@@ -55,12 +55,16 @@ type SortKey =
   | "reported"
   | "is_temporary";
 
+/* ───────────────── Utils ───────────────── */
+
+const formatDate = (d: string | null) =>
+  d ? new Date(d).toLocaleDateString("nl-NL") : "—";
+
 /* ───────────────── Component ───────────────── */
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
-  /* ───────── State ───────── */
   const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState<BrandRow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -80,14 +84,14 @@ export const AdminDashboard: React.FC = () => {
     valid_until: null,
   });
 
-  /* ───────── Auth guard ───────── */
+  /* ───────── Auth ───────── */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) navigate("/login");
     });
   }, [navigate]);
 
-  /* ───────── Data loading ───────── */
+  /* ───────── Data ───────── */
   const load = async () => {
     setLoading(true);
 
@@ -96,22 +100,7 @@ export const AdminDashboard: React.FC = () => {
       supabase.from("categories").select("id, name").order("name"),
     ]);
 
-    // fetch raw brands rows to ensure we have valid_from/valid_until/is_temporary
-    const { data: brandsRaw } = await supabase
-      .from("brands")
-      .select("id, valid_from, valid_until, is_temporary");
-
-    const merged: BrandRow[] = (brandsData ?? []).map((b: any) => {
-      const extra = (brandsRaw ?? []).find((r: any) => r.id === b.id) || {};
-      return {
-        ...b,
-        valid_from: extra.valid_from ?? b.valid_from ?? null,
-        valid_until: extra.valid_until ?? b.valid_until ?? null,
-        is_temporary: typeof extra.is_temporary !== "undefined" ? extra.is_temporary : !!b.is_temporary,
-      } as BrandRow;
-    });
-
-    setBrands(merged);
+    setBrands((brandsData ?? []) as BrandRow[]);
     setCategories((categoriesData ?? []) as Category[]);
     setLoading(false);
   };
@@ -122,7 +111,7 @@ export const AdminDashboard: React.FC = () => {
     const channel = supabase
       .channel("brands-admin-live")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         { event: "*", schema: "public", table: "brands" },
         load
       )
@@ -134,18 +123,15 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   /* ───────── KPIs ───────── */
-  const totals = useMemo(
-    () => ({
-      brands: brands.length,
-      favorites: brands.reduce((s, b) => s + b.favorites, 0),
-      copied: brands.reduce((s, b) => s + b.copied, 0),
-      shared: brands.reduce((s, b) => s + b.shared, 0),
-      reported: brands.reduce((s, b) => s + b.reported, 0),
-    }),
-    [brands]
-  );
+  const totals = useMemo(() => ({
+    brands: brands.length,
+    favorites: brands.reduce((s, b) => s + b.favorites, 0),
+    copied: brands.reduce((s, b) => s + b.copied, 0),
+    shared: brands.reduce((s, b) => s + b.shared, 0),
+    reported: brands.reduce((s, b) => s + b.reported, 0),
+  }), [brands]);
 
-  /* ───────── Sorting & filtering ───────── */
+  /* ───────── Sorting ───────── */
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir(d => (d === "asc" ? "desc" : "asc"));
@@ -156,33 +142,24 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const visibleBrands = useMemo(() => {
-    return [...brands]
-      .filter(b =>
-        [b.name, b.code, b.discount_text]
-          .join(" ")
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      )
-      .sort((a, b) => {
-        const aVal = a[sortKey];
-        const bVal = b[sortKey];
+    const filtered = brands.filter(b =>
+      [b.name, b.code, b.discount_text]
+        .join(" ")
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
 
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortDir === "asc"
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
+    const dir = sortDir === "asc" ? 1 : -1;
 
-        if (typeof aVal === "boolean" && typeof bVal === "boolean") {
-          return sortDir === "asc"
-            ? Number(aVal) - Number(bVal)
-            : Number(bVal) - Number(aVal);
-        }
-
-        return sortDir === "asc"
-          ? (aVal as number) - (bVal as number)
-          : (bVal as number) - (aVal as number);
-      });
+    return filtered.sort((a, b) => {
+      if (sortKey === "name") {
+        return dir * a.name.localeCompare(b.name);
+      }
+      if (sortKey === "is_temporary") {
+        return dir * (Number(a.is_temporary) - Number(b.is_temporary));
+      }
+      return dir * ((a as any)[sortKey] - (b as any)[sortKey]);
+    });
   }, [brands, search, sortKey, sortDir]);
 
   /* ───────── CRUD ───────── */
@@ -196,20 +173,20 @@ export const AdminDashboard: React.FC = () => {
     setModalOpen(true);
   };
 
-  const openEdit = (brand: BrandRow) => {
-    setForm(brand);
+  const openEdit = (b: BrandRow) => {
+    setForm(b);
     setModalOpen(true);
     setMenuOpen(null);
   };
 
   const save = async () => {
     if (!form.name || !form.discount_text || !form.primary_category_id) {
-      alert("Naam, korting en categorie zijn verplicht.");
+      alert("Naam, korting en categorie zijn verplicht");
       return;
     }
 
     if (form.is_temporary && (!form.valid_from || !form.valid_until)) {
-      alert("Vul een geldige periode in voor de tijdelijke actie.");
+      alert("Vul een geldige periode in");
       return;
     }
 
@@ -220,9 +197,8 @@ export const AdminDashboard: React.FC = () => {
       code: form.code ?? null,
       discount_text: form.discount_text,
       website_url: form.website_url ?? null,
-      is_active: form.is_active ?? true,
       primary_category_id: form.primary_category_id,
-
+      is_active: true,
       is_temporary: form.is_temporary ?? false,
       valid_from: form.is_temporary ? form.valid_from : null,
       valid_until: form.is_temporary ? form.valid_until : null,
@@ -244,15 +220,6 @@ export const AdminDashboard: React.FC = () => {
     await supabase.from("brands").update({ is_active: false }).eq("id", id);
     load();
   };
-
-  /* ───────── UI helpers ───────── */
-  const SortIcon = ({ col }: { col: SortKey }) =>
-    sortKey === col ? (
-      sortDir === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-    ) : null;
-
-  const formatDate = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString("nl-NL") : "—";
 
   /* ───────── Render ───────── */
   return (
@@ -311,27 +278,15 @@ export const AdminDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
-                  <Th onClick={() => toggleSort("name")}>
-                    Merk <SortIcon col="name" />
-                  </Th>
+                  <Th onClick={() => toggleSort("name")}>Merk</Th>
                   <th className="px-6 py-3">Categorie</th>
                   <th className="px-6 py-3">Code</th>
-                  <Th onClick={() => toggleSort("is_temporary")}>
-                    Tijdelijk <SortIcon col="is_temporary" />
-                  </Th>
+                  <Th onClick={() => toggleSort("is_temporary")}>Tijdelijk</Th>
                   <th className="px-6 py-3">Periode</th>
-                  <Th onClick={() => toggleSort("favorites")}>
-                    Favorieten <SortIcon col="favorites" />
-                  </Th>
-                  <Th onClick={() => toggleSort("copied")}>
-                    Gekopieerd <SortIcon col="copied" />
-                  </Th>
-                  <Th onClick={() => toggleSort("shared")}>
-                    Gedeeld <SortIcon col="shared" />
-                  </Th>
-                  <Th onClick={() => toggleSort("reported")}>
-                    Reports <SortIcon col="reported" />
-                  </Th>
+                  <Th onClick={() => toggleSort("favorites")}>❤️</Th>
+                  <Th onClick={() => toggleSort("copied")}>📋</Th>
+                  <Th onClick={() => toggleSort("shared")}>🔗</Th>
+                  <Th onClick={() => toggleSort("reported")}>⚠️</Th>
                   <th />
                 </tr>
               </thead>
@@ -347,11 +302,9 @@ export const AdminDashboard: React.FC = () => {
                         <span className="inline-flex items-center gap-1 text-orange-600">
                           <Clock size={14} /> Ja
                         </span>
-                      ) : (
-                        "Nee"
-                      )}
+                      ) : "Nee"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">
+                    <td className="px-6 py-4 text-sm">
                       {b.is_temporary
                         ? `${formatDate(b.valid_from)} – ${formatDate(b.valid_until)}`
                         : "—"}
@@ -397,7 +350,6 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </main>
 
-      {/* Modal */}
       {modalOpen && (
         <BrandModal
           form={form}
@@ -428,19 +380,19 @@ const BrandModal = ({
         {form.id ? "Merk bewerken" : "Nieuw merk"}
       </h2>
 
-      <Input label="Naam" value={form.name} onChange={v => setForm((f: any) => ({ ...f, name: v }))} />
-      <Input label="Website" value={form.website_url} onChange={v => setForm((f: any) => ({ ...f, website_url: v }))} />
-      <Input label="Korting uitleg" value={form.discount_text} onChange={v => setForm((f: any) => ({ ...f, discount_text: v }))} />
-      <Input label="Code" value={form.code} onChange={v => setForm((f: any) => ({ ...f, code: v }))} />
+      <Input label="Naam" value={form.name} onChange={v => setForm((f:any)=>({...f,name:v}))} />
+      <Input label="Website" value={form.website_url} onChange={v => setForm((f:any)=>({...f,website_url:v}))} />
+      <Input label="Korting uitleg" value={form.discount_text} onChange={v => setForm((f:any)=>({...f,discount_text:v}))} />
+      <Input label="Code" value={form.code} onChange={v => setForm((f:any)=>({...f,code:v}))} />
 
       <label className="text-sm font-bold">Categorie</label>
       <select
         value={form.primary_category_id ?? ""}
-        onChange={e => setForm((f: any) => ({ ...f, primary_category_id: e.target.value }))}
+        onChange={e => setForm((f:any)=>({...f,primary_category_id:e.target.value}))}
         className="w-full mb-4 px-3 py-2 border rounded"
       >
         <option value="">Kies categorie</option>
-        {categories.map((c: any) => (
+        {categories.map((c:any)=>(
           <option key={c.id} value={c.id}>{c.name}</option>
         ))}
       </select>
@@ -450,10 +402,10 @@ const BrandModal = ({
           type="checkbox"
           checked={form.is_temporary ?? false}
           onChange={e =>
-            setForm((f: any) => ({
+            setForm((f:any)=>({
               ...f,
               is_temporary: e.target.checked,
-              ...(e.target.checked ? {} : { valid_from: null, valid_until: null }),
+              ...(e.target.checked ? {} : { valid_from: null, valid_until: null })
             }))
           }
         />
@@ -462,15 +414,15 @@ const BrandModal = ({
 
       {form.is_temporary && (
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <Input type="date" label="Geldig van" value={form.valid_from} onChange={v => setForm((f: any) => ({ ...f, valid_from: v }))} />
-          <Input type="date" label="Geldig t/m" value={form.valid_until} onChange={v => setForm((f: any) => ({ ...f, valid_until: v }))} />
+          <Input type="date" label="Geldig van" value={form.valid_from} onChange={v => setForm((f:any)=>({...f,valid_from:v}))} />
+          <Input type="date" label="Geldig t/m" value={form.valid_until} onChange={v => setForm((f:any)=>({...f,valid_until:v}))} />
         </div>
       )}
 
       <div className="flex justify-end gap-3">
         <button onClick={onClose}>Annuleren</button>
         <button onClick={onSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">
-          <Save size={16} /> Opslaan
+          <Save size={16}/> Opslaan
         </button>
       </div>
     </div>
@@ -488,15 +440,12 @@ const Kpi = ({ label, value, icon: Icon }: any) => (
 );
 
 const Th = ({ children, onClick }: any) => (
-  <th
-    onClick={onClick}
-    className="px-6 py-3 cursor-pointer select-none hover:text-slate-900"
-  >
-    <div className="flex items-center gap-1">{children}</div>
+  <th onClick={onClick} className="px-6 py-3 cursor-pointer">
+    {children}
   </th>
 );
 
-const Input = ({ label, value, onChange, type = "text" }: any) => (
+const Input = ({ label, value, onChange, type="text" }: any) => (
   <>
     <label className="text-sm font-bold">{label}</label>
     <input
