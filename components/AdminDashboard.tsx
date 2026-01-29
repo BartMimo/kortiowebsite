@@ -95,7 +95,22 @@ export const AdminDashboard: React.FC = () => {
       supabase.from("categories").select("id, name").order("name"),
     ]);
 
-    setBrands((brandsData ?? []) as BrandRow[]);
+    // fetch raw brands rows to ensure we have valid_from/valid_until/is_temporary
+    const { data: brandsRaw } = await supabase
+      .from("brands")
+      .select("id, valid_from, valid_until, is_temporary");
+
+    const merged: BrandRow[] = (brandsData ?? []).map((b: any) => {
+      const extra = (brandsRaw ?? []).find((r: any) => r.id === b.id) || {};
+      return {
+        ...b,
+        valid_from: extra.valid_from ?? b.valid_from ?? null,
+        valid_until: extra.valid_until ?? b.valid_until ?? null,
+        is_temporary: typeof extra.is_temporary !== "undefined" ? extra.is_temporary : !!b.is_temporary,
+      } as BrandRow;
+    });
+
+    setBrands(merged);
     setCategories((categoriesData ?? []) as Category[]);
     setLoading(false);
   };
