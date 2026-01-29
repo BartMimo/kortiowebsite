@@ -53,6 +53,7 @@ type SortKey =
   | "copied"
   | "shared"
   | "reported";
+  | "is_temporary";
 
 /* ───────────────── Component ───────────────── */
 
@@ -170,6 +171,12 @@ export const AdminDashboard: React.FC = () => {
           return sortDir === "asc"
             ? aVal.localeCompare(bVal)
             : bVal.localeCompare(aVal);
+        }
+
+        if (typeof aVal === "boolean" && typeof bVal === "boolean") {
+          return sortDir === "asc"
+            ? Number(aVal) - Number(bVal)
+            : Number(bVal) - Number(aVal);
         }
 
         return sortDir === "asc"
@@ -309,7 +316,9 @@ export const AdminDashboard: React.FC = () => {
                   </Th>
                   <th className="px-6 py-3">Categorie</th>
                   <th className="px-6 py-3">Code</th>
-                  <th className="px-6 py-3">Tijdelijk</th>
+                  <Th onClick={() => toggleSort("is_temporary")}>
+                    Tijdelijk <SortIcon col="is_temporary" />
+                  </Th>
                   <th className="px-6 py-3">Periode</th>
                   <Th onClick={() => toggleSort("favorites")}>
                     Favorieten <SortIcon col="favorites" />
