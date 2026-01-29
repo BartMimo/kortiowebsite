@@ -106,6 +106,7 @@ export const AdminDashboard: React.FC = () => {
     const channel = supabase
       .channel("brands-admin-live")
       .on(
+        'postgres_changes',
         { event: "*", schema: "public", table: "brands" },
         load
       )
