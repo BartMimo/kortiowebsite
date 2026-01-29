@@ -52,7 +52,7 @@ type SortKey =
   | "favorites"
   | "copied"
   | "shared"
-  | "reported";
+  | "reported"
   | "is_temporary";
 
 /* ───────────────── Component ───────────────── */
