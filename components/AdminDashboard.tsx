@@ -13,6 +13,7 @@ import {
   Save,
   ChevronUp,
   ChevronDown,
+  Clock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -28,7 +29,10 @@ type BrandRow = {
   website_url: string | null;
   is_active: boolean;
   primary_category_id: string;
-  created_at: string;
+
+  is_temporary: boolean;
+  valid_from: string | null;
+  valid_until: string | null;
 
   favorites: number;
   copied: number;
@@ -60,14 +64,20 @@ export const AdminDashboard: React.FC = () => {
   const [brands, setBrands] = useState<BrandRow[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
-  const [menuOpen, setMenuOpen] = useState<string | null>(null);
 
   const [sortKey, setSortKey] = useState<SortKey>("copied");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<Partial<BrandRow>>({ is_active: true });
+
+  const [form, setForm] = useState<Partial<BrandRow>>({
+    is_active: true,
+    is_temporary: false,
+    valid_from: null,
+    valid_until: null,
+  });
 
   /* ───────── Auth guard ───────── */
   useEffect(() => {
@@ -76,7 +86,7 @@ export const AdminDashboard: React.FC = () => {
     });
   }, [navigate]);
 
-  /* ───────── Data load ───────── */
+  /* ───────── Data loading ───────── */
   const load = async () => {
     setLoading(true);
 
@@ -96,7 +106,6 @@ export const AdminDashboard: React.FC = () => {
     const channel = supabase
       .channel("brands-admin-live")
       .on(
-        "postgres_changes",
         { event: "*", schema: "public", table: "brands" },
         load
       )
@@ -108,17 +117,18 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   /* ───────── KPIs ───────── */
-  const totals = useMemo(() => {
-    return {
+  const totals = useMemo(
+    () => ({
       brands: brands.length,
       favorites: brands.reduce((s, b) => s + b.favorites, 0),
       copied: brands.reduce((s, b) => s + b.copied, 0),
       shared: brands.reduce((s, b) => s + b.shared, 0),
       reported: brands.reduce((s, b) => s + b.reported, 0),
-    };
-  }, [brands]);
+    }),
+    [brands]
+  );
 
-  /* ───────── Sorting logic ───────── */
+  /* ───────── Sorting & filtering ───────── */
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir(d => (d === "asc" ? "desc" : "asc"));
@@ -128,38 +138,43 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const sortedAndFiltered = useMemo(() => {
-    const filtered = brands.filter(b =>
-      [b.name, b.code, b.discount_text]
-        .join(" ")
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
+  const visibleBrands = useMemo(() => {
+    return [...brands]
+      .filter(b =>
+        [b.name, b.code, b.discount_text]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      )
+      .sort((a, b) => {
+        const aVal = a[sortKey];
+        const bVal = b[sortKey];
 
-    return [...filtered].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortDir === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
 
-      if (typeof aVal === "string" && typeof bVal === "string") {
         return sortDir === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
-      }
-
-      return sortDir === "asc"
-        ? (aVal as number) - (bVal as number)
-        : (bVal as number) - (aVal as number);
-    });
+          ? (aVal as number) - (bVal as number)
+          : (bVal as number) - (aVal as number);
+      });
   }, [brands, search, sortKey, sortDir]);
 
   /* ───────── CRUD ───────── */
   const openCreate = () => {
-    setForm({ is_active: true });
+    setForm({
+      is_active: true,
+      is_temporary: false,
+      valid_from: null,
+      valid_until: null,
+    });
     setModalOpen(true);
   };
 
-  const openEdit = (b: BrandRow) => {
-    setForm(b);
+  const openEdit = (brand: BrandRow) => {
+    setForm(brand);
     setModalOpen(true);
     setMenuOpen(null);
   };
@@ -167,6 +182,11 @@ export const AdminDashboard: React.FC = () => {
   const save = async () => {
     if (!form.name || !form.discount_text || !form.primary_category_id) {
       alert("Naam, korting en categorie zijn verplicht.");
+      return;
+    }
+
+    if (form.is_temporary && (!form.valid_from || !form.valid_until)) {
+      alert("Vul een geldige periode in voor de tijdelijke actie.");
       return;
     }
 
@@ -179,6 +199,10 @@ export const AdminDashboard: React.FC = () => {
       website_url: form.website_url ?? null,
       is_active: form.is_active ?? true,
       primary_category_id: form.primary_category_id,
+
+      is_temporary: form.is_temporary ?? false,
+      valid_from: form.is_temporary ? form.valid_from : null,
+      valid_until: form.is_temporary ? form.valid_until : null,
     };
 
     if (form.id) {
@@ -198,16 +222,16 @@ export const AdminDashboard: React.FC = () => {
     load();
   };
 
-  /* ───────── UI ───────── */
+  /* ───────── UI helpers ───────── */
   const SortIcon = ({ col }: { col: SortKey }) =>
     sortKey === col ? (
-      sortDir === "asc" ? (
-        <ChevronUp size={14} />
-      ) : (
-        <ChevronDown size={14} />
-      )
+      sortDir === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />
     ) : null;
 
+  const formatDate = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString("nl-NL") : "—";
+
+  /* ───────── Render ───────── */
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar */}
@@ -269,6 +293,8 @@ export const AdminDashboard: React.FC = () => {
                   </Th>
                   <th className="px-6 py-3">Categorie</th>
                   <th className="px-6 py-3">Code</th>
+                  <th className="px-6 py-3">Tijdelijk</th>
+                  <th className="px-6 py-3">Periode</th>
                   <Th onClick={() => toggleSort("favorites")}>
                     Favorieten <SortIcon col="favorites" />
                   </Th>
@@ -284,12 +310,27 @@ export const AdminDashboard: React.FC = () => {
                   <th />
                 </tr>
               </thead>
+
               <tbody>
-                {sortedAndFiltered.map(b => (
+                {visibleBrands.map(b => (
                   <tr key={b.id} className="border-t">
                     <td className="px-6 py-4 font-bold">{b.name}</td>
                     <td className="px-6 py-4">{b.category_name ?? "—"}</td>
                     <td className="px-6 py-4 font-mono">{b.code ?? "—"}</td>
+                    <td className="px-6 py-4">
+                      {b.is_temporary ? (
+                        <span className="inline-flex items-center gap-1 text-orange-600">
+                          <Clock size={14} /> Ja
+                        </span>
+                      ) : (
+                        "Nee"
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {b.is_temporary
+                        ? `${formatDate(b.valid_from)} – ${formatDate(b.valid_until)}`
+                        : "—"}
+                    </td>
                     <td className="px-6 py-4">{b.favorites}</td>
                     <td className="px-6 py-4">{b.copied}</td>
                     <td className="px-6 py-4">{b.shared}</td>
@@ -317,9 +358,10 @@ export const AdminDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ))}
+
                 {loading && (
                   <tr>
-                    <td colSpan={8} className="px-6 py-6 text-slate-500">
+                    <td colSpan={11} className="px-6 py-6 text-slate-500">
                       Laden…
                     </td>
                   </tr>
@@ -332,43 +374,83 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-          <div className="bg-white w-full max-w-lg rounded-xl p-6">
-            <h2 className="font-bold mb-4">
-              {form.id ? "Merk bewerken" : "Nieuw merk"}
-            </h2>
-
-            <Input label="Naam" value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} />
-            <Input label="Website" value={form.website_url} onChange={v => setForm(f => ({ ...f, website_url: v }))} />
-            <Input label="Korting uitleg" value={form.discount_text} onChange={v => setForm(f => ({ ...f, discount_text: v }))} />
-            <Input label="Code" value={form.code} onChange={v => setForm(f => ({ ...f, code: v }))} />
-
-            <label className="text-sm font-bold">Categorie</label>
-            <select
-              value={form.primary_category_id ?? ""}
-              onChange={e =>
-                setForm(f => ({ ...f, primary_category_id: e.target.value }))
-              }
-              className="w-full mb-4 px-3 py-2 border rounded"
-            >
-              <option value="">Kies categorie</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setModalOpen(false)}>Annuleren</button>
-              <button onClick={save} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">
-                <Save size={16} /> Opslaan
-              </button>
-            </div>
-          </div>
-        </div>
+        <BrandModal
+          form={form}
+          setForm={setForm}
+          categories={categories}
+          saving={saving}
+          onClose={() => setModalOpen(false)}
+          onSave={save}
+        />
       )}
     </div>
   );
 };
+
+/* ───────────────── Modal ───────────────── */
+
+const BrandModal = ({
+  form,
+  setForm,
+  categories,
+  saving,
+  onClose,
+  onSave,
+}: any) => (
+  <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
+    <div className="bg-white w-full max-w-lg rounded-xl p-6">
+      <h2 className="font-bold mb-4">
+        {form.id ? "Merk bewerken" : "Nieuw merk"}
+      </h2>
+
+      <Input label="Naam" value={form.name} onChange={v => setForm((f: any) => ({ ...f, name: v }))} />
+      <Input label="Website" value={form.website_url} onChange={v => setForm((f: any) => ({ ...f, website_url: v }))} />
+      <Input label="Korting uitleg" value={form.discount_text} onChange={v => setForm((f: any) => ({ ...f, discount_text: v }))} />
+      <Input label="Code" value={form.code} onChange={v => setForm((f: any) => ({ ...f, code: v }))} />
+
+      <label className="text-sm font-bold">Categorie</label>
+      <select
+        value={form.primary_category_id ?? ""}
+        onChange={e => setForm((f: any) => ({ ...f, primary_category_id: e.target.value }))}
+        className="w-full mb-4 px-3 py-2 border rounded"
+      >
+        <option value="">Kies categorie</option>
+        {categories.map((c: any) => (
+          <option key={c.id} value={c.id}>{c.name}</option>
+        ))}
+      </select>
+
+      <label className="flex items-center gap-2 mb-4 text-sm font-bold">
+        <input
+          type="checkbox"
+          checked={form.is_temporary ?? false}
+          onChange={e =>
+            setForm((f: any) => ({
+              ...f,
+              is_temporary: e.target.checked,
+              ...(e.target.checked ? {} : { valid_from: null, valid_until: null }),
+            }))
+          }
+        />
+        Tijdelijke actie
+      </label>
+
+      {form.is_temporary && (
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <Input type="date" label="Geldig van" value={form.valid_from} onChange={v => setForm((f: any) => ({ ...f, valid_from: v }))} />
+          <Input type="date" label="Geldig t/m" value={form.valid_until} onChange={v => setForm((f: any) => ({ ...f, valid_until: v }))} />
+        </div>
+      )}
+
+      <div className="flex justify-end gap-3">
+        <button onClick={onClose}>Annuleren</button>
+        <button onClick={onSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">
+          <Save size={16} /> Opslaan
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 /* ───────────────── Helpers ───────────────── */
 
@@ -389,10 +471,11 @@ const Th = ({ children, onClick }: any) => (
   </th>
 );
 
-const Input = ({ label, value, onChange }: any) => (
+const Input = ({ label, value, onChange, type = "text" }: any) => (
   <>
     <label className="text-sm font-bold">{label}</label>
     <input
+      type={type}
       value={value ?? ""}
       onChange={e => onChange(e.target.value)}
       className="w-full mb-3 px-3 py-2 border rounded"
