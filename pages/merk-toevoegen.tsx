@@ -37,7 +37,13 @@ export default function MerkToevoegen() {
 
               <div>
                 <label className="block text-sm font-bold mb-1">Omschrijving van de code</label>
-                <textarea name="Omschrijving" rows={4} required className="w-full px-3 py-2 border rounded" />
+                <textarea
+                  name="Omschrijving"
+                  rows={2}
+                  placeholder="Bijv. 20% Korting"
+                  required
+                  className="w-full md:w-2/3 px-3 py-2 border rounded"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,7 +53,7 @@ export default function MerkToevoegen() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold mb-1">Periode van de code</label>
-                  <input type="text" name="Periode" placeholder="Bijv. 1 maart t/m 31 maart" className="w-full px-3 py-2 border rounded" />
+                  <input type="text" name="Periode" placeholder="Altijd geldig of bijv. 1 maart t/m 31 maart" className="w-full px-3 py-2 border rounded" />
                 </div>
               </div>
 
