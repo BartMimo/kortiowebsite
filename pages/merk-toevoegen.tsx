@@ -21,10 +21,14 @@ export default function MerkToevoegen() {
     if (email) fd.append('_cc', String(email));
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/info@kortio.app', {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: fd,
+        // send JSON to our serverless email API
+        const payload: any = {};
+        fd.forEach((v, k) => (payload[k] = v));
+
+        const res = await fetch('/api/send-merk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
       });
 
       if (res.ok) {
