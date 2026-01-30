@@ -248,16 +248,33 @@ export const AdminDashboard: React.FC = () => {
       website_url: form.website_url ?? null,
       primary_category_id: form.primary_category_id,
       is_active: true,
-      is_temporary: form.is_temporary ?? false,
-      is_featured: form.is_featured ?? false,
-      valid_from: form.is_temporary ? form.valid_from : null,
-      valid_until: form.is_temporary ? form.valid_until : null,
+      is_temporary: Boolean(form.is_temporary),
+      is_featured: Boolean(form.is_featured),
+      valid_from: form.is_temporary ? form.valid_from || null : null,
+      valid_until: form.is_temporary ? form.valid_until || null : null,
     };
 
-    if (form.id) {
-      await supabase.from("brands").update(payload).eq("id", form.id);
-    } else {
-      await supabase.from("brands").insert(payload);
+    try {
+      let res;
+      if (form.id) {
+        res = await supabase.from("brands").update(payload).eq("id", form.id).select();
+      } else {
+        res = await supabase.from("brands").insert(payload).select();
+      }
+
+      if (res.error) {
+        console.error("Failed to save brand:", res.error);
+        alert("Opslaan mislukt: " + res.error.message);
+        setSaving(false);
+        return;
+      }
+
+      console.debug("Save result:", res);
+    } catch (err: any) {
+      console.error("Unexpected error saving brand:", err);
+      alert("Onverwachte fout: " + (err?.message ?? String(err)));
+      setSaving(false);
+      return;
     }
 
     setSaving(false);
