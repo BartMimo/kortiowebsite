@@ -18,28 +18,7 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(prev => !prev);
   };
 
-  /** Alleen voor sections op de homepage */
-  const scrollToSection = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    id: string
-  ) => {
-    e.preventDefault();
-
-    const element = document.getElementById(id);
-    if (!element) return;
-
-    const headerOffset = 80;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition =
-      elementPosition + window.pageYOffset - headerOffset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth',
-    });
-
-    setMobileMenuOpen(false);
-  };
+  /** scrollToSection is handled in LandingPage when navigating to hashes */
 
   return (
     <>
@@ -61,27 +40,24 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#features"
-              onClick={(e) => scrollToSection(e, 'features')}
+            <Link
+              to="/#features"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Functies
-            </a>
-            <a
-              href="#how-it-works"
-              onClick={(e) => scrollToSection(e, 'how-it-works')}
+            </Link>
+            <Link
+              to="/#how-it-works"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Hoe het werkt
-            </a>
-            <a
-              href="#screenshots"
-              onClick={(e) => scrollToSection(e, 'screenshots')}
+            </Link>
+            <Link
+              to="/#screenshots"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Screenshots
-            </a>
+            </Link>
 
             {/* ✅ ECHTE PAGINA */}
             <Link
@@ -115,27 +91,27 @@ export const Navbar: React.FC = () => {
             : 'opacity-0 pointer-events-none'
         }`}
       >
-        <a
-          href="#features"
-          onClick={(e) => scrollToSection(e, 'features')}
+        <Link
+          to="/#features"
+          onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Functies
-        </a>
-        <a
-          href="#how-it-works"
-          onClick={(e) => scrollToSection(e, 'how-it-works')}
+        </Link>
+        <Link
+          to="/#how-it-works"
+          onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Hoe het werkt
-        </a>
-        <a
-          href="#screenshots"
-          onClick={(e) => scrollToSection(e, 'screenshots')}
+        </Link>
+        <Link
+          to="/#screenshots"
+          onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Screenshots
-        </a>
+        </Link>
 
         <Link
           to="/merk-toevoegen"
