@@ -191,12 +191,30 @@ export const AdminDashboard: React.FC = () => {
   const save = async () => {
     console.debug("AdminDashboard.save() form:", form);
     if (!form.name || !form.discount_text || !form.primary_category_id) {
+      const missing: string[] = [];
+      if (!form.name) missing.push("Naam");
+      if (!form.discount_text) missing.push("Korting");
+      if (!form.primary_category_id) missing.push("Categorie");
+
       console.debug("Missing required fields", {
         name: form.name,
         discount_text: form.discount_text,
         primary_category_id: form.primary_category_id,
       });
-      alert("Naam, korting en categorie zijn verplicht");
+
+      alert(
+        `Naam, korting en categorie zijn verplicht.\n\nOntbrekend: ${missing.join(", ") || "(geen)"}\n\nHuidige waarden:\n` +
+          JSON.stringify(
+            {
+              name: form.name,
+              discount_text: form.discount_text,
+              primary_category_id: form.primary_category_id,
+            },
+            null,
+            2
+          )
+      );
+
       return;
     }
 
