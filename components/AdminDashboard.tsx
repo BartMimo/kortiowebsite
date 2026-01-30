@@ -183,13 +183,19 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const openEdit = (b: BrandRow) => {
-    setForm(b);
+    setForm({ ...b, is_featured: b.is_featured ?? false });
     setModalOpen(true);
     setMenuOpen(null);
   };
 
   const save = async () => {
+    console.debug("AdminDashboard.save() form:", form);
     if (!form.name || !form.discount_text || !form.primary_category_id) {
+      console.debug("Missing required fields", {
+        name: form.name,
+        discount_text: form.discount_text,
+        primary_category_id: form.primary_category_id,
+      });
       alert("Naam, korting en categorie zijn verplicht");
       return;
     }
