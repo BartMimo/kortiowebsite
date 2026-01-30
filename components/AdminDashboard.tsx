@@ -100,12 +100,28 @@ export const AdminDashboard: React.FC = () => {
   const load = async () => {
     setLoading(true);
 
-    const [{ data: brandsData }, { data: categoriesData }] = await Promise.all([
+    const [
+      { data: brandsData },
+      { data: categoriesData },
+      { data: rawBrandsData },
+    ] = await Promise.all([
       supabase.from("admin_brands_overview").select("*"),
       supabase.from("categories").select("id, name").order("name"),
+      supabase.from("brands").select("id, primary_category_id, is_featured"),
     ]);
 
-    setBrands((brandsData ?? []) as BrandRow[]);
+    const rawMap = new Map<string, any>((rawBrandsData ?? []).map((r: any) => [r.id, r]));
+
+    const merged = (brandsData ?? []).map((b: any) => {
+      const raw = rawMap.get(b.id);
+      return {
+        ...b,
+        primary_category_id: raw?.primary_category_id ?? b.primary_category_id ?? null,
+        is_featured: raw?.is_featured ?? (b.is_featured ?? false),
+      } as BrandRow;
+    });
+
+    setBrands(merged as BrandRow[]);
     setCategories((categoriesData ?? []) as Category[]);
     setLoading(false);
   };
