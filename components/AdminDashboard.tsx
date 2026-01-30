@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronDown,
   Clock,
+  Star,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -34,6 +35,8 @@ type BrandRow = {
   valid_from: string | null;
   valid_until: string | null;
 
+  is_featured: boolean;
+
   favorites: number;
   copied: number;
   shared: number;
@@ -53,7 +56,8 @@ type SortKey =
   | "copied"
   | "shared"
   | "reported"
-  | "is_temporary";
+  | "is_temporary"
+  | "is_featured";
 
 /* ───────────────── Utils ───────────────── */
 
@@ -155,6 +159,9 @@ export const AdminDashboard: React.FC = () => {
     return filtered.sort((a, b) => {
       if (sortKey === "name") {
         return dir * a.name.localeCompare(b.name);
+      }
+      if (sortKey === "is_featured") {
+        return dir * (Number(a.is_featured) - Number(b.is_featured));
       }
       if (sortKey === "is_temporary") {
         return dir * (Number(a.is_temporary) - Number(b.is_temporary));
@@ -284,7 +291,8 @@ export const AdminDashboard: React.FC = () => {
                   <Th onClick={() => toggleSort("name")}>Merk</Th>
                   <th className="px-6 py-3">Categorie</th>
                   <th className="px-6 py-3">Code</th>
-                  <Th onClick={() => toggleSort("is_temporary")}>Tijdelijk</Th>
+                      <Th onClick={() => toggleSort("is_featured")}>Uitgelicht</Th>
+                      <Th onClick={() => toggleSort("is_temporary")}>Tijdelijk</Th>
                   <th className="px-6 py-3">Periode</th>
                   <Th onClick={() => toggleSort("favorites")}>❤️</Th>
                   <Th onClick={() => toggleSort("copied")}>📋</Th>
@@ -300,6 +308,15 @@ export const AdminDashboard: React.FC = () => {
                     <td className="px-6 py-4 font-bold">{b.name}</td>
                     <td className="px-6 py-4">{b.category_name ?? "—"}</td>
                     <td className="px-6 py-4 font-mono">{b.code ?? "—"}</td>
+                    <td className="px-6 py-4">
+                      {b.is_featured ? (
+                        <span className="inline-flex items-center gap-1 text-yellow-500">
+                          <Star size={14} /> Ja
+                        </span>
+                      ) : (
+                        "Nee"
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       {b.is_temporary ? (
                         <span className="inline-flex items-center gap-1 text-orange-600">
@@ -342,7 +359,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {loading && (
                   <tr>
-                    <td colSpan={11} className="px-6 py-6 text-slate-500">
+                    <td colSpan={12} className="px-6 py-6 text-slate-500">
                       Laden…
                     </td>
                   </tr>
