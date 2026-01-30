@@ -1,6 +1,6 @@
 import React, { ErrorInfo, ReactNode, Component } from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 
 const rootElement = document.getElementById('root');
@@ -60,10 +60,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <HashRouter>
+      <ErrorBoundary>
+      <BrowserRouter>
         <App />
-      </HashRouter>
+      </BrowserRouter>
     </ErrorBoundary>
   </React.StrictMode>
 );
