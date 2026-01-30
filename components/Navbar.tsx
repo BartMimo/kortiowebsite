@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { AppStoreButton } from './ui/AppStoreButton';
 import { Logo } from './ui/Logo';
 import { Menu, X } from 'lucide-react';
@@ -83,12 +84,12 @@ export const Navbar: React.FC = () => {
             </a>
 
             {/* ✅ ECHTE PAGINA */}
-            <a
-              href="/merk-toevoegen"
+            <Link
+              to="/merk-toevoegen"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Merk toevoegen
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:block">
@@ -136,13 +137,13 @@ export const Navbar: React.FC = () => {
           Screenshots
         </a>
 
-        <a
-          href="/merk-toevoegen"
+        <Link
+          to="/merk-toevoegen"
           onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Merk toevoegen
-        </a>
+        </Link>
 
         <div className="pt-8">
           <AppStoreButton onClick={() => setMobileMenuOpen(false)} />
