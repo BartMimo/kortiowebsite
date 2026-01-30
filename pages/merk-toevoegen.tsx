@@ -8,7 +8,7 @@ export default function MerkToevoegen() {
       <Navbar />
       <main className="min-h-screen bg-slate-50 py-16">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+          <div className="max-w-3xl mx-auto mt-8 md:mt-12 bg-white rounded-xl shadow-lg p-8">
             <h1 className="text-2xl font-bold mb-2">Merk toevoegen aan Kortio</h1>
             <p className="text-slate-600 mb-6">
               Wil je jouw merk onder de aandacht brengen via Kortio? Vul het
