@@ -48,7 +48,12 @@ export default function MerkToevoegen() {
 
               <div>
                 <label className="block text-sm font-bold mb-1">Website</label>
-                <input type="url" name="Website" className="w-full px-3 py-2 border rounded" />
+                <input
+                  type="text"
+                  name="Website"
+                  placeholder="Bijv. www.test.nl"
+                  className="w-full px-3 py-2 border rounded"
+                />
               </div>
 
               <div>
