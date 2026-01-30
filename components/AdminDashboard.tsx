@@ -82,6 +82,7 @@ export const AdminDashboard: React.FC = () => {
     is_temporary: false,
     valid_from: null,
     valid_until: null,
+    is_featured: false,
   });
 
   /* ───────── Auth ───────── */
@@ -169,6 +170,7 @@ export const AdminDashboard: React.FC = () => {
       is_temporary: false,
       valid_from: null,
       valid_until: null,
+      is_featured: false,
     });
     setModalOpen(true);
   };
@@ -200,6 +202,7 @@ export const AdminDashboard: React.FC = () => {
       primary_category_id: form.primary_category_id,
       is_active: true,
       is_temporary: form.is_temporary ?? false,
+      is_featured: form.is_featured ?? false,
       valid_from: form.is_temporary ? form.valid_from : null,
       valid_until: form.is_temporary ? form.valid_until : null,
     };
@@ -418,6 +421,15 @@ const BrandModal = ({
           <Input type="date" label="Geldig t/m" value={form.valid_until} onChange={v => setForm((f:any)=>({...f,valid_until:v}))} />
         </div>
       )}
+
+      <label className="flex items-center gap-2 mb-4 text-sm font-bold">
+        <input
+          type="checkbox"
+          checked={form.is_featured ?? false}
+          onChange={e => setForm((f:any)=>({...f, is_featured: e.target.checked}))}
+        />
+        Uitgelicht
+      </label>
 
       <div className="flex justify-end gap-3">
         <button onClick={onClose}>Annuleren</button>
