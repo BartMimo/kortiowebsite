@@ -1,8 +1,46 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 
 export default function MerkToevoegen() {
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    const form = e.currentTarget as HTMLFormElement;
+    const fd = new FormData(form);
+
+    // CC the submitter so they receive a copy (if provided)
+    const email = fd.get('Email');
+    if (email) fd.append('_cc', String(email));
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/info@kortio.app', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: fd,
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        form.reset();
+      } else {
+        const json = await res.json().catch(() => null);
+        setError((json && json.message) || 'Er is iets misgegaan bij het verzenden.');
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Netwerkfout bij verzenden');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -15,63 +53,69 @@ export default function MerkToevoegen() {
               korte formulier hieronder in en we nemen contact met je op.
             </p>
 
-            <form
-              action="https://formsubmit.co/info@kortio.app"
-              method="POST"
-              className="space-y-4"
-            >
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_subject" value="Nieuw merk aangemeld via Kortio.app" />
-              <input type="hidden" name="_next" value="https://www.kortio.app/bedankt" />
-
-              <div>
-                <label className="block text-sm font-bold mb-1">Merknaam</label>
-                <input name="Merknaam" required className="w-full px-3 py-2 border rounded" />
+            {success ? (
+              <div className="rounded-md bg-green-50 border border-green-100 p-4">
+                <strong className="block font-bold text-green-700">Verzonden</strong>
+                <p className="text-sm text-slate-700">Bedankt — we hebben je aanvraag ontvangen. We sturen een kopie naar het opgegeven e-mailadres.</p>
               </div>
+            ) : (
+              <form className="space-y-4" ref={formRef} onSubmit={handleSubmit}>
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_subject" value="Nieuw merk aangemeld via Kortio.app" />
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Merkcode</label>
-                <input name="Merkcode" required className="w-full px-3 py-2 border rounded font-mono" />
-                <p className="text-xs text-slate-400 mt-1">Bijv. KORTIO10 (laat leeg als nog niet bekend)</p>
-              </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Merknaam</label>
+                  <input name="Merknaam" required className="w-full px-3 py-2 border rounded" />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Omschrijving van de code</label>
-                <textarea
-                  name="Omschrijving"
-                  rows={2}
-                  placeholder="Bijv. 20% Korting"
-                  required
-                  className="w-full px-3 py-2 border rounded"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Merkcode</label>
+                  <input name="Merkcode" required className="w-full px-3 py-2 border rounded font-mono" />
+                  <p className="text-xs text-slate-400 mt-1">Bijv. KORTIO10 (laat leeg als nog niet bekend)</p>
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Website</label>
-                <input
-                  type="text"
-                  name="Website"
-                  placeholder="Bijv. www.test.nl"
-                  className="w-full px-3 py-2 border rounded"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Omschrijving van de code</label>
+                  <textarea
+                    name="Omschrijving"
+                    rows={2}
+                    placeholder="Bijv. 20% Korting"
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Periode van de code</label>
-                <input type="text" name="Periode" placeholder="Altijd geldig of bijv. 1 maart t/m 31 maart" className="w-full px-3 py-2 border rounded" />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Website</label>
+                  <input
+                    type="text"
+                    name="Website"
+                    placeholder="Bijv. www.test.nl"
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Contact e-mail</label>
-                <input type="email" name="Email" placeholder="jouw@bedrijf.nl" required className="w-full px-3 py-2 border rounded" />
-                <p className="text-xs text-slate-400 mt-1">We gebruiken dit alleen om contact op te nemen over deze aanmelding.</p>
-              </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Periode van de code</label>
+                  <input type="text" name="Periode" placeholder="Altijd geldig of bijv. 1 maart t/m 31 maart" className="w-full px-3 py-2 border rounded" />
+                </div>
 
-              <div className="flex items-center justify-end gap-3">
-                <button type="reset" className="px-4 py-2 rounded border">Wis</button>
-                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white">Versturen</button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-sm font-bold mb-1">Contact e-mail</label>
+                  <input type="email" name="Email" placeholder="jouw@bedrijf.nl" required className="w-full px-3 py-2 border rounded" />
+                  <p className="text-xs text-slate-400 mt-1">We gebruiken dit alleen om contact op te nemen over deze aanmelding.</p>
+                </div>
+
+                {error && <div className="text-sm text-red-600">{error}</div>}
+
+                <div className="flex items-center justify-end gap-3">
+                  <button type="reset" className="px-4 py-2 rounded border">Wis</button>
+                  <button type="submit" disabled={submitting} className="px-4 py-2 rounded bg-blue-600 text-white">
+                    {submitting ? 'Bezig...' : 'Versturen'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </main>
