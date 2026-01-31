@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
-import { AdminDashboard } from './components/AdminDashboard';
+import { AdminDashboard } from './admin/AdminDashboard';
 import { PrivateRoute } from './components/PrivateRoute';
 import MerkToevoegen from './pages/merk-toevoegen';
 import Privacy from './pages/Privacy';
