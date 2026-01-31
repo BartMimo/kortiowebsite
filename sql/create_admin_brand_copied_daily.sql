@@ -6,7 +6,7 @@ SELECT
   (DATE_TRUNC('day', created_at))::date AS date,
   COUNT(*) AS count
 FROM public.events
-WHERE (event = 'copy' OR event = 'copied' OR type = 'copy' OR action = 'copy')
+WHERE (COALESCE(event_type,'') ILIKE '%copy%')
 GROUP BY DATE_TRUNC('day', created_at)::date
 ORDER BY DATE_TRUNC('day', created_at)::date;
 
