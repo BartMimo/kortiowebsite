@@ -198,10 +198,10 @@ export const AdminDashboard = () => {
                             <td className="px-6 py-4 text-slate-800">{b.shared}</td>
                             <td className="px-6 py-4 text-slate-800">{b.reported}</td>
                             <td className="px-6 py-4 text-right relative">
-                              <button onClick={() => setMenuOpen(b.id)} className="p-2 rounded hover:bg-slate-100">⋯</button>
+                              <button onClick={() => setMenuOpen(b.id)} className="p-2 rounded hover:bg-slate-100 text-slate-800">⋯</button>
                               {menuOpen === b.id && (
                                 <div className="absolute right-4 mt-2 bg-white border rounded-lg shadow-lg z-10">
-                                  <button onClick={() => { setForm({ ...b, is_featured: b.is_featured ?? false }); setModalOpen(true); setMenuOpen(null); }} className="px-4 py-2 w-full text-left">Bewerken</button>
+                                  <button onClick={() => { setForm({ ...b, is_featured: b.is_featured ?? false }); setModalOpen(true); setMenuOpen(null); }} className="px-4 py-2 w-full text-left text-slate-800">Bewerken</button>
                                   <button onClick={async ()=>{ if(confirm('Merk deactiveren?')){ await supabase.from('brands').update({ is_active:false }).eq('id', b.id); await load(); }}} className="px-4 py-2 w-full text-left text-red-600">Deactiveren</button>
                                 </div>
                               )}
@@ -248,14 +248,14 @@ const Input = ({ label, value, onChange, type = 'text' }: any) => (
 const BrandModal = ({ form, setForm, categories, saving, onClose, onSave }: any) => (
   <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
     <div className="bg-white w-full max-w-lg rounded-xl p-6">
-      <h2 className="font-bold mb-4">{form.id ? 'Merk bewerken' : 'Nieuw merk'}</h2>
+      <h2 className="font-bold mb-4 text-slate-800">{form.id ? 'Merk bewerken' : 'Nieuw merk'}</h2>
 
       <Input label="Naam" value={form.name} onChange={(v:any) => setForm((f:any)=>({...f,name:v}))} />
       <Input label="Website" value={form.website_url} onChange={(v:any) => setForm((f:any)=>({...f,website_url:v}))} />
       <Input label="Korting uitleg" value={form.discount_text} onChange={(v:any) => setForm((f:any)=>({...f,discount_text:v}))} />
       <Input label="Code" value={form.code} onChange={(v:any) => setForm((f:any)=>({...f,code:v}))} />
 
-      <label className="text-sm font-bold">Categorie</label>
+      <label className="text-sm font-bold text-slate-800">Categorie</label>
       <select value={form.primary_category_id ?? ''} onChange={e => setForm((f:any)=>({...f,primary_category_id:e.target.value}))} className="w-full mb-4 px-3 py-2 border rounded">
         <option value="">Kies categorie</option>
         {categories.map((c:any)=>(<option key={c.id} value={c.id}>{c.name}</option>))}
@@ -279,7 +279,7 @@ const BrandModal = ({ form, setForm, categories, saving, onClose, onSave }: any)
       </label>
 
       <div className="flex justify-end gap-3">
-        <button onClick={onClose}>Annuleren</button>
+        <button onClick={onClose} className="text-slate-800">Annuleren</button>
         <button onClick={onSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">Opslaan</button>
       </div>
     </div>
