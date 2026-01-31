@@ -5,7 +5,7 @@ CREATE OR REPLACE VIEW public.admin_brand_copied_daily AS
 SELECT
   (DATE_TRUNC('day', created_at))::date AS date,
   COUNT(*) AS count
-FROM public.events
+FROM public.brand_events
 WHERE (COALESCE(event_type,'') ILIKE '%copy%')
 GROUP BY DATE_TRUNC('day', created_at)::date
 ORDER BY DATE_TRUNC('day', created_at)::date;
