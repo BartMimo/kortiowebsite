@@ -290,40 +290,47 @@ export const AdminDashboard: React.FC = () => {
 
   /* ───────── Render ───────── */
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r hidden lg:flex flex-col">
+      <aside className="w-72 bg-white/80 backdrop-blur border-r hidden lg:flex flex-col">
         <div className="p-6 flex items-center gap-3">
-          <Logo className="w-8 h-8" />
-          <span className="font-bold text-xl">Kortio Admin</span>
+          <Logo className="w-9 h-9" />
+          <span className="font-extrabold text-2xl text-slate-700">Kortio Admin</span>
         </div>
-        <nav className="flex-1 px-4">
-          <div className="px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold flex gap-3">
+        <nav className="flex-1 px-4 mt-6">
+          <div className="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-2xl font-semibold flex gap-3 items-center">
             <LayoutDashboard size={20} /> Dashboard
           </div>
         </nav>
-        <button
-          onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
-          className="m-4 px-4 py-3 flex gap-3 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-xl"
-        >
-          <LogOut size={20} /> Uitloggen
-        </button>
+        <div className="p-4">
+          <button
+            onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
+            className="w-full px-4 py-3 flex gap-3 items-center justify-center bg-red-600 text-white rounded-xl shadow-md"
+          >
+            <LogOut size={18} /> Uitloggen
+          </button>
+        </div>
       </aside>
 
       {/* Main */}
       <main className="flex-1">
-        <header className="h-20 bg-white border-b flex items-center justify-between px-8">
-          <h1 className="text-xl font-bold">Overzicht</h1>
+        <header className="h-24 bg-white/60 border-b flex items-center justify-between px-8">
+          <div>
+            <h1 className="text-2xl font-extrabold text-slate-800">Overzicht</h1>
+            <div className="text-sm text-slate-500">Beheer je merken en acties</div>
+          </div>
           <div className="flex gap-4 items-center">
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Zoek merk of code"
-              className="px-4 py-2 rounded-lg bg-slate-100"
-            />
+            <div className="relative">
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Zoek merk of code"
+                className="px-4 py-2 rounded-lg bg-white border shadow-sm w-80"
+              />
+            </div>
             <button
               onClick={openCreate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex gap-2"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg flex gap-2 items-center shadow-lg"
             >
               <Plus size={18} /> Nieuw merk
             </button>
@@ -341,9 +348,9 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-white/80 rounded-2xl border overflow-hidden shadow-sm">
             <table className="w-full">
-              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className="bg-slate-100 text-xs uppercase text-slate-600 tracking-wide">
                 <tr>
                   <Th onClick={() => toggleSort("name")}>Merk</Th>
                   <th className="px-6 py-3">Categorie</th>
@@ -359,19 +366,19 @@ export const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
 
-              <tbody>
-                {visibleBrands.map(b => (
-                  <tr key={b.id} className="border-t">
-                    <td className="px-6 py-4 font-bold">{b.name}</td>
-                    <td className="px-6 py-4">{b.category_name ?? "—"}</td>
-                    <td className="px-6 py-4 font-mono">{b.code ?? "—"}</td>
+              <tbody className="divide-y">
+                {visibleBrands.map((b, idx) => (
+                  <tr key={b.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}>
+                    <td className="px-6 py-4 font-semibold text-slate-800">{b.name}</td>
+                    <td className="px-6 py-4 text-slate-600">{b.category_name ?? "—"}</td>
+                    <td className="px-6 py-4 font-mono text-slate-700">{b.code ?? "—"}</td>
                     <td className="px-6 py-4">
                       {b.is_featured ? (
                         <span className="inline-flex items-center gap-1 text-yellow-500">
                           <Star size={14} /> Ja
                         </span>
                       ) : (
-                        "Nee"
+                        <span className="text-slate-400">Nee</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -379,32 +386,32 @@ export const AdminDashboard: React.FC = () => {
                         <span className="inline-flex items-center gap-1 text-orange-600">
                           <Clock size={14} /> Ja
                         </span>
-                      ) : "Nee"}
+                      ) : <span className="text-slate-400">Nee</span>}
                     </td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {b.is_temporary
                         ? `${formatDate(b.valid_from)} – ${formatDate(b.valid_until)}`
                         : "—"}
                     </td>
-                    <td className="px-6 py-4">{b.favorites}</td>
-                    <td className="px-6 py-4">{b.copied}</td>
-                    <td className="px-6 py-4">{b.shared}</td>
-                    <td className="px-6 py-4">{b.reported}</td>
+                    <td className="px-6 py-4 text-slate-700">{b.favorites}</td>
+                    <td className="px-6 py-4 text-slate-700">{b.copied}</td>
+                    <td className="px-6 py-4 text-slate-700">{b.shared}</td>
+                    <td className="px-6 py-4 text-slate-700">{b.reported}</td>
                     <td className="px-6 py-4 text-right relative">
-                      <button onClick={() => setMenuOpen(b.id)}>
+                      <button onClick={() => setMenuOpen(b.id)} className="p-2 rounded hover:bg-slate-100">
                         <MoreVertical />
                       </button>
                       {menuOpen === b.id && (
-                        <div className="absolute right-4 mt-2 bg-white border rounded-lg shadow">
+                        <div className="absolute right-4 mt-2 bg-white border rounded-lg shadow-lg z-10">
                           <button
                             onClick={() => openEdit(b)}
-                            className="px-4 py-2 flex gap-2"
+                            className="px-4 py-2 flex gap-2 items-center hover:bg-slate-50 w-full text-left"
                           >
                             <Pencil size={16} /> Bewerken
                           </button>
                           <button
                             onClick={() => deactivate(b.id)}
-                            className="px-4 py-2 flex gap-2 text-red-600"
+                            className="px-4 py-2 flex gap-2 items-center hover:bg-slate-50 w-full text-left text-red-600"
                           >
                             <Trash2 size={16} /> Deactiveren
                           </button>
@@ -416,7 +423,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {loading && (
                   <tr>
-                    <td colSpan={12} className="px-6 py-6 text-slate-500">
+                    <td colSpan={12} className="px-6 py-6 text-slate-500 text-center">
                       Laden…
                     </td>
                   </tr>
