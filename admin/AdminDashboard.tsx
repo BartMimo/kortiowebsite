@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "./components/AdminLayout";
 import { StatsRow } from "./components/StatsRow";
 import { BrandGrid } from "./components/BrandGrid";
+import StatisticsPanel from "./components/StatisticsPanel";
 import { supabase } from "../lib/supabase";
 
 export const AdminDashboard = () => {
@@ -9,6 +10,7 @@ export const AdminDashboard = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'stats'>('overview');
 
   const load = async () => {
     setLoading(true);
@@ -69,15 +71,36 @@ export const AdminDashboard = () => {
           </div>
         </header>
 
-        <StatsRow totals={totals} />
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <button onClick={() => setActiveTab('overview')} className={`px-3 py-2 rounded-lg ${activeTab === 'overview' ? 'bg-white/6' : 'bg-transparent'}`}>
+              Dashboard
+            </button>
+            <button onClick={() => setActiveTab('stats')} className={`px-3 py-2 rounded-lg ${activeTab === 'stats' ? 'bg-white/6' : 'bg-transparent'}`}>
+              Statistieken
+            </button>
+          </div>
 
-        <section>
-          {loading ? (
-            <div className="text-slate-400">Laden…</div>
-          ) : (
-            <BrandGrid brands={filtered} onEdit={setEditing} />
+          {activeTab === 'overview' && (
+            <>
+              <StatsRow totals={totals} />
+
+              <section>
+                {loading ? (
+                  <div className="text-slate-400">Laden…</div>
+                ) : (
+                  <BrandGrid brands={filtered} onEdit={setEditing} />
+                )}
+              </section>
+            </>
           )}
-        </section>
+
+          {activeTab === 'stats' && (
+            <div>
+              <StatisticsPanel />
+            </div>
+          )}
+        </div>
 
         {/* volgende stap: BrandDrawer hier */}
       </div>
