@@ -25,7 +25,7 @@ export const AppStoreButton: React.FC<AppStoreButtonProps> = ({ className = '', 
       </svg>
       <div className="text-left leading-tight">
         <div className="text-[10px] uppercase font-medium tracking-wide opacity-80">Download in de</div>
-        <div className="text-lg font-bold font-sans -mt-1">App Store</div>
+        <div className="text-sm font-semibold -mt-1">Kortio – Kortingscodes &amp; Deals</div>
       </div>
     </a>
   );
