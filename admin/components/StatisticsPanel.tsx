@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export const StatisticsPanel = () => {
   const [loading, setLoading] = useState(true);
@@ -40,6 +36,31 @@ export const StatisticsPanel = () => {
     load();
   }, []);
 
+  const [chartLine, setChartLine] = useState<any | null>(null);
+
+  // Dynamically import Chart.js and react-chartjs-2 on client only to avoid SSR/build errors
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (typeof window === 'undefined') return;
+      try {
+        const [{ Chart: ChartJS }, { Line }] = await Promise.all([
+          import('chart.js'),
+          import('react-chartjs-2')
+        ]);
+        const { CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } = await import('chart.js');
+        // register if possible
+        if (ChartJS && ChartJS.register) {
+          ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+        }
+        if (mounted) setChartLine(() => Line as any);
+      } catch (err) {
+        console.error('Failed to load Chart.js dynamically', err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
   const chartData = {
     labels,
     datasets: [
@@ -72,7 +93,12 @@ export const StatisticsPanel = () => {
       {loading ? (
         <div className="text-slate-400">Laden…</div>
       ) : (
-        <Line data={chartData} options={options} />
+        chartLine ? (
+          // @ts-ignore
+          React.createElement(chartLine, { data: chartData, options })
+        ) : (
+          <div className="text-slate-400">Grafiek laden…</div>
+        )
       )}
     </div>
   );
