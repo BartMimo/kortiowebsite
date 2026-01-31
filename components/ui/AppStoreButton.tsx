@@ -11,10 +11,13 @@ export const AppStoreButton: React.FC<AppStoreButtonProps> = ({ className = '', 
   const textColor = theme === 'dark' ? 'text-white' : 'text-slate-900';
 
   return (
-    <a 
-      href="#" 
+    <a
+      href="https://apps.apple.com/nl/app/kortio-kortingscodes-deals/id6758350707"
+      title="Kortio – Kortingscodes & Deals"
+      target="_blank"
+      rel="noopener noreferrer"
       className={`inline-flex items-center justify-center px-5 py-2.5 rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-200/50 ${bgColor} ${textColor} ${className}`}
-      aria-label="Download on the App Store"
+      aria-label="Download Kortio in de App Store"
       onClick={onClick}
     >
       <svg className="w-6 h-6 mr-3" viewBox="0 0 384 512" fill="currentColor">
