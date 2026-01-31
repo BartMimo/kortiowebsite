@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "./components/AdminLayout";
 import StatsRow from "./components/StatsRow";
-import { BrandGrid } from "./components/BrandGrid";
+import BrandGrid from "./components/BrandGrid";
 import StatisticsPanel from "./components/StatisticsPanel";
 import { supabase } from "../lib/supabase";
 
