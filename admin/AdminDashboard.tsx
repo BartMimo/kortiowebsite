@@ -9,6 +9,13 @@ export const AdminDashboard = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [sortKey, setSortKey] = useState<any>('copied');
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
+  const toggleSort = (key: any) => {
+    if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    else {
+      setSortKey(key);
+      setSortDir(key === 'name' ? 'asc' : 'desc');
+    }
+  };
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,6 +50,18 @@ export const AdminDashboard = () => {
       ),
     [brands, search]
   );
+
+  const visibleBrands = useMemo(() => {
+    const dir = sortDir === 'asc' ? 1 : -1;
+    return filtered.slice().sort((a:any,b:any) => {
+      if (sortKey === 'name') return dir * a.name.localeCompare(b.name);
+      if (sortKey === 'category_name') return dir * (String(a.category_name || '').localeCompare(String(b.category_name || '')));
+      if (sortKey === 'code') return dir * (String(a.code || '').localeCompare(String(b.code || '')));
+      if (sortKey === 'is_featured') return dir * (Number(a.is_featured) - Number(b.is_featured));
+      if (sortKey === 'is_temporary') return dir * (Number(a.is_temporary) - Number(b.is_temporary));
+      return dir * ((Number(a[sortKey] || 0) - Number(b[sortKey] || 0)));
+    });
+  }, [filtered, sortKey, sortDir]);
 
   const totals = useMemo(
     () => ({
@@ -152,32 +171,32 @@ export const AdminDashboard = () => {
                     <table className="w-full">
                       <thead className="bg-slate-100 text-xs uppercase text-slate-600 tracking-wide">
                         <tr>
-                          <th className="px-6 py-3">Merk</th>
-                          <th className="px-6 py-3">Categorie</th>
-                          <th className="px-6 py-3">Code</th>
-                          <th className="px-6 py-3">Uitgelicht</th>
-                          <th className="px-6 py-3">Tijdelijk</th>
+                          <th onClick={() => toggleSort('name')} className="px-6 py-3 cursor-pointer">Merk {sortKey==='name'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('category_name')} className="px-6 py-3 cursor-pointer">Categorie {sortKey==='category_name'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('code')} className="px-6 py-3 cursor-pointer">Code {sortKey==='code'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('is_featured')} className="px-6 py-3 cursor-pointer">Uitgelicht {sortKey==='is_featured'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('is_temporary')} className="px-6 py-3 cursor-pointer">Tijdelijk {sortKey==='is_temporary'?(sortDir==='asc'?'▲':'▼'):''}</th>
                           <th className="px-6 py-3">Periode</th>
-                          <th className="px-6 py-3">❤️</th>
-                          <th className="px-6 py-3">📋</th>
-                          <th className="px-6 py-3">🔗</th>
-                          <th className="px-6 py-3">⚠️</th>
+                          <th onClick={() => toggleSort('favorites')} className="px-6 py-3 cursor-pointer">❤️ {sortKey==='favorites'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('copied')} className="px-6 py-3 cursor-pointer">📋 {sortKey==='copied'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('shared')} className="px-6 py-3 cursor-pointer">🔗 {sortKey==='shared'?(sortDir==='asc'?'▲':'▼'):''}</th>
+                          <th onClick={() => toggleSort('reported')} className="px-6 py-3 cursor-pointer">⚠️ {sortKey==='reported'?(sortDir==='asc'?'▲':'▼'):''}</th>
                           <th />
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {filtered.map((b:any, idx:number) => (
+                        {visibleBrands.map((b:any, idx:number) => (
                           <tr key={b.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}>
                             <td className="px-6 py-4 font-semibold text-slate-800">{b.name}</td>
-                            <td className="px-6 py-4 text-slate-600">{b.category_name ?? '—'}</td>
-                            <td className="px-6 py-4 font-mono text-slate-700">{b.code ?? '—'}</td>
-                            <td className="px-6 py-4">{b.is_featured ? 'Ja' : 'Nee'}</td>
-                            <td className="px-6 py-4">{b.is_temporary ? 'Ja' : 'Nee'}</td>
-                            <td className="px-6 py-4 text-sm text-slate-600">{b.is_temporary ? b.valid_from + ' – ' + b.valid_until : '—'}</td>
-                            <td className="px-6 py-4 text-slate-700">{b.favorites}</td>
-                            <td className="px-6 py-4 text-slate-700">{b.copied}</td>
-                            <td className="px-6 py-4 text-slate-700">{b.shared}</td>
-                            <td className="px-6 py-4 text-slate-700">{b.reported}</td>
+                            <td className="px-6 py-4 text-slate-800">{b.category_name ?? '—'}</td>
+                            <td className="px-6 py-4 font-mono text-slate-800">{b.code ?? '—'}</td>
+                            <td className="px-6 py-4 text-slate-800 font-medium">{b.is_featured ? 'Ja' : 'Nee'}</td>
+                            <td className="px-6 py-4 text-slate-800 font-medium">{b.is_temporary ? 'Ja' : 'Nee'}</td>
+                            <td className="px-6 py-4 text-sm text-slate-800">{b.is_temporary ? b.valid_from + ' – ' + b.valid_until : '—'}</td>
+                            <td className="px-6 py-4 text-slate-800">{b.favorites}</td>
+                            <td className="px-6 py-4 text-slate-800">{b.copied}</td>
+                            <td className="px-6 py-4 text-slate-800">{b.shared}</td>
+                            <td className="px-6 py-4 text-slate-800">{b.reported}</td>
                             <td className="px-6 py-4 text-right relative">
                               <button onClick={() => setMenuOpen(b.id)} className="p-2 rounded hover:bg-slate-100">⋯</button>
                               {menuOpen === b.id && (
@@ -221,8 +240,8 @@ export const AdminDashboard = () => {
 
 const Input = ({ label, value, onChange, type = 'text' }: any) => (
   <>
-    <label className="text-sm font-bold">{label}</label>
-    <input type={type} value={value ?? ''} onChange={e => onChange(e.target.value)} className="w-full mb-3 px-3 py-2 border rounded" />
+    <label className="text-sm font-bold text-slate-800">{label}</label>
+    <input type={type} value={value ?? ''} onChange={e => onChange(e.target.value)} className="w-full mb-3 px-3 py-2 border rounded text-slate-800" />
   </>
 );
 
