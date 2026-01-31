@@ -5,8 +5,7 @@ CREATE OR REPLACE VIEW public.admin_brand_favorites_daily AS
 SELECT
   (DATE_TRUNC('day', created_at))::date AS date,
   COUNT(*) AS count
-FROM public.favorites_events
-WHERE event = 'favorite'
+FROM public.favorites
 GROUP BY DATE_TRUNC('day', created_at)::date
 ORDER BY DATE_TRUNC('day', created_at)::date;
 
