@@ -1,287 +1,290 @@
 import { useEffect, useMemo, useState } from "react";
-import { AdminLayout } from "./components/AdminLayout";
-import StatsRow from "./components/StatsRow";
-import StatisticsPanel from "./components/StatisticsPanel";
 import { supabase } from "../lib/supabase";
+import BrandDrawer from "./BrandDrawer";
 
-export const AdminDashboard = () => {
-  const [brands, setBrands] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [sortKey, setSortKey] = useState<any>('copied');
-  const [sortDir, setSortDir] = useState<'asc'|'desc'>('desc');
-  const toggleSort = (key: any) => {
-    if (sortKey === key) setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
-    else {
-      setSortKey(key);
-      setSortDir(key === 'name' ? 'asc' : 'desc');
-    }
-  };
-  const [menuOpen, setMenuOpen] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<any>({ is_active: true, is_temporary:false, valid_from:null, valid_until:null, is_featured:false });
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'stats'>('overview');
+/* ───────── Types ───────── */
 
-  const load = async () => {
-    setLoading(true);
-    const [{ data: brandsData }, { data: categoriesData }] = await Promise.all([
-      supabase.from("admin_brands_overview").select("*"),
-      supabase.from("categories").select('id,name').order('name'),
-    ]);
-    setBrands(brandsData ?? []);
-    setCategories(categoriesData ?? []);
-    setLoading(false);
-  };
+type Brand = {
+  id: string;
+  name: string;
+  category_name: string | null;
+  primary_category_id: string | null;
+  website_url: string | null;
+  code: string | null;
+  discount_text: string | null;
+
+  favorited: number;
+  copied: number;
+  open_website: number;
+  reported: number;
+
+  is_temporary: boolean;
+  valid_from: string | null;
+  valid_until: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+};
+
+type Category = {
+  id: string;
+  name: string;
+};
+
+type SortState = {
+  key: keyof Brand;
+  dir: "asc" | "desc";
+};
+
+/* ───────── Component ───────── */
+
+export default function AdminDashboard() {
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editing, setEditing] = useState<Brand | null>(null);
+
+  const [sort, setSort] = useState<SortState>({
+    key: "name",
+    dir: "asc",
+  });
+
+  const [form, setForm] = useState<any>({});
 
   useEffect(() => {
     load();
   }, []);
 
-  const filtered = useMemo(
-    () =>
-      brands.filter((b:any) =>
-        [b.name, b.code, b.discount_text]
-          .join(" ")
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      ),
-    [brands, search]
-  );
+  async function load() {
+    const [{ data: brandsData }, { data: categoriesData }] =
+      await Promise.all([
+        supabase.from("admin_brands_overview").select("*"),
+        supabase.from("categories").select("id, name").order("name"),
+      ]);
 
-  const visibleBrands = useMemo(() => {
-    const dir = sortDir === 'asc' ? 1 : -1;
-    return filtered.slice().sort((a:any,b:any) => {
-      if (sortKey === 'name') return dir * a.name.localeCompare(b.name);
-      if (sortKey === 'category_name') return dir * (String(a.category_name || '').localeCompare(String(b.category_name || '')));
-      if (sortKey === 'code') return dir * (String(a.code || '').localeCompare(String(b.code || '')));
-      if (sortKey === 'is_featured') return dir * (Number(a.is_featured) - Number(b.is_featured));
-      if (sortKey === 'is_temporary') return dir * (Number(a.is_temporary) - Number(b.is_temporary));
-      return dir * ((Number(a[sortKey] || 0) - Number(b[sortKey] || 0)));
+    setBrands(Array.isArray(brandsData) ? brandsData : []);
+    setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+  }
+
+  /* ───────── Totals ───────── */
+
+  const totals = useMemo(() => ({
+    favorited: brands.reduce((s, b) => s + b.favorited, 0),
+    copied: brands.reduce((s, b) => s + b.copied, 0),
+    open_website: brands.reduce((s, b) => s + b.open_website, 0),
+    reported: brands.reduce((s, b) => s + b.reported, 0),
+  }), [brands]);
+
+  /* ───────── Sorting ───────── */
+
+  const sortedBrands = useMemo(() => {
+    const dir = sort.dir === "asc" ? 1 : -1;
+
+    return [...brands].sort((a, b) => {
+      const av = a[sort.key];
+      const bv = b[sort.key];
+
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+
+      if (typeof av === "string") {
+        return dir * av.localeCompare(String(bv));
+      }
+
+      return dir * ((av as number) - (bv as number));
     });
-  }, [filtered, sortKey, sortDir]);
+  }, [brands, sort]);
 
-  const totals = useMemo(
-    () => ({
-      brands: brands.length,
-      favorites: brands.reduce((s, b) => s + b.favorites, 0),
-      copied: brands.reduce((s, b) => s + b.copied, 0),
-      shared: brands.reduce((s, b) => s + b.shared, 0),
-      reported: brands.reduce((s, b) => s + b.reported, 0),
-    }),
-    [brands]
-  );
+  function toggleSort(key: keyof Brand) {
+    setSort(s =>
+      s.key === key
+        ? { key, dir: s.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" }
+    );
+  }
 
-  const save = async () => {
-    if (!form.name || !form.discount_text || !form.primary_category_id) {
-      alert('Naam, korting en categorie zijn verplicht');
-      return;
-    }
-    if (form.is_temporary && (!form.valid_from || !form.valid_until)) {
-      alert('Vul een geldige periode in');
-      return;
-    }
+  /* ───────── Drawer ───────── */
 
-    setSaving(true);
+  function openCreate() {
+    setEditing(null);
+    setForm({
+      name: "",
+      primary_category_id: "",
+      website_url: "",
+      code: "",
+      discount_text: "",
+      is_temporary: false,
+      valid_from: "",
+      valid_until: "",
+      is_featured: false,
+      is_active: true,
+    });
+    setDrawerOpen(true);
+  }
+
+  function openEdit(b: Brand) {
+    setEditing(b);
+    setForm({ ...b });
+    setDrawerOpen(true);
+  }
+
+  async function saveBrand(e: React.FormEvent) {
+    e.preventDefault();
+
     const payload = {
       name: form.name,
-      code: form.code ?? null,
-      discount_text: form.discount_text,
-      website_url: form.website_url ?? null,
       primary_category_id: form.primary_category_id,
-      is_active: true,
-      is_temporary: Boolean(form.is_temporary),
-      is_featured: Boolean(form.is_featured),
+      website_url: form.website_url || null,
+      code: form.code || null,
+      discount_text: form.discount_text || null,
+      is_temporary: form.is_temporary,
       valid_from: form.is_temporary ? form.valid_from || null : null,
       valid_until: form.is_temporary ? form.valid_until || null : null,
+      is_featured: form.is_featured,
+      is_active: form.is_active,
     };
 
-    try {
-      let res;
-      if (form.id) {
-        res = await supabase.from('brands').update(payload).eq('id', form.id).select();
-      } else {
-        res = await supabase.from('brands').insert(payload).select();
-      }
-      if (res.error) {
-        alert('Opslaan mislukt: ' + res.error.message);
-        setSaving(false);
-        return;
-      }
-    } catch (err:any) {
-      alert('Onverwachte fout: ' + (err?.message ?? String(err)));
-      setSaving(false);
-      return;
+    if (editing) {
+      await supabase.from("brands").update(payload).eq("id", editing.id);
+    } else {
+      await supabase.from("brands").insert(payload);
     }
 
-    setSaving(false);
-    setModalOpen(false);
-    await load();
-  };
+    setDrawerOpen(false);
+    load();
+  }
+
+  /* ───────── Render ───────── */
 
   return (
-    <AdminLayout>
-      <div className="max-w-7xl mx-auto w-full p-6">
+    <div className="min-h-screen bg-slate-50 p-8 max-w-[1600px] mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Admin dashboard</h1>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-4 gap-6 mb-8">
+        <Kpi label="Favorieten" value={totals.favorited} />
+        <Kpi label="Gekopieerd" value={totals.copied} />
+        <Kpi label="Website geopend" value={totals.open_website} />
+        <Kpi label="Gerapporteerd" value={totals.reported} />
+      </div>
         <header className="flex items-center justify-between gap-6 mb-6">
           <div>
+            <a href="/" className="inline-flex items-center text-sm text-slate-600 hover:text-slate-800 mb-2">← Terug naar website</a>
             <h1 className="text-2xl font-extrabold">Dashboard</h1>
             <p className="text-sm text-slate-400">Beheer je merken en acties</p>
           </div>
-
-            <div className="flex items-center gap-3">
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Zoek merk, code of korting"
-              className="bg-white/5 px-4 py-2 rounded-lg border border-white/10 shadow-sm w-64"
-            />
-            <button
-              onClick={() => {
-                setForm({ is_active: true, is_temporary: false, valid_from: null, valid_until: null, is_featured: false });
-                setModalOpen(true);
-              }}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
-            >
-              Nieuw merk
-            </button>
-          </div>
         </header>
 
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <button onClick={() => setActiveTab('overview')} className={`px-3 py-2 rounded-lg ${activeTab === 'overview' ? 'bg-white/6' : 'bg-transparent'}`}>
-              Dashboard
-            </button>
-            <button onClick={() => setActiveTab('stats')} className={`px-3 py-2 rounded-lg ${activeTab === 'stats' ? 'bg-white/6' : 'bg-transparent'}`}>
-              Statistieken
-            </button>
-          </div>
-
-          {activeTab === 'overview' && (
-            <>
-              <StatsRow totals={totals} />
-
-              <section>
-                {loading ? (
-                  <div className="text-slate-400">Laden…</div>
-                ) : (
-                  <div className="bg-white/80 rounded-2xl border overflow-hidden shadow-sm">
-                    <table className="w-full">
-                      <thead className="bg-slate-100 text-xs uppercase text-slate-600 tracking-wide">
-                        <tr>
-                          <th onClick={() => toggleSort('name')} className="px-6 py-3 cursor-pointer">Merk {sortKey==='name'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('category_name')} className="px-6 py-3 cursor-pointer">Categorie {sortKey==='category_name'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('code')} className="px-6 py-3 cursor-pointer">Code {sortKey==='code'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('is_featured')} className="px-6 py-3 cursor-pointer">Uitgelicht {sortKey==='is_featured'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('is_temporary')} className="px-6 py-3 cursor-pointer">Tijdelijk {sortKey==='is_temporary'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th className="px-6 py-3">Periode</th>
-                          <th onClick={() => toggleSort('favorites')} className="px-6 py-3 cursor-pointer">❤️ {sortKey==='favorites'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('copied')} className="px-6 py-3 cursor-pointer">📋 {sortKey==='copied'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('shared')} className="px-6 py-3 cursor-pointer">🔗 {sortKey==='shared'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th onClick={() => toggleSort('reported')} className="px-6 py-3 cursor-pointer">⚠️ {sortKey==='reported'?(sortDir==='asc'?'▲':'▼'):''}</th>
-                          <th />
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {visibleBrands.map((b:any, idx:number) => (
-                          <tr key={b.id} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50"}>
-                            <td className="px-6 py-4 font-semibold text-slate-800">{b.name}</td>
-                            <td className="px-6 py-4 text-slate-800">{b.category_name ?? '—'}</td>
-                            <td className="px-6 py-4 font-mono text-slate-800">{b.code ?? '—'}</td>
-                            <td className="px-6 py-4 text-slate-800 font-medium">{b.is_featured ? 'Ja' : 'Nee'}</td>
-                            <td className="px-6 py-4 text-slate-800 font-medium">{b.is_temporary ? 'Ja' : 'Nee'}</td>
-                            <td className="px-6 py-4 text-sm text-slate-800">{b.is_temporary ? b.valid_from + ' – ' + b.valid_until : '—'}</td>
-                            <td className="px-6 py-4 text-slate-800">{b.favorites}</td>
-                            <td className="px-6 py-4 text-slate-800">{b.copied}</td>
-                            <td className="px-6 py-4 text-slate-800">{b.shared}</td>
-                            <td className="px-6 py-4 text-slate-800">{b.reported}</td>
-                            <td className="px-6 py-4 text-right relative">
-                              <button onClick={() => setMenuOpen(b.id)} className="p-2 rounded hover:bg-slate-100 text-slate-800">⋯</button>
-                              {menuOpen === b.id && (
-                                <div className="absolute right-4 mt-2 bg-white border rounded-lg shadow-lg z-10">
-                                  <button onClick={() => { setForm({ ...b, is_featured: b.is_featured ?? false }); setModalOpen(true); setMenuOpen(null); }} className="px-4 py-2 w-full text-left text-slate-800">Bewerken</button>
-                                  <button onClick={async ()=>{ if(confirm('Merk deactiveren?')){ await supabase.from('brands').update({ is_active:false }).eq('id', b.id); await load(); }}} className="px-4 py-2 w-full text-left text-red-600">Deactiveren</button>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-
-                        {loading && (
-                          <tr>
-                            <td colSpan={12} className="px-6 py-6 text-slate-500 text-center">Laden…</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </section>
-            </>
-          )}
-
-          {activeTab === 'stats' && (
-            <div>
-              <StatisticsPanel />
-            </div>
-          )}
-        </div>
-
-        {/* volgende stap: BrandDrawer hier */}
-        {modalOpen && (
-          <BrandModal form={form} setForm={setForm} categories={categories} saving={saving} onClose={() => setModalOpen(false)} onSave={save} />
-        )}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={openCreate}
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white"
+        >
+          Nieuw merk
+        </button>
       </div>
-    </AdminLayout>
-  );
-};
 
-const Input = ({ label, value, onChange, type = 'text' }: any) => (
-  <>
-    <label className="text-sm font-bold text-slate-800">{label}</label>
-    <input type={type} value={value ?? ''} onChange={e => onChange(e.target.value)} className="w-full mb-3 px-3 py-2 border rounded text-slate-800" />
-  </>
-);
+      {/* Table */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-slate-600">
+            <tr>
+              <Th onClick={() => toggleSort("name")}>Naam</Th>
+              <Th onClick={() => toggleSort("category_name")}>Categorie</Th>
+              <Th>Website</Th>
+              <Th>Code</Th>
+              <Th onClick={() => toggleSort("is_temporary")}>Tijdelijk</Th>
+              <Th onClick={() => toggleSort("is_featured")}>⭐</Th>
+              <Th onClick={() => toggleSort("favorited")}>❤️</Th>
+              <Th onClick={() => toggleSort("copied")}>📋</Th>
+              <Th onClick={() => toggleSort("open_website")}>🔗</Th>
+              <Th onClick={() => toggleSort("reported")}>⚠️</Th>
+              <Th onClick={() => toggleSort("is_active")}>Actief</Th>
+              <Th />
+            </tr>
+          </thead>
 
-const BrandModal = ({ form, setForm, categories, saving, onClose, onSave }: any) => (
-  <div className="fixed inset-0 bg-black/30 flex items-center justify-center">
-    <div className="bg-white w-full max-w-lg rounded-xl p-6">
-      <h2 className="font-bold mb-4 text-slate-800">{form.id ? 'Merk bewerken' : 'Nieuw merk'}</h2>
-
-      <Input label="Naam" value={form.name} onChange={(v:any) => setForm((f:any)=>({...f,name:v}))} />
-      <Input label="Website" value={form.website_url} onChange={(v:any) => setForm((f:any)=>({...f,website_url:v}))} />
-      <Input label="Korting uitleg" value={form.discount_text} onChange={(v:any) => setForm((f:any)=>({...f,discount_text:v}))} />
-      <Input label="Code" value={form.code} onChange={(v:any) => setForm((f:any)=>({...f,code:v}))} />
-
-      <label className="text-sm font-bold text-slate-800">Categorie</label>
-      <select value={form.primary_category_id ?? ''} onChange={e => setForm((f:any)=>({...f,primary_category_id:e.target.value}))} className="w-full mb-4 px-3 py-2 border rounded">
-        <option value="">Kies categorie</option>
-        {categories.map((c:any)=>(<option key={c.id} value={c.id}>{c.name}</option>))}
-      </select>
-
-      <label className="flex items-center gap-2 mb-4 text-sm font-bold">
-        <input type="checkbox" checked={form.is_temporary ?? false} onChange={e => setForm((f:any)=>({...f,is_temporary:e.target.checked, ...(e.target.checked?{}:{valid_from:null,valid_until:null})}))} />
-        Tijdelijke actie
-      </label>
-
-      {form.is_temporary && (
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <Input type="date" label="Geldig van" value={form.valid_from} onChange={(v:any)=>setForm((f:any)=>({...f,valid_from:v}))} />
-          <Input type="date" label="Geldig t/m" value={form.valid_until} onChange={(v:any)=>setForm((f:any)=>({...f,valid_until:v}))} />
-        </div>
-      )}
-
-      <label className="flex items-center gap-2 mb-4 text-sm font-bold">
-        <input type="checkbox" checked={form.is_featured ?? false} onChange={e => setForm((f:any)=>({...f,is_featured:e.target.checked}))} />
-        Uitgelicht
-      </label>
-
-      <div className="flex justify-end gap-3">
-        <button onClick={onClose} className="text-slate-800">Annuleren</button>
-        <button onClick={onSave} disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded">Opslaan</button>
+          <tbody>
+            {sortedBrands.map(b => (
+              <tr key={b.id} className="border-t hover:bg-slate-50">
+                <td className="px-6 py-3 font-medium">{b.name}</td>
+                <td className="px-6 py-3">{b.category_name ?? "-"}</td>
+                <td className="px-6 py-3">
+                  {b.website_url ? (
+                    <a
+                      href={b.website_url}
+                      target="_blank"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {new URL(b.website_url).hostname}
+                    </a>
+                  ) : "-"}
+                </td>
+                <td className="px-6 py-3 font-mono">{b.code ?? "-"}</td>
+                <td className="px-6 py-3">
+                  {b.is_temporary
+                    ? `⏱️ ${b.valid_from ?? "?"} → ${b.valid_until ?? "?"}`
+                    : "—"}
+                </td>
+                <td className="px-6 py-3">{b.is_featured ? "⭐" : ""}</td>
+                <td className="px-6 py-3">{b.favorited}</td>
+                <td className="px-6 py-3">{b.copied}</td>
+                <td className="px-6 py-3">{b.open_website}</td>
+                <td className="px-6 py-3">{b.reported}</td>
+                <td className="px-6 py-3">{b.is_active ? "Ja" : "Nee"}</td>
+                <td className="px-6 py-3 text-right">
+                  <button
+                    onClick={() => openEdit(b)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Bewerken
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <BrandDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onSave={saveBrand}
+        form={form}
+        setForm={setForm}
+        categories={categories}
+        editing={!!editing}
+      />
     </div>
-  </div>
-);
+  );
+}
+
+/* ───────── UI helpers ───────── */
+
+function Kpi({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-white rounded-xl p-6 shadow">
+      <div className="text-xs text-slate-500 mb-1">{label}</div>
+      <div className="text-3xl font-bold">{value}</div>
+    </div>
+  );
+}
+
+function Th({
+  children,
+  onClick,
+}: {
+  children?: React.ReactNode;
+  onClick?: () => void;
+}) {
+  return (
+    <th
+      onClick={onClick}
+      className={`px-6 py-3 text-left text-xs font-semibold ${
+        onClick ? "cursor-pointer hover:text-blue-600" : ""
+      }`}
+    >
+      {children}
+    </th>
+  );
+}

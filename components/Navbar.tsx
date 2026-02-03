@@ -66,6 +66,12 @@ export const Navbar: React.FC = () => {
             >
               Merk toevoegen
             </Link>
+            <Link
+              to="/merken"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Merken
+            </Link>
           </div>
 
           <div className="hidden md:block">
@@ -119,6 +125,14 @@ export const Navbar: React.FC = () => {
           className="text-2xl font-medium text-slate-900"
         >
           Merk toevoegen
+        </Link>
+
+        <Link
+          to="/merken"
+          onClick={() => setMobileMenuOpen(false)}
+          className="text-2xl font-medium text-slate-900"
+        >
+          Merken
         </Link>
 
         <div className="pt-8">

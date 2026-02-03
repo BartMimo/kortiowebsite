@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
+// src/components/PrivateRoute.tsx
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-export const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [authed, setAuthed] = useState(false);
+export function PrivateRoute({ children }: { children: JSX.Element }) {
+  const [status, setStatus] = useState<'loading' | 'authed' | 'guest'>('loading');
 
   useEffect(() => {
-    const check = async () => {
-      const { data } = await supabase.auth.getUser();
-      setAuthed(!!data.user);
-      setLoading(false);
-    };
-    check();
+    supabase.auth.getUser().then(({ data }) => {
+      setStatus(data.user ? 'authed' : 'guest');
+    });
   }, []);
 
-  if (loading) return <div className="p-8">Controleren...</div>;
-  if (!authed) return <Navigate to="/login" replace />;
+  if (status === 'loading') {
+    return <div className="p-8">Controleren…</div>;
+  }
+
+  if (status === 'guest') {
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
-};
+}
