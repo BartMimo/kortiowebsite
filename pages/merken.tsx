@@ -59,6 +59,14 @@ const MerkenPage: React.FC = () => {
     return allCategories.map(c => c.name).sort();
   }, [allCategories]);
 
+  const filteredBrandsWithCategory = useMemo(() => {
+    let filtered = filteredBrands;
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(b => b.category_name && selectedCategories.includes(b.category_name));
+    }
+    return filtered;
+  }, [filteredBrands, selectedCategories]);
+
   const toggleCategory = (categoryName: string) => {
     setSelectedCategories(prev => 
       prev.includes(categoryName)
