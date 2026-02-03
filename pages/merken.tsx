@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { Search, ExternalLink, Tag, Sparkles, ArrowRight, Filter, ChevronDown } from 'lucide-react';
+import { Navbar } from '../components/Navbar';
+import { Footer } from '../components/Footer';
 
 type Brand = {
   id: string;
@@ -27,6 +29,23 @@ const MerkenPage: React.FC = () => {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await supabase.from('admin_brands_overview').select('*').order('name', { ascending: true });
+        if (!mounted) return;
+        setBrands((data ?? []) as Brand[]);
+      } catch (err) {
+        console.error('Failed to load brands', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
 
   const filteredBrands = useMemo(() => {
@@ -63,8 +82,10 @@ const MerkenPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {/* Hero Section */}
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative container mx-auto px-6 py-24 md:py-32">
@@ -222,6 +243,8 @@ const MerkenPage: React.FC = () => {
         </div>
       </section>
     </div>
+    <Footer />
+    </>
   );
 };
 
