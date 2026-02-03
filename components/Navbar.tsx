@@ -48,6 +48,16 @@ export const Navbar: React.FC = () => {
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-8">
             <Link
+              to="/"
+              className={`text-sm font-medium transition-colors ${
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Home
+            </Link>
+            <Link
               to="/#features"
               className={`text-sm font-medium transition-colors ${
                 isOnDarkBackground && !scrolled && !mobileMenuOpen
@@ -128,6 +138,13 @@ export const Navbar: React.FC = () => {
             : 'opacity-0 pointer-events-none'
         }`}
       >
+        <Link
+          to="/"
+          onClick={() => setMobileMenuOpen(false)}
+          className="text-2xl font-medium text-slate-900"
+        >
+          Home
+        </Link>
         <Link
           to="/#features"
           onClick={() => setMobileMenuOpen(false)}

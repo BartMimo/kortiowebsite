@@ -104,7 +104,7 @@ const MerkenPage: React.FC = () => {
               <span className="text-sm font-medium">Ontdek geweldige deals</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
-              Alle Merken
+  
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
               Vind je favoriete merken en profiteer van de beste kortingscodes en aanbiedingen
