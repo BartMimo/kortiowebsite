@@ -15,13 +15,17 @@ const MerkenPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const filterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setIsFilterOpen(false);
+        // Check if click is not on the fixed dropdown
+        const dropdown = document.querySelector('[data-filter-dropdown]');
+        if (dropdown && !dropdown.contains(event.target as Node)) {
+          setIsFilterOpen(false);
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -112,16 +116,29 @@ const MerkenPage: React.FC = () => {
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
                   />
                 </div>
-                <div className="relative z-[1000]" ref={filterRef}>
+                <div className="relative" ref={filterRef}>
                   <button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    onClick={(e) => {
+                      if (!isFilterOpen) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setDropdownPosition({
+                          top: rect.bottom + window.scrollY + 8,
+                          left: rect.right + window.scrollX - 192 // 192px is min-w-48 width
+                        });
+                      }
+                      setIsFilterOpen(!isFilterOpen);
+                    }}
                     className="flex items-center gap-2 px-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
                   >
                     <Filter className="w-5 h-5" />
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   {isFilterOpen && (
-                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[1000]">
+                    <div 
+                      className="fixed bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[1000]"
+                      style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+                      data-filter-dropdown
+                    >
                       <button
                         onClick={() => {
                           setSelectedCategory(null);
