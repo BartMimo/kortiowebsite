@@ -4,17 +4,14 @@ import { Search, ExternalLink, Tag, Sparkles, ArrowRight, Filter, ChevronDown } 
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 
-type Brand = {
+type Category = {
   id: string;
   name: string;
-  discount_text: string;
-  code?: string | null;
-  website_url?: string | null;
-  category_name?: string | null;
 };
 
 const MerkenPage: React.FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [allCategories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -36,11 +33,15 @@ const MerkenPage: React.FC = () => {
     (async () => {
       setLoading(true);
       try {
-        const { data } = await supabase.from('admin_brands_overview').select('*').order('name', { ascending: true });
+        const [{ data: brandsData }, { data: categoriesData }] = await Promise.all([
+          supabase.from('admin_brands_overview').select('*').order('name', { ascending: true }),
+          supabase.from('categories').select('id, name').order('name')
+        ]);
         if (!mounted) return;
-        setBrands((data ?? []) as Brand[]);
+        setBrands((brandsData ?? []) as Brand[]);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
-        console.error('Failed to load brands', err);
+        console.error('Failed to load brands and categories', err);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -57,10 +58,9 @@ const MerkenPage: React.FC = () => {
     );
   }, [brands, search]);
 
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(brands.map(b => b.category_name).filter(Boolean)));
-    return uniqueCategories.sort();
-  }, [brands]);
+  const categoryNames = useMemo(() => {
+    return allCategories.map(c => c.name).sort();
+  }, [allCategories]);
 
   const filteredBrandsWithCategory = useMemo(() => {
     let filtered = filteredBrands;
@@ -131,7 +131,7 @@ const MerkenPage: React.FC = () => {
                       >
                         Alle categorieën
                       </button>
-                      {categories.map(category => (
+                      {categoryNames.map(category => (
                         <button
                           key={category}
                           onClick={() => {
