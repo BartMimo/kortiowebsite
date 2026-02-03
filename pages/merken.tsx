@@ -204,7 +204,13 @@ const MerkenPage: React.FC = () => {
                       {brand.code && (
                         <div className="mb-4">
                           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-4 py-2 rounded-xl font-mono text-sm font-semibold border border-indigo-100">
-                            <span>{brand.code}</span>
+                            <span
+                              className="cursor-pointer hover:bg-indigo-100 px-2 py-1 rounded transition-colors select-all"
+                              onClick={() => navigator.clipboard.writeText(brand.code!)}
+                              title="Klik om te kopiëren"
+                            >
+                              {brand.code}
+                            </span>
                             <button
                               onClick={() => navigator.clipboard.writeText(brand.code!)}
                               className="hover:text-indigo-800 transition-colors"
