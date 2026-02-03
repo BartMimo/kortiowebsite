@@ -40,7 +40,6 @@ const MerkenPage: React.FC = () => {
         if (!mounted) return;
         setBrands((brandsData ?? []) as Brand[]);
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
-        console.log('Loaded categories:', categoriesData);
       } catch (err) {
         console.error('Failed to load brands and categories', err);
       } finally {
@@ -60,9 +59,7 @@ const MerkenPage: React.FC = () => {
   }, [brands, search]);
 
   const categoryNames = useMemo(() => {
-    const names = allCategories.map(c => c.name).sort();
-    console.log('Category names:', names);
-    return names;
+    return allCategories.map(c => c.name).sort();
   }, [allCategories]);
 
   const filteredBrandsWithCategory = useMemo(() => {
@@ -124,7 +121,7 @@ const MerkenPage: React.FC = () => {
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   {isFilterOpen && (
-                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-50">
+                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[100]">
                       <button
                         onClick={() => {
                           setSelectedCategory(null);
