@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
-import { Search, ExternalLink, Tag, Sparkles, ArrowRight, Filter, ChevronDown } from 'lucide-react';
+import { Search, ExternalLink, Tag, Sparkles, ArrowRight, Filter, ChevronDown, X, Check } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 
@@ -23,19 +23,7 @@ const MerkenPage: React.FC = () => {
   const [allCategories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const filterRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setIsFilterOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -71,13 +59,17 @@ const MerkenPage: React.FC = () => {
     return allCategories.map(c => c.name).sort();
   }, [allCategories]);
 
-  const filteredBrandsWithCategory = useMemo(() => {
-    let filtered = filteredBrands;
-    if (selectedCategory) {
-      filtered = filtered.filter(b => b.category_name === selectedCategory);
-    }
-    return filtered;
-  }, [filteredBrands, selectedCategory]);
+  const toggleCategory = (categoryName: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryName)
+        ? prev.filter(c => c !== categoryName)
+        : [...prev, categoryName]
+    );
+  };
+
+  const clearAllCategories = () => {
+    setSelectedCategories([]);
+  };
 
   const gradients = [
     'from-blue-500 to-purple-600',
@@ -109,51 +101,48 @@ const MerkenPage: React.FC = () => {
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
               Vind je favoriete merken en profiteer van de beste kortingscodes en aanbiedingen
             </p>
-            <div className="relative max-w-md mx-auto">
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
+            <div className="relative max-w-4xl mx-auto">
+              <div className="flex flex-col gap-6">
+                {/* Search Bar */}
+                <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Zoek een merk of categorie..."
+                    placeholder="Zoek een merk..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
                   />
                 </div>
-                <div className="relative" ref={filterRef}>
-                  <button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    className="flex items-center gap-2 px-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
-                  >
-                    <Filter className="w-5 h-5" />
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                  {isFilterOpen && (
-                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[9999] transform translate-z-0">
-                      <button
-                        onClick={() => {
-                          setSelectedCategory(null);
-                          setIsFilterOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors ${!selectedCategory ? 'text-indigo-600 font-semibold' : 'text-slate-700'}`}
-                      >
-                        Alle categorieën
-                      </button>
-                      {categoryNames.map(category => (
-                        <button
-                          key={category}
-                          onClick={() => {
-                            setSelectedCategory(category);
-                            setIsFilterOpen(false);
-                          }}
-                          className={`w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors ${selectedCategory === category ? 'text-indigo-600 font-semibold' : 'text-slate-700'}`}
-                        >
-                          {category}
-                        </button>
-                      ))}
-                    </div>
+
+                {/* Category Filter Tags */}
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {selectedCategories.length > 0 && (
+                    <button
+                      onClick={clearAllCategories}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all duration-300 text-sm font-medium"
+                    >
+                      <X className="w-4 h-4" />
+                      Wis filters
+                    </button>
                   )}
+                  {categoryNames.map(category => {
+                    const isSelected = selectedCategories.includes(category);
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => toggleCategory(category)}
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border transition-all duration-300 text-sm font-medium ${
+                          isSelected
+                            ? 'bg-white text-blue-600 border-white shadow-lg'
+                            : 'bg-white/10 text-white border-white/30 hover:bg-white/20'
+                        }`}
+                      >
+                        {isSelected && <Check className="w-4 h-4" />}
+                        {category}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
