@@ -95,7 +95,7 @@ const MerkenPage: React.FC = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-400 to-blue-200 text-white">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative container mx-auto px-6 py-24 md:py-32">
           <div className="max-w-4xl mx-auto text-center">
