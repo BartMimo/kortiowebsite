@@ -23,6 +23,13 @@ export const LandingPage: React.FC = () => {
     window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
   }, [hash]);
 
+  useEffect(() => {
+    // Scroll to top when component mounts (only if no hash navigation)
+    if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, []);
+
   return (
     <>
       <Navbar />

@@ -26,6 +26,11 @@ const MerkenPage: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
     (async () => {
       setLoading(true);
