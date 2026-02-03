@@ -112,7 +112,7 @@ const MerkenPage: React.FC = () => {
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
                   />
                 </div>
-                <div className="relative" ref={filterRef}>
+                <div className="relative z-[1000]" ref={filterRef}>
                   <button
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
                     className="flex items-center gap-2 px-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
@@ -121,7 +121,7 @@ const MerkenPage: React.FC = () => {
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   {isFilterOpen && (
-                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[100]">
+                    <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 min-w-48 z-[1000]">
                       <button
                         onClick={() => {
                           setSelectedCategory(null);
