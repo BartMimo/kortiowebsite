@@ -16,6 +16,10 @@ type Brand = {
   code?: string | null;
   website_url?: string | null;
   category_name?: string | null;
+  is_featured?: boolean;
+  is_temporary?: boolean;
+  valid_from?: string | null;
+  valid_until?: string | null;
 };
 
 const MerkenPage: React.FC = () => {
@@ -36,11 +40,18 @@ const MerkenPage: React.FC = () => {
       setLoading(true);
       try {
         const [{ data: brandsData }, { data: categoriesData }] = await Promise.all([
-          supabase.from('admin_brands_overview').select('*').order('name', { ascending: true }),
+          supabase.from('admin_brands_overview').select('id, name, discount_text, code, website_url, category_name, is_featured, is_temporary, valid_from, valid_until').order('name', { ascending: true }),
           supabase.from('categories').select('id, name').order('name')
         ]);
         if (!mounted) return;
-        setBrands((brandsData ?? []) as Brand[]);
+        const sortedBrands = ((brandsData ?? []) as Brand[]).sort((a, b) => {
+          // Featured first
+          if (a.is_featured && !b.is_featured) return -1;
+          if (!a.is_featured && b.is_featured) return 1;
+          // Then alphabetical
+          return a.name.localeCompare(b.name);
+        });
+        setBrands(sortedBrands);
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
         console.error('Failed to load brands and categories', err);
@@ -67,21 +78,48 @@ const MerkenPage: React.FC = () => {
   const filteredBrandsWithCategory = useMemo(() => {
     let filtered = filteredBrands;
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(b => b.category_name && selectedCategories.includes(b.category_name));
+      filtered = filtered.filter(b => {
+        if (!b.category_name) return false;
+        return selectedCategories.some(selected =>
+          selected.toLowerCase() === b.category_name!.toLowerCase()
+        );
+      });
     }
     return filtered;
   }, [filteredBrands, selectedCategories]);
 
   const toggleCategory = (categoryName: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(categoryName)
-        ? prev.filter(c => c !== categoryName)
+    setSelectedCategories(prev =>
+      prev.some(cat => cat.toLowerCase() === categoryName.toLowerCase())
+        ? prev.filter(cat => cat.toLowerCase() !== categoryName.toLowerCase())
         : [...prev, categoryName]
     );
   };
 
   const clearAllCategories = () => {
     setSelectedCategories([]);
+  };
+
+  const categoryConfig: Record<string, { emoji: string; color: string }> = {
+    'mode': { emoji: '👕', color: 'from-pink-500 to-rose-600' },
+    'sport': { emoji: '💪', color: 'from-green-500 to-emerald-600' },
+    'eten & drinken': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
+    'eten': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
+    'drinken': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
+    'reizen': { emoji: '✈️', color: 'from-blue-500 to-cyan-600' },
+    'elektronica': { emoji: '💻', color: 'from-purple-500 to-indigo-600' },
+    'electronica': { emoji: '💻', color: 'from-purple-500 to-indigo-600' },
+    'beauty': { emoji: '✨', color: 'from-yellow-500 to-amber-600' },
+    'kinderen': { emoji: '👨‍👩‍👧‍👦', color: 'from-teal-500 to-cyan-600' },
+    'sportsupplementen': { emoji: '💊', color: 'from-lime-500 to-green-600' },
+    'wonen': { emoji: '🏠', color: 'from-slate-500 to-gray-600' },
+    'default': { emoji: '🏷️', color: 'from-blue-500 to-purple-600' }
+  };
+
+  const getCategoryConfig = (categoryName: string | null) => {
+    if (!categoryName) return categoryConfig['default'];
+    const lowerName = categoryName.toLowerCase();
+    return categoryConfig[lowerName] || categoryConfig['default'];
   };
 
   const gradients = [
@@ -102,7 +140,7 @@ const MerkenPage: React.FC = () => {
         {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-400 to-blue-200 text-white">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-6 py-24 md:py-32">
+        <div className="relative container mx-auto px-6 py-20 md:py-32">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-5 h-5" />
@@ -140,12 +178,12 @@ const MerkenPage: React.FC = () => {
                     </button>
                   )}
                   {categoryNames.map(category => {
-                    const isSelected = selectedCategories.includes(category);
+                    const isSelected = selectedCategories.some(selected => selected.toLowerCase() === category.toLowerCase());
                     return (
                       <button
                         key={category}
                         onClick={() => toggleCategory(category)}
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border transition-all duration-300 text-sm font-medium ${
+                        className={`inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full backdrop-blur-md border transition-all duration-300 text-sm font-medium ${
                           isSelected
                             ? 'bg-white text-blue-600 border-white shadow-lg'
                             : 'bg-white/10 text-white border-white/30 hover:bg-white/20'
@@ -188,13 +226,27 @@ const MerkenPage: React.FC = () => {
                 {filteredBrandsWithCategory.map((brand, index) => (
                   <article
                     key={brand.id}
-                    className="group bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-slate-100 overflow-hidden relative"
+                    className={`group bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border overflow-hidden relative min-h-[320px] ${
+                      brand.is_featured ? 'border-yellow-400 border-4 shadow-yellow-200' : 'border-slate-100'
+                    }`}
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index % gradients.length]} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
                     <div className="relative z-10">
+                      {brand.is_temporary && (brand.valid_from || brand.valid_until) && (
+                        <div className="absolute top-12 md:top-16 right-2 p-2 bg-orange-50 border border-orange-200 rounded-lg z-20">
+                          <div className="flex items-center gap-1 text-orange-700 text-xs font-medium mb-1">
+                            ⏰ Tijdelijk
+                          </div>
+                          <div className="text-orange-600 text-xs">
+                            {brand.valid_from && `Van: ${new Date(brand.valid_from).toLocaleDateString('nl-NL')}`}
+                            {brand.valid_from && brand.valid_until && <br />}
+                            {brand.valid_until && `Tot: ${new Date(brand.valid_until).toLocaleDateString('nl-NL')}`}
+                          </div>
+                        </div>
+                      )}
                       <div className="flex items-start justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${gradients[index % gradients.length]} flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
-                          {brand.name.charAt(0)}
+                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${getCategoryConfig(brand.category_name).color} flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
+                          {getCategoryConfig(brand.category_name).emoji}
                         </div>
                         {brand.category_name && (
                           <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
@@ -204,13 +256,15 @@ const MerkenPage: React.FC = () => {
                         )}
                       </div>
 
-                      <h2 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
+                      <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
                         {brand.name}
                       </h2>
 
-                      <p className="text-slate-600 mb-4 leading-relaxed">
-                        {brand.discount_text}
-                      </p>
+                      <div className="mb-4">
+                        <p className="text-slate-600 leading-relaxed">
+                          {brand.discount_text}
+                        </p>
+                      </div>
 
                       {brand.code && (
                         <div className="mb-4">
