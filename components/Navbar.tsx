@@ -9,7 +9,7 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
-  const isOnBrandsPage = location.pathname === '/merken';
+  const isOnDarkBackground = location.pathname === '/merken';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -27,9 +27,9 @@ export const Navbar: React.FC = () => {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-          scrolled || mobileMenuOpen || isOnBrandsPage
-            ? 'bg-white/90 backdrop-blur-md shadow-sm py-4'
-            : 'bg-transparent py-6'
+          isOnDarkBackground && !scrolled && !mobileMenuOpen
+            ? 'bg-transparent py-6'
+            : 'bg-white/90 backdrop-blur-md shadow-sm py-4'
         }`}
       >
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
@@ -37,9 +37,9 @@ export const Navbar: React.FC = () => {
           <a href="/" className="flex items-center gap-2 relative z-[101]">
             <Logo className="w-8 h-8" />
             <span className={`text-xl font-bold tracking-tight transition-colors ${
-              scrolled || mobileMenuOpen || isOnBrandsPage
-                ? 'text-slate-900'
-                : 'text-white'
+              isOnDarkBackground && !scrolled && !mobileMenuOpen
+                ? 'text-white'
+                : 'text-slate-900'
             }`}>
               Kortio
             </span>
@@ -50,9 +50,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/#features"
               className={`text-sm font-medium transition-colors ${
-                scrolled || mobileMenuOpen || isOnBrandsPage
-                  ? 'text-slate-600 hover:text-slate-900'
-                  : 'text-white hover:text-white/80'
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Functies
@@ -60,9 +60,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/#how-it-works"
               className={`text-sm font-medium transition-colors ${
-                scrolled || mobileMenuOpen || isOnBrandsPage
-                  ? 'text-slate-600 hover:text-slate-900'
-                  : 'text-white hover:text-white/80'
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Hoe het werkt
@@ -70,9 +70,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/#screenshots"
               className={`text-sm font-medium transition-colors ${
-                scrolled || mobileMenuOpen || isOnBrandsPage
-                  ? 'text-slate-600 hover:text-slate-900'
-                  : 'text-white hover:text-white/80'
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Screenshots
@@ -82,9 +82,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/merk-toevoegen"
               className={`text-sm font-medium transition-colors ${
-                scrolled || mobileMenuOpen || isOnBrandsPage
-                  ? 'text-slate-600 hover:text-slate-900'
-                  : 'text-white hover:text-white/80'
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Merk toevoegen
@@ -92,9 +92,9 @@ export const Navbar: React.FC = () => {
             <Link
               to="/merken"
               className={`text-sm font-medium transition-colors ${
-                scrolled || mobileMenuOpen || isOnBrandsPage
-                  ? 'text-slate-600 hover:text-slate-900'
-                  : 'text-white hover:text-white/80'
+                isOnDarkBackground && !scrolled && !mobileMenuOpen
+                  ? 'text-white hover:text-white/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Merken
@@ -108,9 +108,9 @@ export const Navbar: React.FC = () => {
           {/* Mobile toggle */}
           <button
             className={`md:hidden relative z-[101] p-2 transition-colors ${
-              scrolled || mobileMenuOpen || isOnBrandsPage
-                ? 'text-slate-600'
-                : 'text-white'
+              isOnDarkBackground && !scrolled && !mobileMenuOpen
+                ? 'text-white'
+                : 'text-slate-600'
             }`}
             onClick={toggleMobileMenu}
             aria-label="Menu"

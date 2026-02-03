@@ -40,6 +40,7 @@ const MerkenPage: React.FC = () => {
         if (!mounted) return;
         setBrands((brandsData ?? []) as Brand[]);
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        console.log('Loaded categories:', categoriesData);
       } catch (err) {
         console.error('Failed to load brands and categories', err);
       } finally {
@@ -59,7 +60,9 @@ const MerkenPage: React.FC = () => {
   }, [brands, search]);
 
   const categoryNames = useMemo(() => {
-    return allCategories.map(c => c.name).sort();
+    const names = allCategories.map(c => c.name).sort();
+    console.log('Category names:', names);
+    return names;
   }, [allCategories]);
 
   const filteredBrandsWithCategory = useMemo(() => {
@@ -205,7 +208,7 @@ const MerkenPage: React.FC = () => {
                         <div className="mb-4">
                           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-4 py-2 rounded-xl font-mono text-sm font-semibold border border-indigo-100">
                             <span
-                              className="cursor-pointer hover:bg-indigo-100 px-2 py-1 rounded transition-colors select-all"
+                              className="cursor-pointer hover:bg-indigo-100 px-2 py-1 rounded transition-colors"
                               onClick={() => navigator.clipboard.writeText(brand.code!)}
                               title="Klik om te kopiëren"
                             >
