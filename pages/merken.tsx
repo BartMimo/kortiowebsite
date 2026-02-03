@@ -9,6 +9,15 @@ type Category = {
   name: string;
 };
 
+type Brand = {
+  id: string;
+  name: string;
+  discount_text: string;
+  code?: string | null;
+  website_url?: string | null;
+  category_name?: string | null;
+};
+
 const MerkenPage: React.FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [allCategories, setCategories] = useState<Category[]>([]);
