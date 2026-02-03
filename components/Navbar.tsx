@@ -34,7 +34,7 @@ export const Navbar: React.FC = () => {
       >
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 relative z-[101]">
+          <a href="/home" className="flex items-center gap-2 relative z-[101]">
             <Logo className="w-8 h-8" />
             <span className={`text-xl font-bold tracking-tight transition-colors ${
               isOnDarkBackground && !scrolled && !mobileMenuOpen
@@ -48,7 +48,7 @@ export const Navbar: React.FC = () => {
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              to="/"
+              to="/home"
               className={`text-sm font-medium transition-colors ${
                 isOnDarkBackground && !scrolled && !mobileMenuOpen
                   ? 'text-white hover:text-white/80'
@@ -58,7 +58,7 @@ export const Navbar: React.FC = () => {
               Home
             </Link>
             <Link
-              to="/#features"
+              to="/home#features"
               className={`text-sm font-medium transition-colors ${
                 isOnDarkBackground && !scrolled && !mobileMenuOpen
                   ? 'text-white hover:text-white/80'
@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
               Functies
             </Link>
             <Link
-              to="/#how-it-works"
+              to="/home#how-it-works"
               className={`text-sm font-medium transition-colors ${
                 isOnDarkBackground && !scrolled && !mobileMenuOpen
                   ? 'text-white hover:text-white/80'
@@ -78,7 +78,7 @@ export const Navbar: React.FC = () => {
               Hoe het werkt
             </Link>
             <Link
-              to="/#screenshots"
+              to="/home#screenshots"
               className={`text-sm font-medium transition-colors ${
                 isOnDarkBackground && !scrolled && !mobileMenuOpen
                   ? 'text-white hover:text-white/80'
@@ -139,28 +139,28 @@ export const Navbar: React.FC = () => {
         }`}
       >
         <Link
-          to="/"
+          to="/home"
           onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Home
         </Link>
         <Link
-          to="/#features"
+          to="/home#features"
           onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Functies
         </Link>
         <Link
-          to="/#how-it-works"
+          to="/home#how-it-works"
           onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >
           Hoe het werkt
         </Link>
         <Link
-          to="/#screenshots"
+          to="/home#screenshots"
           onClick={() => setMobileMenuOpen(false)}
           className="text-2xl font-medium text-slate-900"
         >

@@ -10,7 +10,8 @@ import AdminDashboard from "./admin/AdminDashboard";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<MerkenPage />} />
+      <Route path="/home" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/merk-toevoegen" element={<MerkToevoegen />} />
