@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AppStoreButton } from './ui/AppStoreButton';
+import { AppStoreButton, PlayStoreButton } from './ui/AppStoreButton';
 import { Logo } from './ui/Logo';
 import { Menu, X } from 'lucide-react';
 
@@ -111,8 +111,9 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
             <AppStoreButton className="scale-90 origin-right !py-2 !px-4" />
+            <PlayStoreButton className="scale-90 origin-right !py-2 !px-4" />
           </div>
 
           {/* Mobile toggle */}
@@ -183,8 +184,9 @@ export const Navbar: React.FC = () => {
           Merken
         </Link>
 
-        <div className="pt-8">
+        <div className="pt-8 flex flex-col gap-4">
           <AppStoreButton onClick={() => setMobileMenuOpen(false)} />
+          <PlayStoreButton onClick={() => setMobileMenuOpen(false)} />
         </div>
       </div>
     </>

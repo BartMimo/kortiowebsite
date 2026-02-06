@@ -42,6 +42,7 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<Brand | null>(null);
+  const [appDownloads, setAppDownloads] = useState<{ ios: number; android: number }>({ ios: 0, android: 0 });
 
   const [sort, setSort] = useState<SortState>({
     key: "name",
@@ -55,14 +56,25 @@ export default function AdminDashboard() {
   }, []);
 
   async function load() {
-    const [{ data: brandsData }, { data: categoriesData }] =
+    const [{ data: brandsData }, { data: categoriesData }, { data: downloadsData }] =
       await Promise.all([
         supabase.from("admin_brands_overview").select("*"),
         supabase.from("categories").select("id, name").order("name"),
+        supabase.from("app_downloads").select("platform"),
       ]);
 
     setBrands(Array.isArray(brandsData) ? brandsData : []);
     setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+
+    // Count downloads
+    const counts = { ios: 0, android: 0 };
+    if (downloadsData) {
+      downloadsData.forEach(item => {
+        if (item.platform === 'ios') counts.ios++;
+        if (item.platform === 'android') counts.android++;
+      });
+    }
+    setAppDownloads(counts);
   }
 
   /* ───────── Totals ───────── */
@@ -166,6 +178,12 @@ export default function AdminDashboard() {
         <Kpi label="Gekopieerd" value={totals.copied} />
         <Kpi label="Website geopend" value={totals.open_website} />
         <Kpi label="Gerapporteerd" value={totals.reported} />
+      </div>
+
+      {/* App Downloads */}
+      <div className="grid grid-cols-2 gap-6 mb-8">
+        <Kpi label="iOS Downloads" value={appDownloads.ios} />
+        <Kpi label="Android Downloads" value={appDownloads.android} />
       </div>
         <header className="flex items-center justify-between gap-6 mb-6">
           <div>

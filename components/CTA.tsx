@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppStoreButton } from './ui/AppStoreButton';
+import { AppStoreButton, PlayStoreButton } from './ui/AppStoreButton';
 import { Reveal } from './ui/Reveal';
 
 export const CTA: React.FC = () => {
@@ -21,9 +21,12 @@ export const CTA: React.FC = () => {
                   Snel, simpel en volledig gratis.
                 </p>
                 
-                <div className="flex flex-col items-center">
-                   <AppStoreButton className="scale-110 shadow-xl shadow-blue-200" />
-                   <span className="mt-6 text-sm text-slate-400 font-medium">Versie 2.1 • iOS 15+</span>
+                <div className="flex flex-col items-center gap-4">
+                   <div className="flex flex-col sm:flex-row gap-4">
+                     <AppStoreButton className="scale-110 shadow-xl shadow-blue-200" />
+                     <PlayStoreButton className="scale-110 shadow-xl shadow-green-200" />
+                   </div>
+                   <span className="mt-6 text-sm text-slate-400 font-medium">Versie 2.1 • iOS 15+ & Android</span>
                 </div>
              </Reveal>
            </div>

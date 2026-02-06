@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppStoreButton } from './ui/AppStoreButton';
+import { AppStoreButton, PlayStoreButton } from './ui/AppStoreButton';
 import { PhoneMockup } from './ui/PhoneMockup';
 import adidasImg from '../assets/WhatsApp Image 2026-01-27 at 16.11.58.jpeg';
 import { Reveal } from './ui/Reveal';
@@ -15,7 +15,7 @@ export const Hero: React.FC = () => {
             <Reveal>
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold tracking-wide uppercase mb-4 border border-blue-100">
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                  Nu beschikbaar voor iOS
+                  Nu beschikbaar voor iOS & Android
                </div>
             </Reveal>
             
@@ -32,15 +32,11 @@ export const Hero: React.FC = () => {
             </Reveal>
 
             <Reveal delay={300}>
-              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                <AppStoreButton className="w-full sm:w-auto" />
-                <div className="flex -space-x-2 items-center px-4">
-                   <div className="text-xs text-slate-500 font-medium">
-                      Gratis te downloaden
-                   </div>
-                </div>
-              </div>
-            </Reveal>
+  <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+    <AppStoreButton className="w-full sm:w-auto" />
+    <PlayStoreButton className="w-full sm:w-auto" />
+  </div>
+</Reveal>
 
             <Reveal delay={400}>
                <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4 text-sm text-slate-500">
