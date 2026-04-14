@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
+import { SEO } from '../components/SEO';
 
 export default function Privacy() {
   useEffect(() => {
@@ -10,6 +11,12 @@ export default function Privacy() {
 
   return (
     <>
+      <SEO
+        title="Privacybeleid — Kortio"
+        description="Lees het privacybeleid van Kortio. We verzamelen geen persoonsgegevens en verkopen nooit data aan derden."
+        canonical="/privacy"
+        noindex={true}
+      />
       <Navbar />
       <main className="min-h-screen bg-slate-50 pt-28 pb-20">
         <div className="container mx-auto px-6 md:px-12">

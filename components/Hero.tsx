@@ -21,13 +21,13 @@ export const Hero: React.FC = () => {
             
             <Reveal delay={100}>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1]">
-                Snel korting vinden, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">zonder gedoe.</span>
+                Kortingscodes vinden, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">zonder gedoe.</span>
               </h1>
             </Reveal>
 
             <Reveal delay={200}>
               <p className="text-lg md:text-xl text-slate-500 max-w-lg mx-auto md:mx-0 leading-relaxed">
-                De slimste manier om kortingscodes te vinden, te bewaren en direct te gebruiken. Download Kortio en bespaar direct.
+                De slimste kortingscode app voor Nederland. Zoek een webshop, kopieer de code met één tik en bespaar direct bij het afrekenen. Gratis voor iOS en Android.
               </p>
             </Reveal>
 

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
-import { Search, ExternalLink, Tag, Sparkles, ArrowRight, Filter, ChevronDown, X, Check } from 'lucide-react';
+import { Search, Tag, Sparkles, ArrowRight, X, Check } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
+import { SEO } from '../components/SEO';
 
 type Category = {
   id: string;
@@ -135,6 +136,11 @@ const MerkenPage: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title="Kortingscodes per merk — alle webshops op een rij"
+        description="Bekijk alle merken in Kortio en ontdek de beste kortingscodes per webshop. Van mode tot sport en elektronica — bespaar direct bij je favoriete Nederlandse webshops."
+        canonical="/merken"
+      />
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         {/* Hero Section */}
@@ -143,14 +149,14 @@ const MerkenPage: React.FC = () => {
         <div className="relative container mx-auto px-6 py-20 md:py-32">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <Sparkles className="w-5 h-5" />
-              <span className="text-sm font-medium">Ontdek geweldige deals</span>
+              <Sparkles className="w-5 h-5" aria-hidden="true" />
+              <span className="text-sm font-medium">Kortingscodes voor honderden webshops</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
-  
+              Alle merken &amp; kortingscodes
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Vind je favoriete merken en profiteer van de beste kortingscodes en aanbiedingen
+              Vind gratis kortingscodes voor honderden Nederlandse webshops. Kopieer de code en bespaar direct bij het afrekenen.
             </p>
             <div className="relative max-w-4xl mx-auto">
               <div className="flex flex-col gap-6">
@@ -256,9 +262,9 @@ const MerkenPage: React.FC = () => {
                         )}
                       </div>
 
-                      <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
+                      <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
                         {brand.name}
-                      </h2>
+                      </h3>
 
                       <div className="mb-4">
                         <p className="text-slate-600 leading-relaxed">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
+import { SEO } from '../components/SEO';
 
 export default function MerkToevoegen() {
   const [submitting, setSubmitting] = useState(false);
@@ -52,14 +53,19 @@ export default function MerkToevoegen() {
 
   return (
     <>
+      <SEO
+        title="Merk toevoegen — Gratis kortingscode aanbieden via Kortio"
+        description="Heb je een webshop? Voeg je merk en kortingscode gratis toe aan de Kortio app. Bereik duizenden gebruikers die actief op zoek zijn naar kortingscodes."
+        canonical="/merk-toevoegen"
+      />
       <Navbar />
       <main className="min-h-screen bg-slate-50 py-16">
         <div className="container mx-auto px-6 md:px-12">
           <div className="max-w-3xl mx-auto mt-8 md:mt-12 bg-white rounded-xl shadow-lg p-8">
             <h1 className="text-2xl font-bold mb-2">Merk toevoegen aan Kortio</h1>
             <p className="text-slate-600 mb-6">
-              Wil je jouw merk onder de aandacht brengen via Kortio? Vul het
-              korte formulier hieronder in en we nemen contact met je op.
+              Wil je jouw kortingscode aanbieden aan duizenden gebruikers die actief op zoek zijn naar aanbiedingen?
+              Vul het formulier in en we voegen je merk gratis toe aan de Kortio app.
             </p>
 
             {success ? (

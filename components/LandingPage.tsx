@@ -8,6 +8,51 @@ import { HowItWorks } from './HowItWorks';
 import { Trust } from './Trust';
 import { CTA } from './CTA';
 import { Footer } from './Footer';
+import { FAQ } from './FAQ';
+import { SEO } from './SEO';
+
+const landingSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://kortio.app/#organization',
+      name: 'Kortio',
+      url: 'https://kortio.app',
+      logo: 'https://kortio.app/assets/logo1.png',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        email: 'info@kortio.app',
+        contactType: 'customer support',
+        availableLanguage: 'Dutch',
+      },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': 'https://kortio.app/#app',
+      name: 'Kortio',
+      description:
+        'De slimste kortingscode app voor Nederland. Vind, kopieer en gebruik kortingscodes van honderden webshops — helemaal gratis.',
+      applicationCategory: 'ShoppingApplication',
+      operatingSystem: 'iOS, Android',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      publisher: { '@id': 'https://kortio.app/#organization' },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '120',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://kortio.app/#website',
+      url: 'https://kortio.app',
+      name: 'Kortio',
+      inLanguage: 'nl-NL',
+      publisher: { '@id': 'https://kortio.app/#organization' },
+    },
+  ],
+};
 
 export const LandingPage: React.FC = () => {
   const { hash } = useLocation();
@@ -29,12 +74,19 @@ export const LandingPage: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title="Kortio — Gratis kortingscodes vinden voor Nederlandse webshops"
+        description="Download de Kortio app en vind direct de beste kortingscodes voor honderden Nederlandse webshops. Gratis, geen account nodig. Beschikbaar voor iOS en Android."
+        canonical="/"
+        schema={landingSchema}
+      />
       <Navbar />
       <Hero />
       <Features />
       <Screenshots />
       <HowItWorks />
       <Trust />
+      <FAQ />
       <CTA />
       <Footer />
     </>
