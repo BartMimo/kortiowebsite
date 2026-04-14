@@ -3,12 +3,51 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kortio - Snel korting vinden</title>
-    <meta name="description" content="Snel korting vinden, zonder gedoe. Download de Kortio app voor iOS." />
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Primary Meta -->
+    <title>Kortio - Snel korting vinden, zonder gedoe</title>
+    <meta name="description" content="Vind direct de beste kortingscodes voor je favoriete webshops. Download de Kortio app voor iOS en Android — gratis, geen account nodig." />
+    <meta name="theme-color" content="#2563eb" />
+
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content="Kortio" />
+    <meta property="og:title" content="Kortio - Snel korting vinden, zonder gedoe" />
+    <meta property="og:description" content="Vind direct de beste kortingscodes voor je favoriete webshops. Download de Kortio app voor iOS en Android — gratis, geen account nodig." />
+    <meta property="og:image" content="/assets/logo1.png" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kortio - Snel korting vinden, zonder gedoe" />
+    <meta name="twitter:description" content="Vind direct de beste kortingscodes voor je favoriete webshops. Download de Kortio app — gratis, geen account nodig." />
+    <meta name="twitter:image" content="/assets/logo1.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Kortio",
+      "description": "De slimste manier om kortingscodes te vinden, te bewaren en direct te gebruiken.",
+      "applicationCategory": "ShoppingApplication",
+      "operatingSystem": "iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      }
+    }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind (CDN — vervang door PostCSS build voor productie) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
       html {
         scroll-behavior: smooth;

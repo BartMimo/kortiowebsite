@@ -21,7 +21,7 @@ export const HowItWorks: React.FC = () => {
           {/* Step 1 */}
           <Reveal delay={0} width="100%">
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative">
+              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">1</div>
                  <Search className="text-blue-600" size={32} />
               </div>
@@ -35,7 +35,7 @@ export const HowItWorks: React.FC = () => {
           {/* Step 2 */}
           <Reveal delay={200} width="100%">
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative">
+              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">2</div>
                  <ClipboardCopy className="text-blue-600" size={32} />
               </div>
@@ -49,7 +49,7 @@ export const HowItWorks: React.FC = () => {
           {/* Step 3 */}
           <Reveal delay={400} width="100%">
             <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative">
+              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">3</div>
                  <ShoppingBag className="text-blue-600" size={32} />
               </div>

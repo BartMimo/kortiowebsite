@@ -57,7 +57,7 @@ export const Hero: React.FC = () => {
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-200/20 rounded-full blur-3xl -z-10"></div>
              
              <Reveal direction="left" delay={500} className="relative z-10 transform md:rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-                <PhoneMockup imgSrc={adidasImg} />
+                <PhoneMockup imgSrc={adidasImg} alt="Kortio app — kortingscode voor Adidas kopiëren" />
                 {/* Floating Card Element */}
                 <div className="absolute -left-12 bottom-32 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 hidden lg:block animate-bounce" style={{ animationDuration: '3s' }}>
                    <div className="flex items-center gap-3">
