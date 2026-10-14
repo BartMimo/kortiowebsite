@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /api/
 
-Sitemap: https://kortio.app/sitemap.xml
+Sitemap: https://www.kortio.app/sitemap.xml

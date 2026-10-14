@@ -25,13 +25,13 @@ export function Footer() {
             <h2>De app</h2>
             <ul>
               <li>
-                <Link to="/home#how-it-works">Hoe het werkt</Link>
+                <Link to="/#how-it-works">Hoe het werkt</Link>
               </li>
               <li>
-                <Link to="/home#screenshots">Bekijk de app</Link>
+                <Link to="/#screenshots">Bekijk de app</Link>
               </li>
               <li>
-                <Link to="/home#download">Download Kortio</Link>
+                <Link to="/#download">Download Kortio</Link>
               </li>
             </ul>
           </nav>
@@ -45,7 +45,10 @@ export function Footer() {
                 <Link to="/merk-toevoegen">Merk aanmelden</Link>
               </li>
               <li>
-                <Link to="/home#faq">Veelgestelde vragen</Link>
+                <Link to="/#faq">Veelgestelde vragen</Link>
+              </li>
+              <li>
+                <Link to="/kortingscode-gebruiken">Kortingscode gebruiken</Link>
               </li>
             </ul>
           </nav>
@@ -62,7 +65,9 @@ export function Footer() {
           </nav>
         </div>
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Kortio. Alle rechten voorbehouden.</p>
+          <p>
+            © {new Date().getFullYear()} Kortio. Alle rechten voorbehouden.
+          </p>
           <p className="footer-signature">
             Gemaakt voor een fijn voordeel.
             <Heart aria-hidden="true" />

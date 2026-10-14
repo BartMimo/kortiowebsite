@@ -1617,6 +1617,11 @@ img {
   padding-left: 20px;
   margin: 15px 0;
 }
+.privacy-content ol {
+  list-style: decimal;
+  padding-left: 24px;
+  margin: 15px 0;
+}
 .privacy-content li {
   padding: 4px 0;
 }

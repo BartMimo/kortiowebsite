@@ -29,3 +29,6 @@ dist-ssr
 .env.*
 !.env.example
 .vercel
+
+# Temporary server build used to generate public HTML
+.prerender/

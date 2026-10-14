@@ -4,8 +4,8 @@ import { ArrowDownToLine, Menu, X } from "lucide-react";
 import { Logo } from "./ui/Logo";
 
 const links = [
-  { label: "Hoe het werkt", to: "/home#how-it-works" },
-  { label: "De app", to: "/home#screenshots" },
+  { label: "Hoe het werkt", to: "/#how-it-works" },
+  { label: "De app", to: "/#screenshots" },
   { label: "Alle merken", to: "/merken" },
   { label: "Merk aanmelden", to: "/merk-toevoegen" },
 ];
@@ -67,7 +67,7 @@ export function Navbar() {
             ))}
           </nav>
           <Link
-            to="/home#download"
+            to="/#download"
             className="button button-primary header-download"
           >
             Download de app
@@ -103,7 +103,7 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Link to="/home#download" className="button button-primary">
+              <Link to="/#download" className="button button-primary">
                 Download de app
                 <ArrowDownToLine size={16} aria-hidden="true" />
               </Link>

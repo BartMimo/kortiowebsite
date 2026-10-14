@@ -25,11 +25,16 @@ npm run preview
 - `/` and `/home`: app introduction, real app preview, live offers and FAQ.
 - `/merken`: active brands, category/search filters, alphabetical sorting and code copying.
 - `/merk-toevoegen`: merchant application form.
+- `/kortingscode-gebruiken`: practical guide to applying codes, conditions and common problems.
 - `/privacy`: explanation of the actual app/contact data flows.
 - `/login` and `/admin`: protected administration.
 - Unknown paths: a helpful 404 view.
 
-`/home#features`, `#how-it-works`, `#screenshots`, `#faq` and `#download` remain available. Known application paths are rewritten to the client app. The build also emits `404.html` for Vercel, so missing routes can use the branded view with an HTTP 404 response instead of a catch-all HTTP 200. This HTTP status behavior needs the hosting platform; the standalone Vite preview server still uses its own SPA fallback.
+The build prerenders all public routes, login, the admin loading state and the branded 404 into their own HTML files. Each page serves its own metadata before JavaScript runs. The same React app hydrates that HTML, so the interactive design is maintained. The build reads only the existing public Supabase catalog; it fails if that read fails instead of publishing an empty catalog. Browser visits refresh the catalog from Supabase, including expiry filtering.
+
+`npm run preview` serves these actual HTML files locally using the same explicit routes as Vercel, returns 404 for unknown paths, and redirects `/home` to `/`. Existing `/home#…` links retain their fragment through the redirect. Internal navigation uses `/#…` directly. Login, admin and privacy carry noindex in their HTML; login/admin/privacy/API also have hosting headers. Admin remains protected by the existing authentication flow.
+
+The sitemap is generated from the indexable route list in `scripts/routes.mjs`. It does not include search-query variants, private routes or invented change frequencies, priorities or last-modified dates. `npm run check:seo` checks the generated HTML, metadata, structured data, actual catalog cards, sitemap and Vercel rewrites. These checks also run automatically at the end of every build.
 
 ## Merchant applications
 
@@ -50,3 +55,11 @@ Brand images are 160px WebP thumbnails, matched to the source URL fingerprint. N
 This checkout is linked to the existing Vercel project `kortiowebsite`, scope `bartmimos-projects`, serving `kortio.app` and `www.kortio.app`. Its existing production public Supabase configuration was verified against the local project and successfully read 49 active brands. Git pushes to `main` automatically publish production; other branches create previews.
 
 The old local Vercel link referred to a duplicate project, `kortio-landing-page`, and has been corrected. Do not commit `.env`, `.env.local` or `.vercel`.
+
+## SEO maintenance
+
+Canonical URLs, sharing URLs, robots and sitemap all use `https://www.kortio.app`, matching the established live domain. The apex domain `kortio.app` permanently redirects to `www.kortio.app` (308), configured on the existing Vercel project domain. Preserve that direction to avoid a redirect loop. The old `/home` path permanently redirects to `/`.
+
+Metadata and JSON-LD live in `components/SEO.tsx` and `lib/seo.ts`. The homepage describes the app and website without invented ratings. Other indexable pages have WebPage/CollectionPage and breadcrumb data. Existing FAQ schema is descriptive; Kortio is not eligible for Google's restricted FAQ rich results. No rich-result or ranking outcome is promised.
+
+The HTML catalog is a snapshot at build time. Visitors and JavaScript-rendering crawlers refresh from the live API; rebuilding refreshes the static snapshot. Rebuild after significant offer changes. Do not claim expired/unchecked discounts always work. Search Console should use `https://www.kortio.app/sitemap.xml` and the canonical www URLs for inspection.

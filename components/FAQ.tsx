@@ -36,7 +36,7 @@ const faqs = [
   {
     question: "Kan ik mijn merk aanmelden?",
     answer:
-      "Zeker. Vul het formulier op de pagina Merk aanmelden in met je merk, kortingscode en voorwaarden. We bekijken je aanvraag voordat je merk in Kortio verschijnt.",
+      "Zeker. Vul het formulier op de pagina Merk aanmelden in. We zetten je merk, kortingscode en voorwaarden klaar in een e-mailconcept. Verstuur dit zelf; we bekijken je aanvraag voordat je merk in Kortio verschijnt.",
   },
 ];
 export function FAQ() {
@@ -72,6 +72,11 @@ export function FAQ() {
             <br />
             <a href="mailto:info@kortio.app">Mail ons gerust</a> of{" "}
             <Link to="/merk-toevoegen">meld je merk aan</Link>.
+            <br />
+            <Link to="/kortingscode-gebruiken">
+              Lees hoe je een kortingscode gebruikt
+            </Link>
+            .
           </p>
         </div>
         <div className="faq-list">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { ArrowRight, ChevronRight, RotateCcw, Search, X } from "lucide-react";
 import { Navbar } from "../components/Navbar";
@@ -15,7 +15,8 @@ const normalize = (s: string) =>
     .trim();
 export default function MerkenPage() {
   const [params] = useSearchParams();
-  const [search, setSearch] = useState(params.get("q") ?? "");
+  const [search, setSearch] = useState("");
+  useEffect(() => setSearch(params.get("q") ?? ""), [params]);
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("featured");
   const { brands, categories, loading, error, retry } = useCatalog();
@@ -49,9 +50,10 @@ export default function MerkenPage() {
   return (
     <>
       <SEO
-        title="Alle merken & kortingscodes — Kortio"
+        title="Gratis kortingscodes voor merken & webshops — Kortio"
         description="Zoek je favoriete merk, bekijk de korting en kopieer de code. Vind gratis kortingscodes voor mode, sport, eten en meer."
         canonical="/merken"
+        pageType="CollectionPage"
       />
       <Navbar />
       <main id="main-content" tabIndex={-1}>
@@ -62,7 +64,9 @@ export default function MerkenPage() {
               <ChevronRight aria-hidden="true" />
               <span>Alle merken</span>
             </div>
-            <div className="section-label">Iets leuks op het oog?</div>
+            <div className="section-label">
+              Gratis kortingscodes voor merken &amp; webshops
+            </div>
             <h1>
               Jouw favoriete merk.
               <br />
@@ -70,8 +74,9 @@ export default function MerkenPage() {
             </h1>
             <div className="catalog-intro-bottom">
               <p className="section-copy">
-                Zoek het merk waar je wilt shoppen. Kopieer een code en neem je
-                korting mee naar de webshop.
+                Zoek gratis kortingscodes voor mode, sport, beauty, eten en
+                meer. Kies je merk, kopieer de code en bekijk de voorwaarden in
+                de webshop.
               </p>
               <div className="catalog-intro-illustration" aria-hidden="true">
                 <div className="small-ticket">%</div>
@@ -201,7 +206,10 @@ export default function MerkenPage() {
             )}
             <p className="brand-note">
               Kortingscodes kunnen een einddatum, minimum bestelbedrag of andere
-              voorwaarden hebben. Controleer deze altijd in de webshop.
+              voorwaarden hebben. Controleer deze altijd in de webshop.{" "}
+              <Link to="/kortingscode-gebruiken">
+                Lees hoe je een kortingscode gebruikt.
+              </Link>
             </p>
           </div>
         </section>

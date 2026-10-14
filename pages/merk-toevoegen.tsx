@@ -60,7 +60,7 @@ export default function MerkToevoegen() {
   return (
     <>
       <SEO
-        title="Meld je merk aan — Kortio"
+        title="Kortingscode of webshop aanmelden — Kortio"
         description="Bied je merk en kortingscode aan via Kortio. Meld je webshop gratis aan. We bekijken je aanvraag voordat je merk in de app verschijnt."
         canonical="/merk-toevoegen"
       />

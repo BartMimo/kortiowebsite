@@ -9,7 +9,7 @@ export function Hero() {
         <div className="hero-copy">
           <div className="eyebrow">
             <span className="eyebrow-dot" />
-            Meer korting. Minder gedoe.
+            Gratis kortingscodes. Altijd bij de hand.
           </div>
           <h1>
             Leuk gevonden.
@@ -17,8 +17,9 @@ export function Hero() {
             <span>Slim bespaard.</span>
           </h1>
           <p className="hero-description">
-            Je favoriete merken, met een beetje extra voordeel. Vind een
-            kortingscode, kopieer ’m en shop lekker verder.
+            Vind gratis kortingscodes van je favoriete merken. Kopieer een code
+            en shop lekker verder. In de Kortio-app voor iPhone en Android
+            bewaar je ook je favorieten en eigen codes.
           </p>
           <div className="download-buttons">
             <AppStoreButton />
