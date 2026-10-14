@@ -1,22 +1,40 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
+  if (req.method === "GET") {
+    res.setHeader("Cache-Control", "no-store");
+    res
+      .status(200)
+      .json({
+        canSendEmail: Boolean(
+          process.env.SMTP_HOST &&
+          process.env.SMTP_USER &&
+          process.env.SMTP_PASS,
+        ),
+      });
+    return;
+  }
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
-  const {
-    Merknaam,
-    Merkcode,
-    Omschrijving,
-    Website,
-    Periode,
-    Email,
-  } = req.body || {};
+  const { Merknaam, Merkcode, Omschrijving, Website, Periode, Email } =
+    req.body || {};
 
-  if (!Merknaam || !Omschrijving || !Email) {
-    res.status(400).json({ error: 'Required fields missing' });
+  if (
+    typeof Merknaam !== "string" ||
+    !Merknaam.trim() ||
+    Merknaam.length > 120 ||
+    /[\r\n]/.test(Merknaam) ||
+    typeof Omschrijving !== "string" ||
+    !Omschrijving.trim() ||
+    Omschrijving.length > 3000 ||
+    typeof Email !== "string" ||
+    Email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email)
+  ) {
+    res.status(400).json({ error: "Required fields missing" });
     return;
   }
 
@@ -24,11 +42,15 @@ export default async function handler(req: any, res: any) {
   const smtpPort = Number(process.env.SMTP_PORT || 587);
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
-  const mailFrom = process.env.MAIL_FROM || 'info@kortio.app';
-  const mailTo = process.env.MAIL_TO || 'info@kortio.app';
+  const mailFrom = process.env.MAIL_FROM || "info@kortio.app";
+  const mailTo = process.env.MAIL_TO || "info@kortio.app";
 
   if (!smtpHost || !smtpUser || !smtpPass) {
-    res.status(500).json({ error: 'SMTP not configured on server' });
+    res
+      .status(503)
+      .json({
+        error: "Direct versturen is niet beschikbaar. Gebruik de e-mailoptie.",
+      });
     return;
   }
 
@@ -45,10 +67,10 @@ export default async function handler(req: any, res: any) {
   const html = `
     <h2>Nieuw merk aangemeld via Kortio.app</h2>
     <p><strong>Merknaam:</strong> ${escapeHtml(Merknaam)}</p>
-    <p><strong>Merkcode:</strong> ${escapeHtml(Merkcode ?? '—')}</p>
+    <p><strong>Merkcode:</strong> ${escapeHtml(Merkcode ?? "—")}</p>
     <p><strong>Omschrijving:</strong> ${escapeHtml(Omschrijving)}</p>
-    <p><strong>Website:</strong> ${escapeHtml(Website ?? '—')}</p>
-    <p><strong>Periode:</strong> ${escapeHtml(Periode ?? '—')}</p>
+    <p><strong>Website:</strong> ${escapeHtml(Website ?? "—")}</p>
+    <p><strong>Periode:</strong> ${escapeHtml(Periode ?? "—")}</p>
     <p><strong>Contact e-mail:</strong> ${escapeHtml(Email)}</p>
   `;
 
@@ -63,17 +85,17 @@ export default async function handler(req: any, res: any) {
 
     res.status(200).json({ ok: true });
   } catch (err: any) {
-    console.error('Mail send error', err);
-    res.status(500).json({ error: 'Failed to send mail' });
+    console.error("Mail send error", err);
+    res.status(500).json({ error: "Failed to send mail" });
   }
 }
 
 function escapeHtml(input: any) {
-  if (!input && input !== 0) return '';
+  if (!input && input !== 0) return "";
   return String(input)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

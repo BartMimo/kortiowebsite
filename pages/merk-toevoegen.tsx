@@ -1,136 +1,375 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
-import { SEO } from '../components/SEO';
-
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  Send,
+  Mail,
+  Store,
+} from "lucide-react";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 export default function MerkToevoegen() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const formRef = useRef<HTMLFormElement | null>(null);
-
+  const [error, setError] = useState("");
+  const [delivery, setDelivery] = useState<"loading" | "server" | "email">(
+    "loading",
+  );
+  const [mailDraft, setMailDraft] = useState("");
+  const [draftValues, setDraftValues] = useState<Record<string, string>>({});
+  const mailHeadingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    let active = true;
+    fetch("/api/send-merk", { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("unavailable");
+        const status = await response.json();
+        if (active)
+          setDelivery(status.canSendEmail === true ? "server" : "email");
+      })
+      .catch(() => {
+        if (active) setDelivery("email");
+      })
+      .finally(() => clearTimeout(timeout));
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  function draft(payload: Record<string, string>) {
+    setDraftValues(payload);
+    const body = [
+      "Hallo Kortio,",
+      "",
+      "Ik wil graag mijn merk aanmelden:",
+      "",
+      "Merknaam: " + payload.Merknaam,
+      "Website: " + (payload.Website || "Niet opgegeven"),
+      "Kortingscode: " + (payload.Merkcode || "Nog niet bekend"),
+      "Korting en voorwaarden: " + payload.Omschrijving,
+      "Geldigheidsperiode: " + (payload.Periode || "Niet opgegeven"),
+      "Contact e-mailadres: " + payload.Email,
+      "",
+      "Met vriendelijke groet,",
+      payload.Merknaam,
+    ].join("\n");
+    setMailDraft(
+      "mailto:info@kortio.app?subject=" +
+        encodeURIComponent("Merkaanmelding: " + payload.Merknaam) +
+        "&body=" +
+        encodeURIComponent(body),
+    );
+    requestAnimationFrame(() => mailHeadingRef.current?.focus());
+  }
+  const successRef = useRef<HTMLHeadingElement>(null);
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
+    if (submitting) return;
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const payload: Record<string, string> = {};
+    data.forEach((value, key) => {
+      payload[key] = String(value).trim();
+    });
+    if (!payload.Merknaam || !payload.Omschrijving || !payload.Email) {
+      setError("Vul je merknaam, kortingsomschrijving en e-mailadres in.");
+      return;
+    }
+    setError("");
+    if (delivery === "email") {
+      draft(payload);
+      return;
+    }
     setSubmitting(true);
-
-    const form = e.currentTarget as HTMLFormElement;
-    const fd = new FormData(form);
-
-    // CC the submitter so they receive a copy (if provided)
-    const email = fd.get('Email');
-    if (email) fd.append('_cc', String(email));
-
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
     try {
-        // send JSON to our serverless email API
-        const payload: any = {};
-        fd.forEach((v, k) => (payload[k] = v));
-
-        const res = await fetch('/api/send-merk', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+      const response = await fetch("/api/send-merk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
-
-      if (res.ok) {
-        setSuccess(true);
-        form.reset();
-      } else {
-        const json = await res.json().catch(() => null);
-        setError((json && json.message) || 'Er is iets misgegaan bij het verzenden.');
-      }
-    } catch (err: any) {
-      setError(err?.message || 'Netwerkfout bij verzenden');
+      if (!response.ok) throw new Error("submit");
+      const result = await response.json();
+      if (result.ok !== true) throw new Error("submit");
+      setSuccess(true);
+      form.reset();
+      requestAnimationFrame(() => successRef.current?.focus());
+    } catch {
+      setDelivery("email");
+      setError(
+        "Versturen lukt nu niet. Je gegevens zijn bewaard in het formulier. Zet je aanvraag klaar om deze via je e-mailprogramma te versturen.",
+      );
     } finally {
+      clearTimeout(timeout);
       setSubmitting(false);
     }
-  };
-
+  }
   return (
     <>
       <SEO
-        title="Merk toevoegen — Gratis kortingscode aanbieden via Kortio"
-        description="Heb je een webshop? Voeg je merk en kortingscode gratis toe aan de Kortio app. Bereik duizenden gebruikers die actief op zoek zijn naar kortingscodes."
+        title="Meld je merk aan — Kortio"
+        description="Bied je merk en kortingscode aan via Kortio. Meld je webshop gratis aan. We bekijken je aanvraag voordat je merk in de app verschijnt."
         canonical="/merk-toevoegen"
       />
       <Navbar />
-      <main className="min-h-screen bg-slate-50 py-16">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="max-w-3xl mx-auto mt-8 md:mt-12 bg-white rounded-xl shadow-lg p-8">
-            <h1 className="text-2xl font-bold mb-2">Merk toevoegen aan Kortio</h1>
-            <p className="text-slate-600 mb-6">
-              Wil je jouw kortingscode aanbieden aan duizenden gebruikers die actief op zoek zijn naar aanbiedingen?
-              Vul het formulier in en we voegen je merk gratis toe aan de Kortio app.
-            </p>
-
-            {success ? (
-              <div className="rounded-md bg-green-50 border border-green-100 p-4">
-                <strong className="block font-bold text-green-700">Verzonden</strong>
-                <p className="text-sm text-slate-700">Bedankt — we hebben je aanvraag ontvangen. We sturen een kopie naar het opgegeven e-mailadres.</p>
+      <main id="main-content" tabIndex={-1} className="form-page">
+        <div className="site-container">
+          <div className="breadcrumb">
+            <Link to="/">Kortio</Link>
+            <ChevronRight aria-hidden="true" />
+            <span>Merk aanmelden</span>
+          </div>
+          <div className="form-layout">
+            <div className="form-intro">
+              <div className="section-label">Voor merken &amp; webshops</div>
+              <h1>
+                Jouw merk.
+                <br />
+                <span>Een fijne match.</span>
+              </h1>
+              <p className="section-copy">
+                Laat shoppers jouw merk ontdekken met een mooie korting. Meld je
+                webshop gratis aan en vertel ons wat je aanbiedt.
+              </p>
+              <div className="form-info-list">
+                <div>
+                  <Store aria-hidden="true" />
+                  <span>
+                    <strong>Gratis aanmelden</strong>
+                    <p>Stuur je merk en je kortingsaanbod in.</p>
+                  </span>
+                </div>
+                <div>
+                  <ClipboardCheck aria-hidden="true" />
+                  <span>
+                    <strong>Eerst even bekijken</strong>
+                    <p>
+                      We controleren je aanvraag voordat je merk verschijnt.
+                    </p>
+                  </span>
+                </div>
+                <div>
+                  <Check aria-hidden="true" />
+                  <span>
+                    <strong>Goed gevonden</strong>
+                    <p>Help gebruikers je merk te ontdekken via Kortio.</p>
+                  </span>
+                </div>
               </div>
-            ) : (
-              <form className="space-y-4" ref={formRef} onSubmit={handleSubmit}>
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_subject" value="Nieuw merk aangemeld via Kortio.app" />
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Merknaam</label>
-                  <input name="Merknaam" required className="w-full px-3 py-2 border rounded" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Merkcode</label>
-                  <input name="Merkcode" required className="w-full px-3 py-2 border rounded font-mono" />
-                  <p className="text-xs text-slate-400 mt-1">Bijv. KORTIO10 (laat leeg als nog niet bekend)</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Omschrijving van de code</label>
-                  <textarea
-                    name="Omschrijving"
-                    rows={2}
-                    placeholder="Bijv. 20% Korting"
-                    required
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Website</label>
-                  <input
-                    type="text"
-                    name="Website"
-                    placeholder="Bijv. www.test.nl"
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Periode van de code</label>
-                  <input type="text" name="Periode" placeholder="Altijd geldig of bijv. 1 maart t/m 31 maart" className="w-full px-3 py-2 border rounded" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-1">Contact e-mail</label>
-                  <input type="email" name="Email" placeholder="jouw@bedrijf.nl" required className="w-full px-3 py-2 border rounded" />
-                  <p className="text-xs text-slate-400 mt-1">We gebruiken dit alleen om contact op te nemen over deze aanmelding.</p>
-                </div>
-
-                {error && <div className="text-sm text-red-600">{error}</div>}
-
-                <div className="flex items-center justify-end gap-3">
-                  <button type="reset" className="px-4 py-2 rounded border">Wis</button>
-                  <button type="submit" disabled={submitting} className="px-4 py-2 rounded bg-blue-600 text-white">
-                    {submitting ? 'Bezig...' : 'Versturen'}
+              <p className="form-contact">
+                Liever eerst even overleggen?
+                <br />
+                <a href="mailto:info@kortio.app">info@kortio.app</a>
+              </p>
+            </div>
+            <div className="form-card">
+              {mailDraft ? (
+                <div className="form-success">
+                  <Mail aria-hidden="true" />
+                  <h2 ref={mailHeadingRef} tabIndex={-1}>
+                    Je aanvraag staat klaar.
+                  </h2>
+                  <p>
+                    Open je e-mailprogramma, controleer de ingevulde gegevens en
+                    verstuur je aanvraag naar info@kortio.app.
+                  </p>
+                  <a href={mailDraft} className="button button-primary">
+                    Open e-mailprogramma
+                    <ArrowRight aria-hidden="true" />
+                  </a>
+                  <button
+                    className="text-link"
+                    style={{ marginTop: 20 }}
+                    onClick={() => setMailDraft("")}
+                  >
+                    Gegevens aanpassen
                   </button>
+                  <label className="mail-draft-label" htmlFor="mail-draft-text">
+                    Je aanvraagtekst
+                  </label>
+                  <textarea
+                    id="mail-draft-text"
+                    className="mail-draft-text"
+                    readOnly
+                    rows={7}
+                    value={decodeURIComponent(
+                      mailDraft.split("&body=")[1] || "",
+                    )}
+                  />
+                  <p className="mail-ready-note">
+                    Je aanvraag is nog niet verzonden. Geen e-mailprogramma
+                    ingesteld? Mail de gegevens zelf naar info@kortio.app.
+                  </p>
                 </div>
-              </form>
-            )}
+              ) : success ? (
+                <div className="form-success">
+                  <CheckCircle2 aria-hidden="true" />
+                  <h2 tabIndex={-1} ref={successRef}>
+                    Bedankt voor je aanmelding!
+                  </h2>
+                  <p>
+                    Je aanvraag is ontvangen. We bekijken je merk en
+                    kortingsaanbod. Een kopie wordt naar het opgegeven
+                    e-mailadres gestuurd.
+                  </p>
+                  <button
+                    className="button button-primary"
+                    onClick={() => setSuccess(false)}
+                  >
+                    Nog een merk aanmelden
+                    <ArrowRight aria-hidden="true" />
+                  </button>
+                  <Link
+                    to="/merken"
+                    className="text-link"
+                    style={{ marginTop: 20 }}
+                  >
+                    Bekijk de merken in Kortio
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <h2>Vertel ons over je merk.</h2>
+                  <p className="form-card-subtitle">
+                    Velden met * zijn verplicht. Een code kun je ook later
+                    aanleveren.
+                  </p>
+                  {delivery === "email" && (
+                    <p className="form-delivery-note">
+                      <Mail size={17} aria-hidden="true" />
+                      <span>
+                        Je verstuurt de aanvraag via je eigen e-mailprogramma.
+                        We zetten de ingevulde gegevens voor je klaar.
+                      </span>
+                    </p>
+                  )}
+                  <form onSubmit={submit} aria-busy={submitting}>
+                    <fieldset disabled={submitting} className="form-fields">
+                      <div className="field field-full">
+                        <label htmlFor="brand-name">Merknaam *</label>
+                        <input
+                          id="brand-name"
+                          name="Merknaam"
+                          defaultValue={draftValues.Merknaam ?? ""}
+                          placeholder="Bijvoorbeeld: jouw webshop"
+                          autoComplete="organization"
+                          maxLength={120}
+                          required
+                        />
+                      </div>
+                      <div className="field">
+                        <label htmlFor="brand-website">
+                          Website <span>optioneel</span>
+                        </label>
+                        <input
+                          id="brand-website"
+                          name="Website"
+                          defaultValue={draftValues.Website ?? ""}
+                          placeholder="www.jouwmerk.nl"
+                          inputMode="url"
+                          autoComplete="url"
+                          maxLength={500}
+                        />
+                      </div>
+                      <div className="field">
+                        <label htmlFor="brand-code">
+                          Kortingscode <span>optioneel</span>
+                        </label>
+                        <input
+                          id="brand-code"
+                          name="Merkcode"
+                          defaultValue={draftValues.Merkcode ?? ""}
+                          placeholder="Bijvoorbeeld KORTIO10"
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck={false}
+                          maxLength={150}
+                        />
+                        <p>Laat leeg als de code nog niet bekend is.</p>
+                      </div>
+                      <div className="field field-full">
+                        <label htmlFor="brand-offer">
+                          Korting &amp; voorwaarden *
+                        </label>
+                        <textarea
+                          id="brand-offer"
+                          name="Omschrijving"
+                          defaultValue={draftValues.Omschrijving ?? ""}
+                          rows={3}
+                          required
+                          maxLength={3000}
+                          placeholder="Bijvoorbeeld: 10% korting vanaf €50. Geldig op het hele assortiment, behalve sale."
+                        />
+                      </div>
+                      <div className="field field-full">
+                        <label htmlFor="brand-period">
+                          Geldigheidsperiode <span>optioneel</span>
+                        </label>
+                        <input
+                          id="brand-period"
+                          name="Periode"
+                          defaultValue={draftValues.Periode ?? ""}
+                          placeholder="Bijvoorbeeld: doorlopend of 1 t/m 31 december"
+                          maxLength={250}
+                        />
+                      </div>
+                      <div className="field field-full">
+                        <label htmlFor="brand-email">
+                          Contact e-mailadres *
+                        </label>
+                        <input
+                          id="brand-email"
+                          name="Email"
+                          defaultValue={draftValues.Email ?? ""}
+                          type="email"
+                          autoComplete="email"
+                          placeholder="jij@jouwmerk.nl"
+                          maxLength={254}
+                          required
+                        />
+                        <p>Voor contact over je aanvraag.</p>
+                      </div>
+                    </fieldset>
+                    {error && (
+                      <p className="form-error" role="alert">
+                        {error}
+                      </p>
+                    )}
+                    <div className="form-actions">
+                      <p>
+                        We gebruiken je gegevens voor deze aanvraag. Lees ons{" "}
+                        <Link to="/privacy">privacybeleid</Link>.
+                      </p>
+                      <button
+                        className="button button-primary"
+                        type="submit"
+                        disabled={submitting || delivery === "loading"}
+                      >
+                        {submitting
+                          ? "Bezig met versturen…"
+                          : delivery === "loading"
+                            ? "Een momentje…"
+                            : delivery === "email"
+                              ? "Zet aanvraag klaar"
+                              : "Verstuur aanmelding"}
+                        <Send aria-hidden="true" />
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </main>

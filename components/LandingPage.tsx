@@ -1,94 +1,61 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Navbar } from './Navbar';
-import { Hero } from './Hero';
-import { Features } from './Features';
-import { Screenshots } from './Screenshots';
-import { HowItWorks } from './HowItWorks';
-import { Trust } from './Trust';
-import { CTA } from './CTA';
-import { Footer } from './Footer';
-import { FAQ } from './FAQ';
-import { SEO } from './SEO';
-
-const landingSchema = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Organization',
-      '@id': 'https://kortio.app/#organization',
-      name: 'Kortio',
-      url: 'https://kortio.app',
-      logo: 'https://kortio.app/assets/logo1.png',
-      contactPoint: {
-        '@type': 'ContactPoint',
-        email: 'info@kortio.app',
-        contactType: 'customer support',
-        availableLanguage: 'Dutch',
-      },
-    },
-    {
-      '@type': 'SoftwareApplication',
-      '@id': 'https://kortio.app/#app',
-      name: 'Kortio',
-      description:
-        'De slimste kortingscode app voor Nederland. Vind, kopieer en gebruik kortingscodes van honderden webshops — helemaal gratis.',
-      applicationCategory: 'ShoppingApplication',
-      operatingSystem: 'iOS, Android',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      publisher: { '@id': 'https://kortio.app/#organization' },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: '120',
-      },
-    },
-    {
-      '@type': 'WebSite',
-      '@id': 'https://kortio.app/#website',
-      url: 'https://kortio.app',
-      name: 'Kortio',
-      inLanguage: 'nl-NL',
-      publisher: { '@id': 'https://kortio.app/#organization' },
-    },
-  ],
+import { Navbar } from "./Navbar";
+import { Hero } from "./Hero";
+import { Features } from "./Features";
+import { Screenshots } from "./Screenshots";
+import { HowItWorks } from "./HowItWorks";
+import { Trust } from "./Trust";
+import { CTA } from "./CTA";
+import { Footer } from "./Footer";
+import { FAQ } from "./FAQ";
+import { SEO } from "./SEO";
+import { FeaturedBrands } from "./FeaturedBrands";
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Kortio",
+  url: "https://kortio.app",
+  description: "Vind, bewaar en gebruik kortingscodes van je favoriete merken.",
+  applicationCategory: "ShoppingApplication",
+  operatingSystem: "iOS, Android",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
 };
-
-export const LandingPage: React.FC = () => {
-  const { hash } = useLocation();
-
-  useEffect(() => {
-    if (hash) {
-      const id = hash.replace('#', '');
-      const el = document.getElementById(id);
-      if (el) {
-        const headerOffset = 80;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-      }
-    } else {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-  }, [hash]);
-
+export function LandingPage() {
   return (
     <>
       <SEO
-        title="Kortio — Gratis kortingscodes vinden voor Nederlandse webshops"
-        description="Download de Kortio app en vind direct de beste kortingscodes voor honderden Nederlandse webshops. Gratis, geen account nodig. Beschikbaar voor iOS en Android."
+        title="Kortio — Leuk gevonden. Slim bespaard."
+        description="Vind gratis kortingscodes van je favoriete merken. Kopieer een code en shop met voordeel. Download Kortio voor iPhone en Android, zonder registratie."
         canonical="/"
-        schema={landingSchema}
+        schema={schema}
       />
       <Navbar />
-      <Hero />
-      <Features />
-      <Screenshots />
-      <HowItWorks />
-      <Trust />
-      <FAQ />
-      <CTA />
+      <main id="main-content" tabIndex={-1}>
+        <Hero />
+        <div className="brand-ribbon">
+          <div className="site-container">
+            <p>Van je dagelijkse boodschappen tot je nieuwe outfit.</p>
+            <div
+              className="brand-wordmarks"
+              role="group"
+              aria-label="Onder andere deze merken vind je in Kortio"
+            >
+              <span>PicNic</span>
+              <span className="wordmark-air">air up</span>
+              <span className="wordmark-up">UPFRONT</span>
+              <span>AYBL</span>
+              <span>Alix the label</span>
+            </div>
+          </div>
+        </div>
+        <HowItWorks />
+        <Screenshots />
+        <Features />
+        <FeaturedBrands />
+        <Trust />
+        <FAQ />
+        <CTA />
+      </main>
       <Footer />
     </>
   );
-};
+}

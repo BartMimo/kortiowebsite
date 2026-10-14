@@ -1,67 +1,58 @@
-import React from 'react';
-import { Search, ClipboardCopy, ShoppingBag } from 'lucide-react';
-import { Reveal } from './ui/Reveal';
-
-export const HowItWorks: React.FC = () => {
+import { ClipboardCopy, Search, ShoppingBag } from "lucide-react";
+const steps = [
+  {
+    number: "01",
+    icon: Search,
+    title: "Vind je merk.",
+    text: "Een nieuwe outfit, iets voor thuis of je dagelijkse boodschappen. Zoek het merk waar je wilt shoppen.",
+  },
+  {
+    number: "02",
+    icon: ClipboardCopy,
+    title: "Pak je code.",
+    text: "Bekijk de korting en kopieer de code met één tik. Geen ingewikkelde stappen of registratie.",
+  },
+  {
+    number: "03",
+    icon: ShoppingBag,
+    title: "Shop met voordeel.",
+    text: "Plak de code bij het afrekenen in de webshop. Check de voorwaarden en geniet van je korting.",
+  },
+];
+export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 bg-white scroll-mt-24">
-      <div className="container mx-auto px-6 md:px-12">
-        
-        <div className="text-center mb-20">
-          <Reveal width="100%">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Hoe werkt Kortio?</h2>
-            <p className="text-lg text-slate-500">Besparen in drie simpele stappen.</p>
-          </Reveal>
+    <section id="how-it-works" className="section">
+      <div className="site-container">
+        <div className="section-heading">
+          <div>
+            <div className="section-label">Zo simpel is het</div>
+            <h2 className="section-title">
+              Van gevonden
+              <br />
+              naar goed gekocht.
+            </h2>
+          </div>
+          <p className="section-copy">
+            Drie kleine stappen.
+            <br />
+            Een fijn verschil bij het afrekenen.
+          </p>
         </div>
-
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
-          {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-100 -z-10"></div>
-
-          {/* Step 1 */}
-          <Reveal delay={0} width="100%">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
-                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">1</div>
-                 <Search className="text-blue-600" size={32} />
+        <div className="steps-grid">
+          {steps.map(({ number, icon: Icon, title, text }) => (
+            <article className="step-card" key={number}>
+              <div className="step-top">
+                <span className="step-number">{number}</span>
+                <div className="step-icon">
+                  <Icon size={22} aria-hidden="true" />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Zoek een winkel</h3>
-              <p className="text-slate-500 max-w-xs mx-auto">
-                Typ de naam van je favoriete webshop in de zoekbalk.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Step 2 */}
-          <Reveal delay={200} width="100%">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
-                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">2</div>
-                 <ClipboardCopy className="text-blue-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Kopieer de code</h3>
-              <p className="text-slate-500 max-w-xs mx-auto">
-                Tik op de beste deal om de code direct naar je klembord te kopiëren.
-              </p>
-            </div>
-          </Reveal>
-
-          {/* Step 3 */}
-          <Reveal delay={400} width="100%">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-slate-50 shadow-xl flex items-center justify-center mb-8 relative" aria-hidden="true">
-                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">3</div>
-                 <ShoppingBag className="text-blue-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Gebruik & bespaar</h3>
-              <p className="text-slate-500 max-w-xs mx-auto">
-                Plak de code tijdens het afrekenen en zie de prijs dalen.
-              </p>
-            </div>
-          </Reveal>
-
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
         </div>
       </div>
     </section>
   );
-};
+}

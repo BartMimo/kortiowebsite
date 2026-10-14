@@ -1,96 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
     <!-- Canonical -->
     <link rel="canonical" href="https://kortio.app/" />
 
     <!-- Primary Meta (fallback — per-pagina overschreven door react-helmet-async) -->
-    <title>Kortio — Gratis kortingscodes vinden voor Nederlandse webshops</title>
-    <meta name="description" content="Download de Kortio app en vind direct de beste kortingscodes voor honderden Nederlandse webshops. Gratis, geen account nodig. Beschikbaar voor iOS en Android." />
-    <meta name="keywords" content="kortingscodes, kortingscode app, gratis kortingscodes, kortingscodes Nederland, kortingscode vinden, webshop korting, kortio" />
-    <meta name="theme-color" content="#2563eb" />
+    <title>Kortio — Leuk gevonden. Slim bespaard.</title>
+    <meta
+      name="description"
+      content="Vind gratis kortingscodes van je favoriete merken. Kopieer een code en shop met voordeel. Download Kortio voor iPhone en Android, zonder registratie."
+    />
+    <meta
+      name="keywords"
+      content="kortingscodes, kortingscode app, gratis kortingscodes, kortingscodes Nederland, kortingscode vinden, webshop korting, kortio"
+    />
+    <meta name="theme-color" content="#245bf3" />
 
     <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="nl_NL" />
     <meta property="og:site_name" content="Kortio" />
-    <meta property="og:title" content="Kortio — Gratis kortingscodes vinden voor Nederlandse webshops" />
-    <meta property="og:description" content="Download de Kortio app en vind direct de beste kortingscodes voor honderden Nederlandse webshops. Gratis, geen account nodig." />
-    <meta property="og:image" content="https://kortio.app/assets/logo1.png" />
+    <meta
+      property="og:title"
+      content="Kortio — Leuk gevonden. Slim bespaard."
+    />
+    <meta
+      property="og:description"
+      content="Download de Kortio app en vind direct de beste kortingscodes van je favoriete merken. Gratis, geen account nodig."
+    />
+    <meta property="og:image" content="https://kortio.app/social-card.png" />
     <meta property="og:url" content="https://kortio.app/" />
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Kortio — Gratis kortingscodes vinden voor Nederlandse webshops" />
-    <meta name="twitter:description" content="Download de Kortio app en vind direct de beste kortingscodes voor honderden Nederlandse webshops. Gratis, geen account nodig." />
-    <meta name="twitter:image" content="https://kortio.app/assets/logo1.png" />
-
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Kortio",
-      "description": "De slimste manier om kortingscodes te vinden, te bewaren en direct te gebruiken.",
-      "applicationCategory": "ShoppingApplication",
-      "operatingSystem": "iOS, Android",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "EUR"
-      }
-    }
-    </script>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind (CDN — vervang door PostCSS build voor productie) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-      html {
-        scroll-behavior: smooth;
-        scroll-padding-top: 100px;
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        margin: 0;
-        padding: 0;
-      }
-      /* Hide scrollbar for clean horizontal scrolling */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-    </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react/": "https://esm.sh/react@18.2.0/",
-        "react-dom": "https://esm.sh/react-dom@18.2.0",
-        "react-dom/": "https://esm.sh/react-dom@18.2.0/",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.460.0?deps=react@18.2.0",
-        "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?deps=react@18.2.0,react-dom@18.2.0"
-      }
-    }
-    </script>
-<link rel="stylesheet" href="/index.css">
-</head>
-  <body class="bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+    <meta
+      name="twitter:title"
+      content="Kortio — Leuk gevonden. Slim bespaard."
+    />
+    <meta
+      name="twitter:description"
+      content="Download de Kortio app en vind direct de beste kortingscodes van je favoriete merken. Gratis, geen account nodig."
+    />
+    <meta name="twitter:image" content="https://kortio.app/social-card.png" />
+  </head>
+  <body
+    class="bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900"
+  >
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

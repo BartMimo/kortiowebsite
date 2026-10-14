@@ -1,328 +1,213 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
-import { Search, Tag, Sparkles, ArrowRight, X, Check } from 'lucide-react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
-import { SEO } from '../components/SEO';
-
-type Category = {
-  id: string;
-  name: string;
-};
-
-type Brand = {
-  id: string;
-  name: string;
-  discount_text: string;
-  code?: string | null;
-  website_url?: string | null;
-  category_name?: string | null;
-  is_featured?: boolean;
-  is_temporary?: boolean;
-  valid_from?: string | null;
-  valid_until?: string | null;
-};
-
-const MerkenPage: React.FC = () => {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [allCategories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const [{ data: brandsData }, { data: categoriesData }] = await Promise.all([
-          supabase.from('admin_brands_overview').select('id, name, discount_text, code, website_url, category_name, is_featured, is_temporary, valid_from, valid_until').order('name', { ascending: true }),
-          supabase.from('categories').select('id, name').order('name')
-        ]);
-        if (!mounted) return;
-        const sortedBrands = ((brandsData ?? []) as Brand[]).sort((a, b) => {
-          // Featured first
-          if (a.is_featured && !b.is_featured) return -1;
-          if (!a.is_featured && b.is_featured) return 1;
-          // Then alphabetical
-          return a.name.localeCompare(b.name);
-        });
-        setBrands(sortedBrands);
-        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
-      } catch (err) {
-        console.error('Failed to load brands and categories', err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
-
-  const filteredBrands = useMemo(() => {
-    if (!search) return brands;
-    return brands.filter(b =>
-      b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.discount_text.toLowerCase().includes(search.toLowerCase()) ||
-      (b.category_name && b.category_name.toLowerCase().includes(search.toLowerCase()))
-    );
-  }, [brands, search]);
-
-  const categoryNames = useMemo(() => {
-    return allCategories.map(c => c.name).sort();
-  }, [allCategories]);
-
-  const filteredBrandsWithCategory = useMemo(() => {
-    let filtered = filteredBrands;
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter(b => {
-        if (!b.category_name) return false;
-        return selectedCategories.some(selected =>
-          selected.toLowerCase() === b.category_name!.toLowerCase()
-        );
-      });
-    }
-    return filtered;
-  }, [filteredBrands, selectedCategories]);
-
-  const toggleCategory = (categoryName: string) => {
-    setSelectedCategories(prev =>
-      prev.some(cat => cat.toLowerCase() === categoryName.toLowerCase())
-        ? prev.filter(cat => cat.toLowerCase() !== categoryName.toLowerCase())
-        : [...prev, categoryName]
-    );
+import { useMemo, useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { ArrowRight, ChevronRight, RotateCcw, Search, X } from "lucide-react";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
+import { BrandCard } from "../components/BrandCard";
+import { CTA } from "../components/CTA";
+import { useCatalog } from "../hooks/useCatalog";
+const normalize = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("nl")
+    .trim();
+export default function MerkenPage() {
+  const [params] = useSearchParams();
+  const [search, setSearch] = useState(params.get("q") ?? "");
+  const [category, setCategory] = useState("");
+  const [sort, setSort] = useState("featured");
+  const { brands, categories, loading, error, retry } = useCatalog();
+  const availableCategories = categories.filter((c) =>
+    brands.some((b) => b.primary_category_id === c.id),
+  );
+  const filtered = useMemo(() => {
+    const term = normalize(search);
+    return brands
+      .filter(
+        (b) =>
+          (!category || b.primary_category_id === category) &&
+          normalize(
+            `${b.name} ${b.discount_text ?? ""} ${b.category_name ?? ""}`,
+          ).includes(term),
+      )
+      .sort(
+        (a, b) =>
+          (sort === "featured"
+            ? Number(b.is_featured) - Number(a.is_featured)
+            : 0) ||
+          (sort === "za"
+            ? b.name.localeCompare(a.name, "nl")
+            : a.name.localeCompare(b.name, "nl")),
+      );
+  }, [brands, search, category, sort]);
+  const reset = () => {
+    setSearch("");
+    setCategory("");
   };
-
-  const clearAllCategories = () => {
-    setSelectedCategories([]);
-  };
-
-  const categoryConfig: Record<string, { emoji: string; color: string }> = {
-    'mode': { emoji: '👕', color: 'from-pink-500 to-rose-600' },
-    'sport': { emoji: '💪', color: 'from-green-500 to-emerald-600' },
-    'eten & drinken': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
-    'eten': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
-    'drinken': { emoji: '🍽️', color: 'from-orange-500 to-red-600' },
-    'reizen': { emoji: '✈️', color: 'from-blue-500 to-cyan-600' },
-    'elektronica': { emoji: '💻', color: 'from-purple-500 to-indigo-600' },
-    'electronica': { emoji: '💻', color: 'from-purple-500 to-indigo-600' },
-    'beauty': { emoji: '✨', color: 'from-yellow-500 to-amber-600' },
-    'kinderen': { emoji: '👨‍👩‍👧‍👦', color: 'from-teal-500 to-cyan-600' },
-    'sportsupplementen': { emoji: '💊', color: 'from-lime-500 to-green-600' },
-    'wonen': { emoji: '🏠', color: 'from-slate-500 to-gray-600' },
-    'default': { emoji: '🏷️', color: 'from-blue-500 to-purple-600' }
-  };
-
-  const getCategoryConfig = (categoryName: string | null) => {
-    if (!categoryName) return categoryConfig['default'];
-    const lowerName = categoryName.toLowerCase();
-    return categoryConfig[lowerName] || categoryConfig['default'];
-  };
-
-  const gradients = [
-    'from-blue-500 to-purple-600',
-    'from-green-500 to-teal-600',
-    'from-pink-500 to-rose-600',
-    'from-indigo-500 to-cyan-600',
-    'from-orange-500 to-red-600',
-    'from-emerald-500 to-green-600',
-    'from-violet-500 to-purple-600',
-    'from-cyan-500 to-blue-600',
-  ];
-
   return (
     <>
       <SEO
-        title="Kortingscodes per merk — alle webshops op een rij"
-        description="Bekijk alle merken in Kortio en ontdek de beste kortingscodes per webshop. Van mode tot sport en elektronica — bespaar direct bij je favoriete Nederlandse webshops."
+        title="Alle merken & kortingscodes — Kortio"
+        description="Zoek je favoriete merk, bekijk de korting en kopieer de code. Vind gratis kortingscodes voor mode, sport, eten en meer."
         canonical="/merken"
       />
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-        {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-400 to-blue-200 text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-6 py-20 md:py-32">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <Sparkles className="w-5 h-5" aria-hidden="true" />
-              <span className="text-sm font-medium">Kortingscodes voor honderden webshops</span>
+      <main id="main-content" tabIndex={-1}>
+        <section className="page-intro catalog-intro">
+          <div className="site-container">
+            <div className="breadcrumb">
+              <Link to="/">Kortio</Link>
+              <ChevronRight aria-hidden="true" />
+              <span>Alle merken</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
-              Alle merken &amp; kortingscodes
+            <div className="section-label">Iets leuks op het oog?</div>
+            <h1>
+              Jouw favoriete merk.
+              <br />
+              <span>Met extra voordeel.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Vind gratis kortingscodes voor honderden Nederlandse webshops. Kopieer de code en bespaar direct bij het afrekenen.
-            </p>
-            <div className="relative max-w-4xl mx-auto">
-              <div className="flex flex-col gap-6">
-                {/* Search Bar */}
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Zoek een merk..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300"
-                  />
-                </div>
-
-                {/* Category Filter Tags */}
-                <div className="flex flex-wrap gap-3 justify-center">
-                  {selectedCategories.length > 0 && (
-                    <button
-                      onClick={clearAllCategories}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all duration-300 text-sm font-medium"
-                    >
-                      <X className="w-4 h-4" />
-                      Wis filters
-                    </button>
-                  )}
-                  {categoryNames.map(category => {
-                    const isSelected = selectedCategories.some(selected => selected.toLowerCase() === category.toLowerCase());
-                    return (
-                      <button
-                        key={category}
-                        onClick={() => toggleCategory(category)}
-                        className={`inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full backdrop-blur-md border transition-all duration-300 text-sm font-medium ${
-                          isSelected
-                            ? 'bg-white text-blue-600 border-white shadow-lg'
-                            : 'bg-white/10 text-white border-white/30 hover:bg-white/20'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-4 h-4" />}
-                        {category}
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="catalog-intro-bottom">
+              <p className="section-copy">
+                Zoek het merk waar je wilt shoppen. Kopieer een code en neem je
+                korting mee naar de webshop.
+              </p>
+              <div className="catalog-intro-illustration" aria-hidden="true">
+                <div className="small-ticket">%</div>
+                <div className="small-ticket">€</div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent"></div>
-      </section>
-
-      {/* Brands Grid */}
-      <section className="relative -mt-12 pb-24">
-        <div className="container mx-auto px-6">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(9)].map((_, i) => (
-                <div key={i} className="bg-white rounded-3xl p-8 shadow-xl animate-pulse">
-                  <div className="h-6 bg-slate-200 rounded mb-4"></div>
-                  <div className="h-4 bg-slate-200 rounded mb-2"></div>
-                  <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-                </div>
+        </section>
+        <section className="catalog-body" aria-label="Merken en kortingscodes">
+          <div className="site-container">
+            <h2 className="sr-only">Vind je merk en kortingscode</h2>
+            <div className="catalog-toolbar">
+              <div className="search-field">
+                <Search aria-hidden="true" />
+                <label className="sr-only" htmlFor="brand-search">
+                  Zoek een merk of kortingscode
+                </label>
+                <input
+                  id="brand-search"
+                  type="search"
+                  autoComplete="off"
+                  placeholder="Welk merk zoek je?"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                {search && (
+                  <button
+                    aria-label="Zoekopdracht wissen"
+                    onClick={() => setSearch("")}
+                  >
+                    <X aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+              <div className="sort-control">
+                <label htmlFor="brand-sort">Sorteer op</label>
+                <select
+                  id="brand-sort"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                >
+                  <option value="featured">Uitgelicht eerst</option>
+                  <option value="az">Naam A–Z</option>
+                  <option value="za">Naam Z–A</option>
+                </select>
+              </div>
+            </div>
+            <div
+              className="filter-chips"
+              role="group"
+              aria-label="Filter op categorie"
+            >
+              <button
+                className="filter-chip"
+                aria-pressed={!category}
+                onClick={() => setCategory("")}
+              >
+                Alle merken
+              </button>
+              {availableCategories.map((c) => (
+                <button
+                  className="filter-chip"
+                  aria-pressed={category === c.id}
+                  key={c.id}
+                  onClick={() => setCategory(category === c.id ? "" : c.id)}
+                >
+                  {c.name}
+                </button>
               ))}
             </div>
-          ) : (
-            <>
-              <div className="text-center mb-12">
-                <p className="text-slate-600 text-lg">
-                  {filteredBrandsWithCategory.length} merk{filteredBrandsWithCategory.length !== 1 ? 'en' : ''} gevonden
+            <div className="catalog-result-count">
+              <p role="status">
+                {loading
+                  ? "Merken laden…"
+                  : error
+                    ? "Merken niet beschikbaar"
+                    : `${filtered.length} ${filtered.length === 1 ? "merk" : "merken"} gevonden`}
+              </p>
+              {(search || category) && (
+                <button onClick={reset}>Wis zoekopdracht &amp; filters</button>
+              )}
+            </div>
+            {error ? (
+              <div className="empty-state">
+                <RotateCcw aria-hidden="true" />
+                <h2>We krijgen even geen verbinding.</h2>
+                <p>
+                  De merken kunnen nu niet worden opgehaald. Probeer het nog
+                  eens.
                 </p>
+                <button onClick={retry} className="button button-primary">
+                  Opnieuw proberen
+                </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredBrandsWithCategory.map((brand, index) => (
-                  <article
-                    key={brand.id}
-                    className={`group bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border overflow-hidden relative min-h-[320px] ${
-                      brand.is_featured ? 'border-yellow-400 border-4 shadow-yellow-200' : 'border-slate-100'
-                    }`}
-                  >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index % gradients.length]} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-                    <div className="relative z-10">
-                      {brand.is_temporary && (brand.valid_from || brand.valid_until) && (
-                        <div className="absolute top-12 md:top-16 right-2 p-2 bg-orange-50 border border-orange-200 rounded-lg z-20">
-                          <div className="flex items-center gap-1 text-orange-700 text-xs font-medium mb-1">
-                            ⏰ Tijdelijk
-                          </div>
-                          <div className="text-orange-600 text-xs">
-                            {brand.valid_from && `Van: ${new Date(brand.valid_from).toLocaleDateString('nl-NL')}`}
-                            {brand.valid_from && brand.valid_until && <br />}
-                            {brand.valid_until && `Tot: ${new Date(brand.valid_until).toLocaleDateString('nl-NL')}`}
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${getCategoryConfig(brand.category_name).color} flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
-                          {getCategoryConfig(brand.category_name).emoji}
-                        </div>
-                        {brand.category_name && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
-                            <Tag className="w-3 h-3" />
-                            {brand.category_name}
-                          </span>
-                        )}
-                      </div>
-
-                      <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
-                        {brand.name}
-                      </h3>
-
-                      <div className="mb-4">
-                        <p className="text-slate-600 leading-relaxed">
-                          {brand.discount_text}
-                        </p>
-                      </div>
-
-                      {brand.code && (
-                        <div className="mb-4">
-                          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-4 py-2 rounded-xl font-mono text-sm font-semibold border border-indigo-100">
-                            <span
-                              className="cursor-pointer hover:bg-indigo-100 px-2 py-1 rounded transition-colors"
-                              onClick={() => navigator.clipboard.writeText(brand.code!)}
-                              title="Klik om te kopiëren"
-                            >
-                              {brand.code}
-                            </span>
-                            <button
-                              onClick={() => navigator.clipboard.writeText(brand.code!)}
-                              className="hover:text-indigo-800 transition-colors"
-                              title="Kopieer code"
-                            >
-                              📋
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between">
-                        {brand.website_url ? (
-                          <a
-                            href={brand.website_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-colors duration-300 group-hover:translate-x-1 transform"
-                          >
-                            Bezoek website
-                            <ArrowRight className="w-4 h-4" />
-                          </a>
-                        ) : (
-                          <span></span>
-                        )}
-                        <div className="text-slate-400 text-sm">
-                          Actief
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                ))}
+            ) : (
+              <div className="catalog-grid" aria-busy={loading}>
+                {loading
+                  ? [1, 2, 3, 4, 5, 6].map((n) => (
+                      <div className="skeleton" key={n} aria-hidden="true" />
+                    ))
+                  : filtered.map((b) => <BrandCard brand={b} key={b.id} />)}
+                {!loading && filtered.length === 0 && (
+                  <div className="empty-state">
+                    <Search aria-hidden="true" />
+                    <h2>
+                      {search || category
+                        ? "Dat merk hebben we niet gevonden."
+                        : "Er zijn nu geen actieve kortingscodes."}
+                    </h2>
+                    <p>
+                      {search || category
+                        ? "Probeer een andere naam of bekijk alle merken."
+                        : "Kom later terug voor nieuw aanbod."}
+                    </p>
+                    {(search || category) && (
+                      <button className="button button-primary" onClick={reset}>
+                        Bekijk alle merken
+                      </button>
+                    )}
+                    <Link to="/merk-toevoegen" className="text-link">
+                      Merk aanmelden
+                      <ArrowRight size={16} aria-hidden="true" />
+                    </Link>
+                  </div>
+                )}
               </div>
-            </>
-          )}
-        </div>
-      </section>
-    </div>
-    <Footer />
+            )}
+            <p className="brand-note">
+              Kortingscodes kunnen een einddatum, minimum bestelbedrag of andere
+              voorwaarden hebben. Controleer deze altijd in de webshop.
+            </p>
+          </div>
+        </section>
+        <CTA />
+      </main>
+      <Footer />
     </>
   );
-};
-
-export default MerkenPage;
+}

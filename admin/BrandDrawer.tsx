@@ -1,4 +1,4 @@
-import { Category } from "./types";
+import type { Category } from "../lib/catalog";
 
 type Props = {
   open: boolean;
@@ -28,12 +28,13 @@ export default function BrandDrawer({
         onClick={onClose}
       />
 
-      <div className="fixed right-0 top-0 h-full w-[440px] bg-white z-50 shadow-xl flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-full max-w-[440px] bg-white z-50 shadow-xl flex flex-col">
         <div className="px-6 py-5 border-b font-semibold text-lg">
           {editing ? "Merk bewerken" : "Nieuw merk"}
         </div>
 
         <form
+          id="admin-brand-form"
           onSubmit={onSave}
           className="flex-1 overflow-y-auto px-6 py-4 space-y-4"
         >
@@ -113,7 +114,8 @@ export default function BrandDrawer({
             Annuleren
           </button>
           <button
-            onClick={onSave}
+            type="submit"
+            form="admin-brand-form"
             className="px-4 py-2 rounded-lg bg-blue-600 text-white"
           >
             Opslaan

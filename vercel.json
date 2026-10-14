@@ -1,5 +1,28 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/home",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/merken",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/merk-toevoegen",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    }
   ]
 }

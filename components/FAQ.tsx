@@ -1,100 +1,106 @@
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Reveal } from './ui/Reveal';
-import { ChevronDown } from 'lucide-react';
-
-const FAQS = [
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+const faqs = [
   {
-    question: 'Wat is Kortio?',
+    question: "Wat is Kortio precies?",
     answer:
-      'Kortio is een gratis app waarmee je snel en eenvoudig kortingscodes vindt voor honderden Nederlandse webshops. Je opent de app, zoekt een merk en kopieert de code met één tik.',
+      "Kortio is een gratis app waarmee je kortingscodes van merken en webshops vindt. Je kunt merken bewaren als favoriet en je eigen codes privé bijhouden.",
   },
   {
-    question: 'Is Kortio gratis te downloaden?',
+    question: "Is Kortio echt gratis?",
     answer:
-      'Ja, Kortio is volledig gratis. Er zijn geen abonnementskosten, geen verborgen kosten en geen reclames.',
+      "Ja. Je kunt Kortio gratis downloaden en de kortingscodes gratis bekijken en kopiëren. Je hebt geen betaald abonnement nodig.",
   },
   {
-    question: 'Voor welke toestellen is Kortio beschikbaar?',
+    question: "Werkt Kortio op mijn telefoon?",
     answer:
-      'Kortio is beschikbaar voor iOS (iPhone, iPad — iOS 15 en hoger) en Android. Download de app via de App Store of Google Play.',
+      "Kortio is beschikbaar voor iPhone via de App Store. Voor Android kun je de app direct downloaden als APK. Bij het installeren kan Android om toestemming vragen om apps van deze bron te installeren.",
   },
   {
-    question: 'Hoe weet ik of een kortingscode werkt?',
+    question: "Moet ik een account aanmaken?",
     answer:
-      'Alle codes in Kortio zijn handmatig gecontroleerd en gemarkeerd als actief. Werkt een code toch niet? Je kunt dit direct in de app melden zodat we hem snel kunnen verwijderen.',
+      "Nee, je hoeft je niet te registreren om Kortio te gebruiken. Download de app en begin met zoeken.",
   },
   {
-    question: 'Moet ik een account aanmaken?',
+    question: "Hoe gebruik ik een kortingscode?",
     answer:
-      'Nee. Kortio werkt zonder account. Je favorieten en instellingen worden lokaal op je telefoon opgeslagen — wij hebben geen toegang tot jouw gegevens.',
+      "Kopieer de code in Kortio en open de webshop. Plak de code tijdens het afrekenen in het veld voor een kortings- of promotiecode. Controleer of de korting is toegepast voordat je bestelt.",
   },
   {
-    question: 'Hoe voeg ik mijn eigen merk toe aan Kortio?',
+    question: "Waarom werkt een code soms niet?",
     answer:
-      'Heb je een webshop en wil je jouw kortingscode aanbieden via Kortio? Vul dan het aanmeldformulier in op onze pagina "Merk toevoegen" en we nemen contact met je op.',
+      "Een code kan voorwaarden hebben, bijvoorbeeld een minimum bestelbedrag, een einddatum of een uitzondering voor bepaalde producten. Bekijk altijd de voorwaarden in de webshop. In de app kun je melden wanneer een code niet werkt.",
+  },
+  {
+    question: "Kan ik mijn merk aanmelden?",
+    answer:
+      "Zeker. Vul het formulier op de pagina Merk aanmelden in met je merk, kortingscode en voorwaarden. We bekijken je aanvraag voordat je merk in Kortio verschijnt.",
   },
 ];
-
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: FAQS.map(({ question, answer }) => ({
-    '@type': 'Question',
-    name: question,
-    acceptedAnswer: { '@type': 'Answer', text: answer },
-  })),
-};
-
-export const FAQ: React.FC = () => {
+export function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
-
   return (
-    <section id="faq" className="py-24 bg-slate-50 scroll-mt-24">
-      <div className="container mx-auto px-6 md:px-12">
-        <Helmet>
-          <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
-        </Helmet>
-
-        <div className="max-w-2xl mx-auto text-center mb-16">
-          <Reveal width="100%" direction="up">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Veelgestelde vragen over Kortio
-            </h2>
-            <p className="text-lg text-slate-500">
-              Alles wat je wilt weten over kortingscodes vinden met de Kortio app.
-            </p>
-          </Reveal>
+    <section className="section" id="faq">
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map(({ question, answer }) => ({
+              "@type": "Question",
+              name: question,
+              acceptedAnswer: { "@type": "Answer", text: answer },
+            })),
+          })}
+        </script>
+      </Helmet>
+      <div className="site-container faq-layout">
+        <div>
+          <div className="section-label">Goed om te weten</div>
+          <h2 className="section-title">
+            Even een
+            <br />
+            vraagje?
+          </h2>
+          <p className="section-copy">
+            Hier vind je de antwoorden op de vragen die we vaker krijgen.
+          </p>
+          <p className="faq-contact">
+            Staat je vraag er niet bij?
+            <br />
+            <a href="mailto:info@kortio.app">Mail ons gerust</a> of{" "}
+            <Link to="/merk-toevoegen">meld je merk aan</Link>.
+          </p>
         </div>
-
-        <div className="max-w-3xl mx-auto space-y-3">
-          {FAQS.map((faq, i) => (
-            <Reveal key={i} delay={i * 60} width="100%">
-              <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="faq-list">
+          {faqs.map(({ question, answer }, i) => (
+            <div className="faq-item" key={question}>
+              <h3>
                 <button
-                  onClick={() => setOpen(open === i ? null : i)}
-                  className="w-full flex items-center justify-between px-6 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-2xl"
+                  id={`faq-question-${i}`}
+                  className="faq-question"
                   aria-expanded={open === i}
+                  aria-controls={`faq-answer-${i}`}
+                  onClick={() => setOpen(open === i ? null : i)}
                 >
-                  <span className="text-base font-semibold text-slate-900 pr-4">
-                    {faq.question}
-                  </span>
-                  <ChevronDown
-                    size={20}
-                    className={`shrink-0 text-slate-400 transition-transform duration-200 ${open === i ? 'rotate-180' : ''}`}
-                    aria-hidden="true"
-                  />
+                  {question}
+                  <Plus aria-hidden="true" />
                 </button>
-                {open === i && (
-                  <div className="px-6 pb-5 text-slate-600 leading-relaxed">
-                    {faq.answer}
-                  </div>
-                )}
+              </h3>
+              <div
+                hidden={open !== i}
+                id={`faq-answer-${i}`}
+                aria-labelledby={`faq-question-${i}`}
+                className="faq-answer"
+              >
+                {answer}
               </div>
-            </Reveal>
+            </div>
           ))}
         </div>
       </div>
     </section>
   );
-};
+}

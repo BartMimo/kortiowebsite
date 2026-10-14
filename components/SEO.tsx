@@ -11,7 +11,7 @@ interface SEOProps {
 }
 
 const BASE_URL = 'https://kortio.app';
-const DEFAULT_OG_IMAGE = `${BASE_URL}/assets/logo1.png`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/social-card.png`;
 
 export const SEO: React.FC<SEOProps> = ({
   title,
