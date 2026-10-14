@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Check,
-  CheckCircle2,
   ChevronRight,
   ClipboardCheck,
   Send,
@@ -14,36 +13,10 @@ import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
 export default function MerkToevoegen() {
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [delivery, setDelivery] = useState<"loading" | "server" | "email">(
-    "loading",
-  );
   const [mailDraft, setMailDraft] = useState("");
   const [draftValues, setDraftValues] = useState<Record<string, string>>({});
   const mailHeadingRef = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    let active = true;
-    fetch("/api/send-merk", { signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("unavailable");
-        const status = await response.json();
-        if (active)
-          setDelivery(status.canSendEmail === true ? "server" : "email");
-      })
-      .catch(() => {
-        if (active) setDelivery("email");
-      })
-      .finally(() => clearTimeout(timeout));
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-      controller.abort();
-    };
-  }, []);
   function draft(payload: Record<string, string>) {
     setDraftValues(payload);
     const body = [
@@ -69,10 +42,8 @@ export default function MerkToevoegen() {
     );
     requestAnimationFrame(() => mailHeadingRef.current?.focus());
   }
-  const successRef = useRef<HTMLHeadingElement>(null);
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
+  function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (submitting) return;
     const form = e.currentTarget;
     const data = new FormData(form);
     const payload: Record<string, string> = {};
@@ -84,35 +55,7 @@ export default function MerkToevoegen() {
       return;
     }
     setError("");
-    if (delivery === "email") {
-      draft(payload);
-      return;
-    }
-    setSubmitting(true);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
-    try {
-      const response = await fetch("/api/send-merk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      if (!response.ok) throw new Error("submit");
-      const result = await response.json();
-      if (result.ok !== true) throw new Error("submit");
-      setSuccess(true);
-      form.reset();
-      requestAnimationFrame(() => successRef.current?.focus());
-    } catch {
-      setDelivery("email");
-      setError(
-        "Versturen lukt nu niet. Je gegevens zijn bewaard in het formulier. Zet je aanvraag klaar om deze via je e-mailprogramma te versturen.",
-      );
-    } finally {
-      clearTimeout(timeout);
-      setSubmitting(false);
-    }
+    draft(payload);
   }
   return (
     <>
@@ -211,33 +154,6 @@ export default function MerkToevoegen() {
                     ingesteld? Mail de gegevens zelf naar info@kortio.app.
                   </p>
                 </div>
-              ) : success ? (
-                <div className="form-success">
-                  <CheckCircle2 aria-hidden="true" />
-                  <h2 tabIndex={-1} ref={successRef}>
-                    Bedankt voor je aanmelding!
-                  </h2>
-                  <p>
-                    Je aanvraag is ontvangen. We bekijken je merk en
-                    kortingsaanbod. Een kopie wordt naar het opgegeven
-                    e-mailadres gestuurd.
-                  </p>
-                  <button
-                    className="button button-primary"
-                    onClick={() => setSuccess(false)}
-                  >
-                    Nog een merk aanmelden
-                    <ArrowRight aria-hidden="true" />
-                  </button>
-                  <Link
-                    to="/merken"
-                    className="text-link"
-                    style={{ marginTop: 20 }}
-                  >
-                    Bekijk de merken in Kortio
-                    <ArrowRight size={15} aria-hidden="true" />
-                  </Link>
-                </div>
               ) : (
                 <>
                   <h2>Vertel ons over je merk.</h2>
@@ -245,17 +161,15 @@ export default function MerkToevoegen() {
                     Velden met * zijn verplicht. Een code kun je ook later
                     aanleveren.
                   </p>
-                  {delivery === "email" && (
-                    <p className="form-delivery-note">
-                      <Mail size={17} aria-hidden="true" />
-                      <span>
-                        Je verstuurt de aanvraag via je eigen e-mailprogramma.
-                        We zetten de ingevulde gegevens voor je klaar.
-                      </span>
-                    </p>
-                  )}
-                  <form onSubmit={submit} aria-busy={submitting}>
-                    <fieldset disabled={submitting} className="form-fields">
+                  <p className="form-delivery-note">
+                    <Mail size={17} aria-hidden="true" />
+                    <span>
+                      Je verstuurt de aanvraag via je eigen e-mailprogramma. We
+                      zetten de ingevulde gegevens voor je klaar.
+                    </span>
+                  </p>
+                  <form onSubmit={submit}>
+                    <fieldset className="form-fields">
                       <div className="field field-full">
                         <label htmlFor="brand-name">Merknaam *</label>
                         <input
@@ -351,18 +265,8 @@ export default function MerkToevoegen() {
                         We gebruiken je gegevens voor deze aanvraag. Lees ons{" "}
                         <Link to="/privacy">privacybeleid</Link>.
                       </p>
-                      <button
-                        className="button button-primary"
-                        type="submit"
-                        disabled={submitting || delivery === "loading"}
-                      >
-                        {submitting
-                          ? "Bezig met versturen…"
-                          : delivery === "loading"
-                            ? "Een momentje…"
-                            : delivery === "email"
-                              ? "Zet aanvraag klaar"
-                              : "Verstuur aanmelding"}
+                      <button className="button button-primary" type="submit">
+                        Zet aanvraag klaar
                         <Send aria-hidden="true" />
                       </button>
                     </div>

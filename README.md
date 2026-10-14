@@ -33,11 +33,9 @@ npm run preview
 
 ## Merchant applications
 
-`api/send-merk.ts` runs as a Vercel function. GET reports only whether direct email is configured. POST validates the application before using the server-side SMTP configuration. The standalone Vite server does not run this function.
+The public form always prepares a mailto draft in the visitor's own email program, as requested by Bart. It also shows the application text for copying. The visitor reviews and sends it; the website does not claim delivery. Fields survive returning from the draft. The form never calls the email endpoint.
 
-If email is unavailable, the form prepares a mailto draft and shows the application text for copying. It does not claim the message was sent. Fields survive returning from the draft. When SMTP is configured in Vercel, the same form sends through the existing email endpoint, checks the JSON success response, and shows confirmed receipt. No test emails are sent by the automated tests.
-
-For direct delivery configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` and `MAIL_TO` in Vercel. These are server-only variables. In the current review no SMTP variables were present; the email-program route is therefore the active route.
+`api/send-merk.ts` remains available as an optional Vercel function. GET reports only whether direct email is configured; POST validates input before using server-side SMTP. The live project already has stored SMTP variables, but their deliverability has not been tested. No test emails were sent. These existing settings are not used by the public form and have not been changed.
 
 ## Images and fonts
 
@@ -49,4 +47,6 @@ Brand images are 160px WebP thumbnails, matched to the source URL fingerprint. N
 
 ## Hosting
 
-This checkout is linked to the existing Vercel project `kortio-landing-page`, scope `bartmimos-projects`. Public Supabase variables have been set for preview and production. Deploy a non-main branch for a preview; release production when the design is approved. Do not commit `.env` or `.vercel`.
+This checkout is linked to the existing Vercel project `kortiowebsite`, scope `bartmimos-projects`, serving `kortio.app` and `www.kortio.app`. Its existing production public Supabase configuration was verified against the local project and successfully read 49 active brands. Git pushes to `main` automatically publish production; other branches create previews.
+
+The old local Vercel link referred to a duplicate project, `kortio-landing-page`, and has been corrected. Do not commit `.env`, `.env.local` or `.vercel`.

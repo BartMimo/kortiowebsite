@@ -85,9 +85,9 @@ export default function Privacy() {
                 </li>
                 <li>
                   <strong>Merkaanmeldingen en contact:</strong> als je een merk
-                  aanmeldt, verwerken we de ingevulde merkgegevens, het
-                  kortingsaanbod en je contact-e-mailadres. Een kopie van de
-                  aanvraag wordt naar dat e-mailadres gestuurd.
+                  aanmeldt, zet de website de merkgegevens, het kortingsaanbod
+                  en je contact-e-mailadres klaar in een e-mailconcept. Pas als
+                  je dit zelf verstuurt, ontvangt Kortio je aanvraag.
                 </li>
               </ul>
               <p>
@@ -107,8 +107,9 @@ export default function Privacy() {
               <p>
                 Kortio maakt gebruik van technische dienstverleners. Supabase
                 ondersteunt de database en appfunctionaliteit. De website wordt
-                gehost via Vercel. Aanmeldingen worden via een e-maildienst naar
-                Kortio gestuurd, met een kopie naar het opgegeven adres.
+                gehost via Vercel. Voor merkaanmeldingen gebruik je je eigen
+                e-mailprogramma. De website verstuurt je aanvraag niet
+                automatisch.
               </p>
               <p>
                 Wanneer je een webshop of downloadlink opent, gelden daar de
