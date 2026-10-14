@@ -12,6 +12,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const MerkToevoegen = lazy(() => import("./pages/merk-toevoegen"));
 const MerkenPage = lazy(() => import("./pages/merken"));
 const CodeGuide = lazy(() => import("./pages/CodeGuide"));
+const MerkLink = lazy(() => import("./pages/MerkLink"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard"));
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/merk-toevoegen" element={<MerkToevoegen />} />
           <Route path="/merken" element={<MerkenPage />} />
           <Route path="/kortingscode-gebruiken" element={<CodeGuide />} />
+          <Route path="/m/:slug" element={<MerkLink />} />
           <Route
             path="/admin"
             element={

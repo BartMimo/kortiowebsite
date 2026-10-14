@@ -8,6 +8,7 @@ import { CatalogContext } from "./components/CatalogProvider";
 import { isCurrentBrand, loadCatalog } from "./lib/catalog";
 import type { Catalog } from "./lib/catalog";
 export { serializeJSON } from "./lib/seo";
+export { slugify } from "./lib/slug";
 
 export async function getPublicCatalog(): Promise<Catalog> {
   const catalog = await loadCatalog();

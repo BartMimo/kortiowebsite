@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["874CLBDTZU.Kortio.Kortio1"],
+        "components": [
+          { "/": "/m/*", "comment": "Deellinks naar een merk openen in de app" }
+        ]
+      }
+    ]
+  }
+}
