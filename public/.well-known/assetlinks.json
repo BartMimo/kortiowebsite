@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "kortio.kortio",
+      "sha256_cert_fingerprints": [
+        "15:0F:D7:C7:73:F7:C0:03:AE:1A:CD:85:AD:88:6C:A5:9A:46:06:27:1E:73:AB:E6:73:3E:72:4D:58:5D:AF:51",
+        "DA:E0:69:78:4C:39:D5:C0:F0:D6:80:8B:68:2A:6C:6A:04:6B:F3:36:5F:AD:CA:3E:09:9D:21:28:87:F3:BD:0B"
+      ]
+    }
+  }
+]
