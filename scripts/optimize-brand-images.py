@@ -30,6 +30,12 @@ with urllib.request.urlopen(request, timeout=15) as response:
 out = root / 'public/images/brands'
 out.mkdir(exist_ok=True)
 
+def image_key(source):
+    # Gelijk aan imageKey in lib/brand-utils.ts: ondertekende en openbare Supabase-link tellen als hetzelfde logo.
+    if '/storage/v1/object/sign/' in source:
+        return source.split('?')[0].replace('/storage/v1/object/sign/', '/storage/v1/object/public/')
+    return source
+
 def optimize(brand):
     source = brand.get('url_image') or ''
     identifier = brand['id']
@@ -44,7 +50,7 @@ def optimize(brand):
         image.thumbnail((160, 160))
         image.save(out / (identifier + '.webp'), quality=86, method=6)
         fingerprint = 5381
-        for character in source:
+        for character in image_key(source):
             fingerprint = ((fingerprint * 33) ^ ord(character)) & 0xffffffff
         return identifier, {'fingerprint': fingerprint, 'file': '/images/brands/' + identifier + '.webp'}
     except Exception:

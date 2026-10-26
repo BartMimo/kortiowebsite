@@ -46,6 +46,16 @@ for (const brand of catalog.brands) {
   await writeFile(`dist/m/${slug}.html`, page);
   brandPaths.push(path);
 }
+// Merken die na deze build zijn toegevoegd hebben nog geen eigen pagina. vercel.json valt dan terug op
+// deze pagina: zonder snapshot, dus de browser laadt de actuele catalogus en toont alsnog het merk.
+const fallback = await render("/m/nieuw-merk", null);
+await writeFile(
+  "dist/m-fallback.html",
+  template
+    .replace('<html lang="nl">', `<html lang="nl" data-rendered-date="${date}">`)
+    .replace("<!--seo-head-->", fallback.head)
+    .replace('<div id="root"></div>', `<div id="root">${fallback.html}</div>`),
+);
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes
   .filter((r) => r.indexable)
   .map(

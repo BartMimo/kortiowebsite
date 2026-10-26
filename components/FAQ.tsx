@@ -16,7 +16,7 @@ const faqs = [
   {
     question: "Werkt Kortio op mijn telefoon?",
     answer:
-      "Kortio is beschikbaar voor iPhone via de App Store. Voor Android kun je de app direct downloaden als APK. Bij het installeren kan Android om toestemming vragen om apps van deze bron te installeren.",
+      "Kortio is beschikbaar voor iPhone via de App Store en voor Android via Google Play.",
   },
   {
     question: "Moet ik een account aanmaken?",

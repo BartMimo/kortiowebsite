@@ -27,6 +27,10 @@
     {
       "source": "/m/:slug",
       "destination": "/m/:slug.html"
+    },
+    {
+      "source": "/m/:slug",
+      "destination": "/m-fallback.html"
     }
   ],
   "redirects": [
@@ -34,9 +38,39 @@
       "source": "/home",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/downloads/Kortioapp.apk",
+      "destination": "https://play.google.com/store/apps/details?id=kortio.kortio",
+      "permanent": false
     }
   ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://dqmbutgyczblvjplowkc.supabase.co wss://dqmbutgyczblvjplowkc.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
     {
       "source": "/admin",
       "headers": [

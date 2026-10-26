@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { safeWebURL } from "../lib/brand-utils";
 import BrandDrawer from "./BrandDrawer";
 
 /* ───────── Types ───────── */
@@ -8,10 +9,14 @@ type Brand = {
   id: string;
   name: string;
   category_name: string | null;
+  category_id?: string | null; // zo heet de categorie in admin_brands_overview
   primary_category_id: string | null;
   website_url: string | null;
   code: string | null;
   discount_text: string | null;
+  // De apps tonen deze eerst; komen uit brands, niet uit admin_brands_overview.
+  discount_text_nl?: string | null;
+  discount_text_en?: string | null;
 
   favorited: number;
   copied: number;
@@ -50,20 +55,27 @@ export default function AdminDashboard() {
   });
 
   const [form, setForm] = useState<any>({});
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     load();
   }, []);
 
   async function load() {
-    const [{ data: brandsData }, { data: categoriesData }, { data: downloadsData }] =
+    const [{ data: brandsData }, { data: categoriesData }, { data: downloadsData }, { data: textsData }] =
       await Promise.all([
         supabase.from("admin_brands_overview").select("*"),
         supabase.from("categories").select("id, name").order("name"),
         supabase.from("app_downloads").select("platform"),
+        supabase.from("brands").select("id, discount_text_nl, discount_text_en"),
       ]);
 
-    setBrands(Array.isArray(brandsData) ? brandsData : []);
+    const texts = new Map((textsData ?? []).map(t => [t.id, t]));
+    setBrands(
+      Array.isArray(brandsData)
+        ? brandsData.map(b => ({ ...b, ...texts.get(b.id) }))
+        : [],
+    );
     setCategories(Array.isArray(categoriesData) ? categoriesData : []);
 
     // Count downloads
@@ -125,30 +137,43 @@ export default function AdminDashboard() {
       website_url: "",
       code: "",
       discount_text: "",
+      discount_text_en: "",
       is_temporary: false,
       valid_from: "",
       valid_until: "",
       is_featured: false,
       is_active: true,
     });
+    setSaveError("");
     setDrawerOpen(true);
   }
 
   function openEdit(b: Brand) {
     setEditing(b);
-    setForm({ ...b });
+    // Zelfde volgorde als de apps: eerst de NL-tekst, dan de oude kolom.
+    setForm({
+      ...b,
+      primary_category_id: b.primary_category_id ?? b.category_id ?? undefined,
+      discount_text: b.discount_text_nl || b.discount_text || "",
+      discount_text_en: b.discount_text_en ?? "",
+    });
+    setSaveError("");
     setDrawerOpen(true);
   }
 
   async function saveBrand(e: React.FormEvent) {
     e.preventDefault();
 
+    const discount = (form.discount_text ?? "").trim();
     const payload = {
       name: form.name,
       primary_category_id: form.primary_category_id,
       website_url: form.website_url || null,
       code: form.code || null,
-      discount_text: form.discount_text || null,
+      // Zoals de admin-app: de oude kolom (website, Android) en de NL-kolom (iOS) krijgen dezelfde tekst.
+      discount_text: discount || null,
+      discount_text_nl: discount || null,
+      discount_text_en: (form.discount_text_en ?? "").trim() || null,
       is_temporary: form.is_temporary,
       valid_from: form.is_temporary ? form.valid_from || null : null,
       valid_until: form.is_temporary ? form.valid_until || null : null,
@@ -156,10 +181,16 @@ export default function AdminDashboard() {
       is_active: form.is_active,
     };
 
-    if (editing) {
-      await supabase.from("brands").update(payload).eq("id", editing.id);
-    } else {
-      await supabase.from("brands").insert(payload);
+    const { data, error } = editing
+      ? await supabase.from("brands").update(payload).eq("id", editing.id).select("id")
+      : await supabase.from("brands").insert(payload).select("id");
+
+    // Zonder beheerrechten weigert de database stil (0 rijen); dat telt ook als mislukt.
+    if (error || !data?.length) {
+      setSaveError(
+        `Opslaan mislukt${error ? `: ${error.message}` : ": geen rechten om dit merk te wijzigen."}`,
+      );
+      return;
     }
 
     setDrawerOpen(false);
@@ -228,15 +259,7 @@ export default function AdminDashboard() {
                 <td className="px-6 py-3 font-medium">{b.name}</td>
                 <td className="px-6 py-3">{b.category_name ?? "-"}</td>
                 <td className="px-6 py-3">
-                  {b.website_url ? (
-                    <a
-                      href={b.website_url}
-                      target="_blank"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {new URL(b.website_url).hostname}
-                    </a>
-                  ) : "-"}
+                  <WebsiteLink value={b.website_url} />
                 </td>
                 <td className="px-6 py-3 font-mono">{b.code ?? "-"}</td>
                 <td className="px-6 py-3">
@@ -272,12 +295,30 @@ export default function AdminDashboard() {
         setForm={setForm}
         categories={categories}
         editing={!!editing}
+        error={saveError}
       />
     </div>
   );
 }
 
 /* ───────── UI helpers ───────── */
+
+// Inzendingen komen van buiten: alleen http(s) als link, en een adres zonder https:// mag het scherm niet laten crashen.
+function WebsiteLink({ value }: { value: string | null }) {
+  if (!value) return <>-</>;
+  const url = safeWebURL(value);
+  if (!url) return <>{value}</>;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      {new URL(url).hostname}
+    </a>
+  );
+}
 
 function Kpi({ label, value }: { label: string; value: number }) {
   return (

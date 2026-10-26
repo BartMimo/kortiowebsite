@@ -9,7 +9,7 @@ import { Footer } from "./Footer";
 import { FAQ } from "./FAQ";
 import { SEO } from "./SEO";
 import { FeaturedBrands } from "./FeaturedBrands";
-import { APP_STORE_URL, SITE_URL } from "../lib/seo";
+import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL } from "../lib/seo";
 const schema = {
   "@type": "SoftwareApplication",
   "@id": `${SITE_URL}/#app`,
@@ -19,7 +19,7 @@ const schema = {
   applicationCategory: "ShoppingApplication",
   operatingSystem: "iOS, Android",
   inLanguage: "nl-NL",
-  installUrl: [APP_STORE_URL, `${SITE_URL}/downloads/Kortioapp.apk`],
+  installUrl: [APP_STORE_URL, PLAY_STORE_URL],
   offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
 };
 export function LandingPage() {

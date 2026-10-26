@@ -38,9 +38,9 @@ The sitemap is generated from the indexable route list in `scripts/routes.mjs`. 
 
 ## Merchant applications
 
-The public form always prepares a mailto draft in the visitor's own email program, as requested by Bart. It also shows the application text for copying. The visitor reviews and sends it; the website does not claim delivery. Fields survive returning from the draft. The form never calls the email endpoint.
+The public form always prepares a mailto draft in the visitor's own email program, as requested by Bart. It also shows the application text for copying. The visitor reviews and sends it; the website does not claim delivery. Fields survive returning from the draft.
 
-`api/send-merk.ts` remains available as an optional Vercel function. GET reports only whether direct email is configured; POST validates input before using server-side SMTP. The live project already has stored SMTP variables, but their deliverability has not been tested. No test emails were sent. These existing settings are not used by the public form and have not been changed.
+There is no server-side mail endpoint. The former `api/send-merk.ts` was removed on 26 October 2026: it let anyone send mail through Kortio's SMTP account to any address (review KW-01). The SMTP/MAIL variables in Vercel are no longer used.
 
 ## Images and fonts
 

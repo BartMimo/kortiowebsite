@@ -1,6 +1,8 @@
 export const SITE_URL = "https://www.kortio.app";
 export const APP_STORE_URL =
   "https://apps.apple.com/nl/app/kortio-kortingscodes-deals/id6758350707";
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=kortio.kortio";
 
 export const organization = {
   "@type": "Organization",

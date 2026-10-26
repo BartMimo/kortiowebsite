@@ -8,6 +8,7 @@ type Props = {
   setForm: (fn: any) => void;
   categories: Category[];
   editing: boolean;
+  error?: string;
 };
 
 export default function BrandDrawer({
@@ -18,6 +19,7 @@ export default function BrandDrawer({
   setForm,
   categories,
   editing,
+  error,
 }: Props) {
   if (!open) return null;
 
@@ -64,9 +66,15 @@ export default function BrandDrawer({
           />
 
           <Textarea
-            label="Code uitleg"
+            label="Code uitleg (Nederlands)"
             value={form.discount_text}
             onChange={v => setForm((f:any)=>({...f,discount_text:v}))}
+          />
+
+          <Textarea
+            label="Code uitleg (Engels, optioneel)"
+            value={form.discount_text_en}
+            onChange={v => setForm((f:any)=>({...f,discount_text_en:v}))}
           />
 
           <Toggle
@@ -104,6 +112,12 @@ export default function BrandDrawer({
             onChange={v => setForm((f:any)=>({...f,is_active:v}))}
           />
         </form>
+
+        {error && (
+          <p role="alert" className="px-6 pt-3 text-sm text-red-600">
+            {error}
+          </p>
+        )}
 
         <div className="px-6 py-4 border-t flex justify-end gap-3">
           <button

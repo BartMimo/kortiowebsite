@@ -28,7 +28,10 @@ export default function MerkLink() {
             ? `Actuele ${brand.name} kortingscode${discount ? ` voor ${discount}` : ""}. Kopieer de code en plak hem bij het afrekenen.`
             : "Kortingscodes van je favoriete merken op één plek."
         }
-        canonical={`/m/${slug}`}
+        // Zonder (geladen) merk geen canonical en noindex: de terugvalpagina voor nieuwe merken en
+        // codes die niet meer actief zijn horen niet in Google.
+        canonical={brand ? `/m/${slugify(brand.name)}` : undefined}
+        noindex={!brand}
       />
       <Navbar />
       <main className="mx-auto max-w-xl px-4 py-16">

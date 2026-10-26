@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, Copy, ExternalLink, Star } from "lucide-react";
 import { Brand, safeWebURL } from "../lib/catalog";
+import { imageKey } from "../lib/brand-utils";
 import { brandImages } from "../lib/brand-images";
 export function BrandCard({ brand }: { brand: Brand }) {
   const [copied, setCopied] = useState(false);
@@ -10,7 +11,7 @@ export function BrandCard({ brand }: { brand: Brand }) {
   const website = safeWebURL(brand.website_url);
   const source = safeWebURL(brand.url_image);
   let fingerprint = 5381;
-  for (const character of brand.url_image ?? "")
+  for (const character of imageKey(brand.url_image))
     fingerprint = ((fingerprint * 33) ^ character.codePointAt(0)!) >>> 0;
   const thumbnail = brandImages[brand.id];
   const image =

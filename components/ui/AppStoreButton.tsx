@@ -1,5 +1,6 @@
 import { Download } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import { PLAY_STORE_URL } from "../../lib/seo";
 interface StoreProps {
   className?: string;
   theme?: "dark" | "light";
@@ -40,9 +41,11 @@ export function AppStoreButton({
 export function PlayStoreButton({ className = "", onClick }: StoreProps) {
   return (
     <a
-      href="https://www.kortio.app/downloads/Kortioapp.apk"
+      href={PLAY_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
       className={`store-button android ${className}`}
-      aria-label="Download Kortio voor Android als APK"
+      aria-label="Download Kortio op Google Play"
       onClick={() => {
         track("android");
         onClick?.();
@@ -50,8 +53,8 @@ export function PlayStoreButton({ className = "", onClick }: StoreProps) {
     >
       <Download aria-hidden="true" />
       <span>
-        <small>Download APK</small>
-        <strong>Voor Android</strong>
+        <small>Ontdek het op</small>
+        <strong>Google Play</strong>
       </span>
     </a>
   );

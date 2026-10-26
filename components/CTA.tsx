@@ -18,7 +18,7 @@ export function CTA() {
               <PlayStoreButton />
             </div>
             <p className="download-caption">
-              Gratis voor iPhone · Android via directe APK-download
+              Gratis voor iPhone en Android
             </p>
           </div>
         </div>

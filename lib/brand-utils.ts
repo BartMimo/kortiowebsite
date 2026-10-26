@@ -14,6 +14,17 @@ export function safeWebURL(value: string | null | undefined): string | null {
     return null;
   }
 }
+// Zelfde logo, andere link: een ondertekende Supabase-link (token verloopt) en de vaste openbare link naar
+// hetzelfde bestand krijgen dezelfde sleutel, zodat de lokale thumbnail blijft passen. Moet gelijk blijven
+// aan image_key in scripts/optimize-brand-images.py.
+export function imageKey(value: string | null | undefined): string {
+  if (!value) return "";
+  return value.includes("/storage/v1/object/sign/")
+    ? value
+        .split("?")[0]
+        .replace("/storage/v1/object/sign/", "/storage/v1/object/public/")
+    : value;
+}
 export function isCurrentBrand(
   brand: Pick<Brand, "is_temporary" | "valid_from" | "valid_until">,
 ): boolean {

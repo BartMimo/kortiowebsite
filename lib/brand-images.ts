@@ -4,199 +4,199 @@ export const brandImages: Record<
   { fingerprint: number; file: string }
 > = {
   "02077156-7300-49e9-a94b-f9000936be9b": {
-    fingerprint: 1845845992,
+    fingerprint: 2707486730,
     file: "/images/brands/02077156-7300-49e9-a94b-f9000936be9b.webp",
   },
   "02abdd47-c15b-4faa-a26d-fea8ab6d6948": {
-    fingerprint: 506056968,
+    fingerprint: 4272043955,
     file: "/images/brands/02abdd47-c15b-4faa-a26d-fea8ab6d6948.webp",
   },
   "045901ef-284b-4477-951b-42228092f175": {
-    fingerprint: 3753346089,
+    fingerprint: 3048021456,
     file: "/images/brands/045901ef-284b-4477-951b-42228092f175.webp",
   },
   "0c922686-f4b7-49ad-b17e-a359a650a492": {
-    fingerprint: 3853004827,
+    fingerprint: 4009940609,
     file: "/images/brands/0c922686-f4b7-49ad-b17e-a359a650a492.webp",
   },
   "0d1c85a5-9d1e-425a-a1aa-a5d7b90a6981": {
-    fingerprint: 3126897467,
+    fingerprint: 1474899316,
     file: "/images/brands/0d1c85a5-9d1e-425a-a1aa-a5d7b90a6981.webp",
   },
   "0d519f6e-aa23-4617-bf31-cfe6ebf0ceb9": {
-    fingerprint: 4289660323,
+    fingerprint: 855075095,
     file: "/images/brands/0d519f6e-aa23-4617-bf31-cfe6ebf0ceb9.webp",
   },
   "0d5740bc-b2ed-43da-acc1-9b461abdc77e": {
-    fingerprint: 1798561908,
+    fingerprint: 1897052500,
     file: "/images/brands/0d5740bc-b2ed-43da-acc1-9b461abdc77e.webp",
   },
   "2339b244-76c5-4484-8c85-ddafb03b11aa": {
-    fingerprint: 985581739,
+    fingerprint: 631190534,
     file: "/images/brands/2339b244-76c5-4484-8c85-ddafb03b11aa.webp",
   },
   "358b89b6-c16d-4342-bc4d-21a1839271f3": {
-    fingerprint: 3525304831,
+    fingerprint: 2957919907,
     file: "/images/brands/358b89b6-c16d-4342-bc4d-21a1839271f3.webp",
   },
   "3640482f-ed84-406a-b27d-acfa1a3b3c4c": {
-    fingerprint: 3894046196,
+    fingerprint: 1066555320,
     file: "/images/brands/3640482f-ed84-406a-b27d-acfa1a3b3c4c.webp",
   },
   "36f4aa2c-383c-46d2-b08d-98bb59c39ddf": {
-    fingerprint: 1856138200,
+    fingerprint: 417138629,
     file: "/images/brands/36f4aa2c-383c-46d2-b08d-98bb59c39ddf.webp",
   },
   "36fb51c6-9928-412b-8409-375de391a6d5": {
-    fingerprint: 272073780,
+    fingerprint: 2529107209,
     file: "/images/brands/36fb51c6-9928-412b-8409-375de391a6d5.webp",
   },
   "3775d7e0-ae27-41a4-a636-c76a7edadff1": {
-    fingerprint: 3933173069,
+    fingerprint: 1195641473,
     file: "/images/brands/3775d7e0-ae27-41a4-a636-c76a7edadff1.webp",
   },
   "3a10cf5e-baec-43f6-a737-bc69b5d802c6": {
-    fingerprint: 1800797528,
+    fingerprint: 3206924325,
     file: "/images/brands/3a10cf5e-baec-43f6-a737-bc69b5d802c6.webp",
   },
   "3b20cb40-0f59-4790-81bb-aa92cddb4377": {
-    fingerprint: 1262279324,
+    fingerprint: 808188914,
     file: "/images/brands/3b20cb40-0f59-4790-81bb-aa92cddb4377.webp",
   },
   "442d1712-de2d-48e3-a7cc-9a550e18e7c1": {
-    fingerprint: 3074852564,
+    fingerprint: 2480846686,
     file: "/images/brands/442d1712-de2d-48e3-a7cc-9a550e18e7c1.webp",
   },
   "4529deef-5973-4c25-8e7c-a49d0250f7ae": {
-    fingerprint: 1341703980,
+    fingerprint: 3256625855,
     file: "/images/brands/4529deef-5973-4c25-8e7c-a49d0250f7ae.webp",
   },
   "49304454-1b64-424c-94b6-33e7f2483ec9": {
-    fingerprint: 1673441994,
+    fingerprint: 3435261840,
     file: "/images/brands/49304454-1b64-424c-94b6-33e7f2483ec9.webp",
   },
   "4c22d3a5-d36b-4adb-b128-9d5ba3603211": {
-    fingerprint: 2356701792,
+    fingerprint: 1400200939,
     file: "/images/brands/4c22d3a5-d36b-4adb-b128-9d5ba3603211.webp",
   },
   "5183d5e9-be29-44ba-804b-f7da33482032": {
-    fingerprint: 4268691967,
+    fingerprint: 2076822517,
     file: "/images/brands/5183d5e9-be29-44ba-804b-f7da33482032.webp",
   },
   "558e6044-1aae-4e6d-89f3-b7cb696b6189": {
-    fingerprint: 3439320401,
+    fingerprint: 2247364476,
     file: "/images/brands/558e6044-1aae-4e6d-89f3-b7cb696b6189.webp",
   },
   "67300602-34f6-472d-87d6-d7a9de45b7f5": {
-    fingerprint: 3137427786,
+    fingerprint: 4032413184,
     file: "/images/brands/67300602-34f6-472d-87d6-d7a9de45b7f5.webp",
   },
   "6d9dbe6d-ec68-40ff-bf60-5f2f63a6dbdf": {
-    fingerprint: 3733467332,
+    fingerprint: 2619291698,
     file: "/images/brands/6d9dbe6d-ec68-40ff-bf60-5f2f63a6dbdf.webp",
   },
   "7001c212-473f-41be-8146-049b687fb054": {
-    fingerprint: 1676980645,
+    fingerprint: 913099280,
     file: "/images/brands/7001c212-473f-41be-8146-049b687fb054.webp",
   },
   "752d0b15-c744-44de-bfd0-5e1bc87ca493": {
-    fingerprint: 1548500964,
+    fingerprint: 686481603,
     file: "/images/brands/752d0b15-c744-44de-bfd0-5e1bc87ca493.webp",
   },
   "76def3e1-be23-4a4e-a70b-3117bc402410": {
-    fingerprint: 218820079,
+    fingerprint: 1412448861,
     file: "/images/brands/76def3e1-be23-4a4e-a70b-3117bc402410.webp",
   },
   "815f1a88-5378-43f1-a07e-61cd1f23942a": {
-    fingerprint: 3638917604,
+    fingerprint: 2025696678,
     file: "/images/brands/815f1a88-5378-43f1-a07e-61cd1f23942a.webp",
   },
   "85560fd0-6a8f-4643-9337-86978cc9ad78": {
-    fingerprint: 3974873191,
+    fingerprint: 523493087,
     file: "/images/brands/85560fd0-6a8f-4643-9337-86978cc9ad78.webp",
   },
   "85be3afd-b6b3-4200-a638-2941f5fa8c63": {
-    fingerprint: 1763394649,
+    fingerprint: 1246771085,
     file: "/images/brands/85be3afd-b6b3-4200-a638-2941f5fa8c63.webp",
   },
   "8a17ab8a-5b6a-4a67-bb85-6721a5d1d7a2": {
-    fingerprint: 964244123,
+    fingerprint: 2539869982,
     file: "/images/brands/8a17ab8a-5b6a-4a67-bb85-6721a5d1d7a2.webp",
   },
   "8fd8d08b-9b48-461e-8184-7415b05aedb7": {
-    fingerprint: 1826335965,
+    fingerprint: 2553604457,
     file: "/images/brands/8fd8d08b-9b48-461e-8184-7415b05aedb7.webp",
   },
   "9a1e8599-9de8-45da-84fa-939452203b6b": {
-    fingerprint: 1830028306,
+    fingerprint: 925647842,
     file: "/images/brands/9a1e8599-9de8-45da-84fa-939452203b6b.webp",
   },
   "9b6a71fc-0aff-4a7e-b94c-d7bbbe409567": {
-    fingerprint: 419279088,
+    fingerprint: 95868308,
     file: "/images/brands/9b6a71fc-0aff-4a7e-b94c-d7bbbe409567.webp",
   },
   "9d92552e-0efa-4755-ab5b-a67a0b4cb83f": {
-    fingerprint: 52426294,
+    fingerprint: 144162569,
     file: "/images/brands/9d92552e-0efa-4755-ab5b-a67a0b4cb83f.webp",
   },
   "a3177894-ea9f-4b12-acce-ba4880acd54d": {
-    fingerprint: 770130088,
+    fingerprint: 609457021,
     file: "/images/brands/a3177894-ea9f-4b12-acce-ba4880acd54d.webp",
   },
   "a620df25-4e74-4c8d-937a-dd89a0f35ccc": {
-    fingerprint: 592757185,
+    fingerprint: 1285215101,
     file: "/images/brands/a620df25-4e74-4c8d-937a-dd89a0f35ccc.webp",
   },
   "b6d5558c-1921-4768-9be8-5a2e9102882e": {
-    fingerprint: 4155708194,
+    fingerprint: 2942376642,
     file: "/images/brands/b6d5558c-1921-4768-9be8-5a2e9102882e.webp",
   },
   "b7cf6fb1-8ffa-4266-8501-87534124910d": {
-    fingerprint: 611608577,
+    fingerprint: 756190038,
     file: "/images/brands/b7cf6fb1-8ffa-4266-8501-87534124910d.webp",
   },
   "ba2ef318-9749-4622-bdf3-5a6f7ab6de5e": {
-    fingerprint: 1776826228,
+    fingerprint: 1751268140,
     file: "/images/brands/ba2ef318-9749-4622-bdf3-5a6f7ab6de5e.webp",
   },
   "bb121425-3b76-4bdf-9754-291179a7bb0e": {
-    fingerprint: 1375299998,
+    fingerprint: 2214721834,
     file: "/images/brands/bb121425-3b76-4bdf-9754-291179a7bb0e.webp",
   },
   "ccf0f2e6-5d3f-4c0b-81b7-acd1f25b693d": {
-    fingerprint: 4188540750,
+    fingerprint: 1140175474,
     file: "/images/brands/ccf0f2e6-5d3f-4c0b-81b7-acd1f25b693d.webp",
   },
   "d2af254a-5ef8-4ef6-b16e-e77f204f7f99": {
-    fingerprint: 2380892762,
+    fingerprint: 3245648520,
     file: "/images/brands/d2af254a-5ef8-4ef6-b16e-e77f204f7f99.webp",
   },
   "de73a838-55bf-4c0f-a8d2-3ed0ee770374": {
-    fingerprint: 116073705,
+    fingerprint: 3628161485,
     file: "/images/brands/de73a838-55bf-4c0f-a8d2-3ed0ee770374.webp",
   },
   "df2da7ad-5023-4294-b67c-e9bd74322f98": {
-    fingerprint: 1555053443,
+    fingerprint: 528541561,
     file: "/images/brands/df2da7ad-5023-4294-b67c-e9bd74322f98.webp",
   },
   "df9c0b17-2278-4070-9c6a-bb5b72b0d5fc": {
-    fingerprint: 2728328609,
+    fingerprint: 3443914841,
     file: "/images/brands/df9c0b17-2278-4070-9c6a-bb5b72b0d5fc.webp",
   },
   "e3fdf8af-e743-424f-8cba-478c6d95ca76": {
-    fingerprint: 3662572565,
+    fingerprint: 4029692913,
     file: "/images/brands/e3fdf8af-e743-424f-8cba-478c6d95ca76.webp",
   },
   "e62cdde4-fdd0-4e0a-bdce-d91f5639cbbe": {
-    fingerprint: 1771592302,
+    fingerprint: 626208735,
     file: "/images/brands/e62cdde4-fdd0-4e0a-bdce-d91f5639cbbe.webp",
   },
   "e90dec0e-69c9-4acb-8cae-e235905d85f1": {
-    fingerprint: 2137213083,
+    fingerprint: 2432881427,
     file: "/images/brands/e90dec0e-69c9-4acb-8cae-e235905d85f1.webp",
   },
   "edbe49c1-d291-4d77-a379-9902c750c006": {
-    fingerprint: 1771592302,
+    fingerprint: 626208735,
     file: "/images/brands/edbe49c1-d291-4d77-a379-9902c750c006.webp",
   },
 };
