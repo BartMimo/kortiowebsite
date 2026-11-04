@@ -39,6 +39,11 @@ export default function Privacy() {
               Hier lees je welke gegevens Kortio gebruikt, waarom we dat doen en
               hoe je contact met ons kunt opnemen.
             </p>
+            <p className="section-copy">
+              Kortio is een product van Bartio (eenmanszaak van Bart van
+              Gemert), Vezelstraat 20, 5411 AP Zeeland, KvK 42025522. Bartio is
+              verantwoordelijk voor de verwerking van je gegevens.
+            </p>
             <p className="privacy-date">Laatst bijgewerkt: 4 november 2026</p>
           </div>
         </section>
