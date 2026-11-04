@@ -65,9 +65,9 @@ export function Screenshots() {
             ))}
           </div>
           <p className="preview-note">
-            Echte schermen van de nieuwe iOS-versie, nu in voorbereiding.
+            Echte schermen uit de iPhone-app.
             <br />
-            De Android-versie kan er anders uitzien.
+            De Android-app kan er iets anders uitzien.
           </p>
         </div>
         <div className="preview-phones" id="app-preview" aria-live="polite">

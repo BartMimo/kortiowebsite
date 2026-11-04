@@ -39,7 +39,7 @@ export default function Privacy() {
               Hier lees je welke gegevens Kortio gebruikt, waarom we dat doen en
               hoe je contact met ons kunt opnemen.
             </p>
-            <p className="privacy-date">Laatst bijgewerkt: 14 oktober 2026</p>
+            <p className="privacy-date">Laatst bijgewerkt: 4 november 2026</p>
           </div>
         </section>
         <section className="section">
@@ -65,7 +65,8 @@ export default function Privacy() {
                 <li>
                   <strong>Appgebruik:</strong> interacties zoals het bekijken
                   van merken, kopiëren van een code en melden van een code die
-                  niet werkt.
+                  niet werkt. We slaan die op met een technische toestel-ID,
+                  niet met je naam.
                 </li>
                 <li>
                   <strong>Favorieten en technische identificatie:</strong>{" "}

@@ -11,7 +11,12 @@ export const organization = {
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/images/logo.webp`,
   email: "info@kortio.app",
-  sameAs: [APP_STORE_URL],
+  sameAs: [
+    APP_STORE_URL,
+    PLAY_STORE_URL,
+    "https://www.instagram.com/kortio.nederland/",
+    "https://www.facebook.com/kortio.nederland",
+  ],
 };
 export const website = {
   "@type": "WebSite",

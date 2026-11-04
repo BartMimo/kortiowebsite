@@ -44,7 +44,7 @@ There is no server-side mail endpoint. The former `api/send-merk.ts` was removed
 
 ## Images and fonts
 
-The app images in `public/images/app` are real screenshots from the new iOS version, optimized to WebP. The site labels this as a preview because the redesign is in TestFlight. Font files and their OFL licenses are local in `public/fonts`.
+The app images in `public/images/app` are real screenshots from the new iOS version, optimized to WebP. iOS 4.0 is live in the App Store (since 19 October 2026). Font files and their OFL licenses are local in `public/fonts`.
 
 Brand images are 160px WebP thumbnails, matched to the source URL fingerprint. New or changed image URLs fall back to the live source. Refresh cached thumbnails with `npm run refresh-brand-images`; this maintenance command requires Python 3 and Pillow and public Supabase configuration. It never writes source URLs or credentials to the manifest. The site build itself does not need Python.
 

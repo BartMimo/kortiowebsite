@@ -58,7 +58,7 @@ export function Hero() {
           </div>
           <PhoneMockup
             imgSrc="/images/app/merken.webp"
-            alt="Voorproefje van Kortio: zoek een merk en bekijk de kortingscodes"
+            alt="Kortio-app: zoek een merk en bekijk de kortingscodes"
             eager
           />
           <div className="floating-note" aria-hidden="true">
@@ -70,7 +70,7 @@ export function Hero() {
               <small>Klaar voor je winkelmandje.</small>
             </div>
           </div>
-          <p className="visual-caption">Voorproefje van de nieuwe iOS-look.</p>
+          <p className="visual-caption">Zo ziet Kortio eruit op de iPhone.</p>
         </div>
       </div>
     </section>
