@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { ArrowRight, ChevronRight, RotateCcw, Search, X } from "lucide-react";
+import { ArrowRight, RotateCcw, Search, X } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
@@ -52,18 +52,13 @@ export default function MerkenPage() {
       <SEO
         title="Gratis kortingscodes voor merken & webshops — Kortio"
         description="Zoek je favoriete merk, bekijk de korting en kopieer de code. Vind gratis kortingscodes voor mode, sport, eten en meer."
-        canonical="/merken"
+        canonical="/"
         pageType="CollectionPage"
       />
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         <section className="page-intro catalog-intro">
           <div className="site-container">
-            <div className="breadcrumb">
-              <Link to="/">Kortio</Link>
-              <ChevronRight aria-hidden="true" />
-              <span>Alle merken</span>
-            </div>
             <div className="section-label">
               Gratis kortingscodes voor merken &amp; webshops
             </div>

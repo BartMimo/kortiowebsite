@@ -59,7 +59,7 @@ export default function CodeGuide() {
                 <li>
                   <strong>Vind een code voor jouw webshop.</strong> Zoek je merk
                   in{" "}
-                  <Link to="/merken">
+                  <Link to="/">
                     het overzicht met gratis kortingscodes
                   </Link>{" "}
                   of in de Kortio-app. Lees de korting en eventuele voorwaarden.
@@ -144,9 +144,9 @@ export default function CodeGuide() {
               </p>
               <h2 id="bewaren">Waar vind en bewaar ik mijn kortingscodes?</h2>
               <p>
-                Op de <Link to="/merken">merkenpagina</Link> kun je zoeken en
+                Op de <Link to="/">merkenpagina</Link> kun je zoeken en
                 filteren op categorie. Gebruik de gratis{" "}
-                <Link to="/#download">Kortio-app voor iPhone of Android</Link>{" "}
+                <Link to="/home#download">Kortio-app voor iPhone of Android</Link>{" "}
                 om merken als favoriet te bewaren en je eigen codes privé bij te
                 houden.
               </p>
@@ -155,7 +155,7 @@ export default function CodeGuide() {
                 eigen codes opslaan. Bewaar de voorwaarden erbij, zodat je later
                 weet wanneer en waarvoor je hem kunt gebruiken.
               </p>
-              <Link className="button button-primary" to="/merken">
+              <Link className="button button-primary" to="/">
                 Vind een kortingscode
                 <ArrowRight aria-hidden="true" />
               </Link>

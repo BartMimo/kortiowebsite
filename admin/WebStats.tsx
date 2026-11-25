@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { slugify } from "../lib/slug";
 
 // Websitestatistiek uit web_events (via admin_web_stats / admin_web_referrers).
 
@@ -11,6 +12,15 @@ type Row = {
   reveals: number;
   copies: number;
   shops: number;
+};
+type BrandRow = {
+  brand_id: string;
+  name: string;
+  reveals: number;
+  copies: number;
+  shops: number;
+  visitors: number;
+  pageViews: number; // weergaven van de eigen merkpagina /m/<merk>
 };
 type Referrer = { referrer: string; views: number; visitors: number };
 type Metric = "views" | "visitors" | "reveals" | "copies" | "shops";
@@ -67,6 +77,8 @@ export default function WebStats() {
   const [page, setPage] = useState<string | null>(null);
   const [sort, setSort] = useState<keyof PageTotals>("visitors");
   const [filter, setFilter] = useState("");
+  const [brandRows, setBrandRows] = useState<Omit<BrandRow, "pageViews">[]>([]);
+  const [brandError, setBrandError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -74,7 +86,8 @@ export default function WebStats() {
     Promise.all([
       supabase.rpc("admin_web_stats", { days }),
       supabase.rpc("admin_web_referrers", { days }),
-    ]).then(([stats, refs]) => {
+      supabase.rpc("admin_web_brands", { days }),
+    ]).then(([stats, refs, brandsRes]) => {
       if (cancelled) return;
       if (stats.error) setError(stats.error.message);
       else setError("");
@@ -91,6 +104,17 @@ export default function WebStats() {
         (refs.data ?? []).map((r: any) => ({
           referrer: r.referrer,
           views: Number(r.views),
+          visitors: Number(r.visitors),
+        })),
+      );
+      setBrandError(brandsRes.error ? brandsRes.error.message : "");
+      setBrandRows(
+        (brandsRes.data ?? []).map((r: any) => ({
+          brand_id: r.brand_id,
+          name: r.name,
+          reveals: Number(r.reveals),
+          copies: Number(r.copies),
+          shops: Number(r.shops),
           visitors: Number(r.visitors),
         })),
       );
@@ -139,6 +163,14 @@ export default function WebStats() {
         sort === "path" ? a.path.localeCompare(b.path) : (b[sort] as number) - (a[sort] as number),
       );
   }, [rows, sort, filter]);
+
+  // Merken: acties (alle pagina's) plus weergaven van de eigen merkpagina.
+  const brandTable = useMemo<BrandRow[]>(() => {
+    const views = new Map<string, number>();
+    for (const r of rows)
+      if (r.path?.startsWith("/m/")) views.set(r.path, (views.get(r.path) ?? 0) + r.views);
+    return brandRows.map((b) => ({ ...b, pageViews: views.get(`/m/${slugify(b.name)}`) ?? 0 }));
+  }, [brandRows, rows]);
 
   const max = Math.max(1, ...perDay.map(([, v]) => v[metric]));
 
@@ -313,6 +345,50 @@ export default function WebStats() {
           </ul>
         </div>
       </div>
+      {/* Per merk */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto mt-6">
+        <div className="p-4">
+          <div className="text-sm font-semibold">Per merk ({brandTable.length})</div>
+          <p className="text-xs text-slate-400">
+            Telt acties op alle pagina's (merkenoverzicht én de eigen merkpagina).
+          </p>
+        </div>
+        {brandError && (
+          <p className="mx-4 mb-4 rounded-lg bg-red-50 text-red-700 p-3 text-sm">
+            Per merk laden mislukt: {brandError}. Draai <code>supabase/2026-11-25-web-brands.sql</code>.
+          </p>
+        )}
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-slate-600 text-xs">
+            <tr>
+              <th className="px-3 py-2 text-left">Merk</th>
+              <th className="px-3 py-2 text-right">Weergaven merkpagina</th>
+              <th className="px-3 py-2 text-right">Code onthuld</th>
+              <th className="px-3 py-2 text-right">Opnieuw gekopieerd</th>
+              <th className="px-3 py-2 text-right">Naar webshop</th>
+            </tr>
+          </thead>
+          <tbody>
+            {brandTable.map((b) => (
+              <tr key={b.brand_id} className="border-t">
+                <td className="px-3 py-2 font-medium">{b.name}</td>
+                <td className="px-3 py-2 text-right">{b.pageViews}</td>
+                <td className="px-3 py-2 text-right font-semibold">{b.reveals}</td>
+                <td className="px-3 py-2 text-right">{b.copies}</td>
+                <td className="px-3 py-2 text-right">{b.shops}</td>
+              </tr>
+            ))}
+            {!loading && !brandError && brandTable.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-3 py-6 text-center text-slate-400">
+                  Nog geen codes onthuld.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       <p className="text-xs text-slate-400 mt-3">
         Bezoeker = één browsersessie. "Code onthuld" kopieert de code ook meteen; "Opnieuw
         gekopieerd" telt extra klikken daarna. Gemeten sinds 25 november 2026, zonder cookies.

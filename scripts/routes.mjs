@@ -1,7 +1,7 @@
 // The build, local production server and artifact audit share these paths.
 export const routes = [
   { path: "/", file: "index.html", indexable: true, catalog: true },
-  { path: "/merken", file: "merken.html", indexable: true, catalog: true },
+  { path: "/home", file: "home.html", indexable: true, catalog: true },
   { path: "/merk-toevoegen", file: "merk-toevoegen.html", indexable: true },
   {
     path: "/kortingscode-gebruiken",

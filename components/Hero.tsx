@@ -41,7 +41,7 @@ export function Hero() {
           </ul>
           <p className="hero-browse">
             Eerst even rondkijken?
-            <Link to="/merken">
+            <Link to="/">
               Ontdek de merken
               <ArrowRight aria-hidden="true" />
             </Link>

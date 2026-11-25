@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/merken",
-      "destination": "/merken.html"
+      "source": "/home",
+      "destination": "/home.html"
     },
     {
       "source": "/merk-toevoegen",
@@ -35,14 +35,14 @@
   ],
   "redirects": [
     {
-      "source": "/home",
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "source": "/downloads/Kortioapp.apk",
       "destination": "https://play.google.com/store/apps/details?id=kortio.kortio",
       "permanent": false
+    },
+    {
+      "source": "/merken",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [

@@ -12,9 +12,9 @@ import { FeaturedBrands } from "./FeaturedBrands";
 import { APP_STORE_URL, PLAY_STORE_URL, SITE_URL } from "../lib/seo";
 const schema = {
   "@type": "SoftwareApplication",
-  "@id": `${SITE_URL}/#app`,
+  "@id": `${SITE_URL}/home#app`,
   name: "Kortio",
-  url: `${SITE_URL}/`,
+  url: `${SITE_URL}/home`,
   description: "Vind, bewaar en gebruik kortingscodes van je favoriete merken.",
   applicationCategory: "ShoppingApplication",
   operatingSystem: "iOS, Android",
@@ -28,7 +28,7 @@ export function LandingPage() {
       <SEO
         title="Gratis kortingscodes & kortingscode-app — Kortio"
         description="Vind gratis kortingscodes van je favoriete merken. Kopieer een code en shop met voordeel. Download Kortio voor iPhone en Android, zonder registratie."
-        canonical="/"
+        canonical="/home"
         schema={schema}
       />
       <Navbar />

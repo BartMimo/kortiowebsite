@@ -25,7 +25,7 @@ export default function NotFound() {
         <Link to="/" className="button button-secondary">
           Naar de startpagina
         </Link>
-        <Link to="/merken" className="button button-primary">
+        <Link to="/" className="button button-primary">
           Ontdek de merken
           <ArrowRight aria-hidden="true" />
         </Link>

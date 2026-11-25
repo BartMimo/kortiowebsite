@@ -92,7 +92,7 @@ for (const route of routes) {
     assert(snapshot.brands.length > 0, "Read-only public catalog succeeded");
     assert.equal(
       cards,
-      route.path === "/merken"
+      route.path === "/"
         ? snapshot.brands.length
         : Math.min(3, snapshot.brands.length),
     );
@@ -114,7 +114,7 @@ assert(
 );
 assert(
   hosting.redirects.some(
-    (r) => r.source === "/home" && r.destination === "/" && r.permanent,
+    (r) => r.source === "/merken" && r.destination === "/" && r.permanent,
   ),
 );
 console.log(

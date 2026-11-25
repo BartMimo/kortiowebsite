@@ -25,13 +25,13 @@ export function Footer() {
             <h2>De app</h2>
             <ul>
               <li>
-                <Link to="/#how-it-works">Hoe het werkt</Link>
+                <Link to="/home#how-it-works">Hoe het werkt</Link>
               </li>
               <li>
-                <Link to="/#screenshots">Bekijk de app</Link>
+                <Link to="/home#screenshots">Bekijk de app</Link>
               </li>
               <li>
-                <Link to="/#download">Download Kortio</Link>
+                <Link to="/home#download">Download Kortio</Link>
               </li>
             </ul>
           </nav>
@@ -39,13 +39,13 @@ export function Footer() {
             <h2>Ontdekken</h2>
             <ul>
               <li>
-                <Link to="/merken">Alle merken</Link>
+                <Link to="/">Alle merken</Link>
               </li>
               <li>
                 <Link to="/merk-toevoegen">Merk aanmelden</Link>
               </li>
               <li>
-                <Link to="/#faq">Veelgestelde vragen</Link>
+                <Link to="/home#faq">Veelgestelde vragen</Link>
               </li>
               <li>
                 <Link to="/kortingscode-gebruiken">Kortingscode gebruiken</Link>

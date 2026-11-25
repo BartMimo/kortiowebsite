@@ -55,7 +55,7 @@ export default function MerkLink() {
           <>
             <h1 className="mb-2 text-2xl font-bold">Deze code is niet meer actief</h1>
             <p className="mb-6">
-              Bekijk de <Link to="/merken" className="underline">actuele kortingscodes</Link>.
+              Bekijk de <Link to="/" className="underline">actuele kortingscodes</Link>.
             </p>
           </>
         )}

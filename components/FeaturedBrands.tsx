@@ -19,7 +19,7 @@ export function FeaturedBrands() {
             <div className="section-label">Een beetje extra voordeel</div>
             <h2 className="section-title">Je merken. Je korting.</h2>
           </div>
-          <Link to="/merken" className="text-link">
+          <Link to="/" className="text-link">
             Bekijk alle merken
             <ArrowRight size={17} aria-hidden="true" />
           </Link>
@@ -48,7 +48,7 @@ export function FeaturedBrands() {
           <div className="empty-state">
             <h3>We vullen het aanbod aan.</h3>
             <p>Bekijk de merkenpagina voor het beschikbare aanbod.</p>
-            <Link to="/merken" className="button button-primary">
+            <Link to="/" className="button button-primary">
               Bekijk merken
             </Link>
           </div>

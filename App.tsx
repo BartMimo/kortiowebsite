@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
-import { LandingPage } from "./components/LandingPage";
+import { Routes, Route, Navigate } from "react-router-dom";
+import MerkenPage from "./pages/merken";
 import { ScrollManager } from "./components/ScrollManager";
 import { RequireAuth } from "./components/RequireAuth";
 
@@ -10,7 +10,9 @@ const Login = lazy(() =>
 );
 const Privacy = lazy(() => import("./pages/Privacy"));
 const MerkToevoegen = lazy(() => import("./pages/merk-toevoegen"));
-const MerkenPage = lazy(() => import("./pages/merken"));
+const LandingPage = lazy(() =>
+  import("./components/LandingPage").then((m) => ({ default: m.LandingPage })),
+);
 const CodeGuide = lazy(() => import("./pages/CodeGuide"));
 const MerkLink = lazy(() => import("./pages/MerkLink"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard"));
@@ -27,12 +29,12 @@ function App() {
         }
       >
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<MerkenPage />} />
           <Route path="/home" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/merk-toevoegen" element={<MerkToevoegen />} />
-          <Route path="/merken" element={<MerkenPage />} />
+          <Route path="/merken" element={<Navigate to="/" replace />} />
           <Route path="/kortingscode-gebruiken" element={<CodeGuide />} />
           <Route path="/m/:slug" element={<MerkLink />} />
           <Route
