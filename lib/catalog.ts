@@ -13,6 +13,7 @@ export type Brand = {
   valid_from: string | null;
   valid_until: string | null;
   url_image: string | null;
+  last_verified_at?: string | null;
   category_name: string | null;
 };
 export type Catalog = { brands: Brand[]; categories: Category[] };
@@ -30,7 +31,7 @@ export function loadCatalog(reload = false): Promise<Catalog> {
         supabase
           .from("brands")
           .select(
-            "id, name, discount_text, code, website_url, primary_category_id, is_featured, is_temporary, valid_from, valid_until, url_image",
+            "id, name, discount_text, code, website_url, primary_category_id, is_featured, is_temporary, valid_from, valid_until, url_image, last_verified_at",
           )
           .eq("is_active", true)
           .order("name")
