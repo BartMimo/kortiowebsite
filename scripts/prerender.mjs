@@ -2,7 +2,7 @@ import { readFile, writeFile, rm, mkdir } from "node:fs/promises";
 import { routes } from "./routes.mjs";
 
 process.env.NODE_ENV = "production";
-const { render, getPublicCatalog, serializeJSON, slugify } = await import(
+const { render, getPublicCatalog, getExpiredBrands, serializeJSON, slugify } = await import(
   "../.prerender/entry-server.js"
 );
 const template = await readFile("dist/index.html", "utf8");
@@ -42,6 +42,23 @@ for (const brand of catalog.brands) {
     .replace(
       '<div id="root"></div>',
       `<div id="root">${html}</div><script id="kortio-catalog" type="application/json">${serializeJSON(catalog)}</script>`,
+    );
+  await writeFile(`dist/m/${slug}.html`, page);
+  brandPaths.push(path);
+}
+// Merken met een verlopen code: pagina blijft, met de melding dat er nu geen geldige code is.
+for (const brand of await getExpiredBrands()) {
+  const slug = slugify(brand.name);
+  if (!slug || brandPaths.includes(`/m/${slug}`)) continue;
+  const path = `/m/${slug}`;
+  const withBrand = { ...catalog, brands: [...catalog.brands, brand] };
+  const { html, head } = await render(path, withBrand);
+  const page = template
+    .replace('<html lang="nl">', `<html lang="nl" data-rendered-date="${date}">`)
+    .replace("<!--seo-head-->", head)
+    .replace(
+      '<div id="root"></div>',
+      `<div id="root">${html}</div><script id="kortio-catalog" type="application/json">${serializeJSON(withBrand)}</script>`,
     );
   await writeFile(`dist/m/${slug}.html`, page);
   brandPaths.push(path);

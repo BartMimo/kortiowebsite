@@ -6,6 +6,7 @@ import { BrandCard } from "../components/BrandCard";
 import { AppStoreButton, PlayStoreButton } from "../components/ui/AppStoreButton";
 import { useCatalog } from "../hooks/useCatalog";
 import { slugify } from "../lib/slug";
+import { isCurrentBrand, safeWebURL } from "../lib/catalog";
 import type { Brand } from "../lib/catalog";
 
 // Merkpagina op kortio.app/m/<merk>. Hier komt 98% van het Google-verkeer binnen
@@ -37,8 +38,10 @@ function buildTitle(brand: Brand, discount: string) {
 
 export default function MerkLink() {
   const { slug = "" } = useParams();
-  const { brands, loading, error, retry } = useCatalog();
-  const brand = brands.find((b) => slugify(b.name) === slug.toLowerCase());
+  const { brands, allBrands, loading, error, retry } = useCatalog();
+  const brand = allBrands.find((b) => slugify(b.name) === slug.toLowerCase());
+  // Merk staat nog in Kortio, maar de tijdelijke code is verlopen: pagina blijft, zonder code.
+  const expired = brand ? !isCurrentBrand(brand) : false;
   const discount = brand?.discount_text?.trim().toLowerCase() ?? "";
   const related = brand
     ? brands
@@ -70,7 +73,7 @@ export default function MerkLink() {
       ]
     : [];
 
-  const faqSchema = brand
+  const faqSchema = brand && !expired
     ? {
         "@type": "FAQPage",
         mainEntity: faq.map((f) => ({
@@ -84,9 +87,17 @@ export default function MerkLink() {
   return (
     <>
       <SEO
-        title={brand ? buildTitle(brand, discount) : "Kortingscode | Kortio"}
-        description={
+        title={
           brand
+            ? expired
+              ? `${brand.name} kortingscode: nieuwe code volgt | Kortio`
+              : buildTitle(brand, discount)
+            : "Kortingscode | Kortio"
+        }
+        description={
+          brand && expired
+            ? `Er is nu geen geldige ${brand.name} kortingscode. We controleren ${brand.name} regelmatig op nieuwe acties; bekijk intussen andere geteste kortingscodes.`
+            : brand
             ? `${brand.name} kortingscode${discount ? ` voor ${discount}` : ""}${verified ? `, getest op ${verified}` : ""}. Tik om de actiecode te zien, kopieer hem en plak hem bij het afrekenen. Gratis, zonder account.`
             : "Kortingscodes van je favoriete merken op één plek."
         }
@@ -114,6 +125,26 @@ export default function MerkLink() {
               {brand.category_name && <> › {brand.category_name}</>}
             </nav>
             <h1 className="mb-2 text-3xl font-bold">{brand.name} kortingscode</h1>
+            {expired ? (
+              <div className="mb-6 rounded-xl border p-5">
+                <p className="font-semibold">Op dit moment is er geen geldige {brand.name} kortingscode.</p>
+                <p className="mt-2">
+                  De laatste code{brand.valid_until ? ` liep af op ${dateNL(brand.valid_until)}` : " is verlopen"}.{" "}
+                  {brand.name} heeft regelmatig nieuwe acties; zodra we een werkende code vinden, staat hij hier.
+                </p>
+                {safeWebURL(brand.website_url) && (
+                  <a
+                    href={safeWebURL(brand.website_url)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-block underline"
+                  >
+                    Bekijk de acties bij {brand.name}
+                  </a>
+                )}
+              </div>
+            ) : (
+            <>
             <p className="mb-6 text-sm" style={{ color: "var(--muted)" }}>
               {discount ? `${brand.discount_text} bij ${brand.name}` : `Actuele code voor ${brand.name}`}
               {verified ? ` · getest op ${verified}` : ""}
@@ -147,6 +178,8 @@ export default function MerkLink() {
                 </div>
               ))}
             </section>
+            </>
+            )}
 
             {related.length > 0 && (
               <section className="mt-10">

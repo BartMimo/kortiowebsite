@@ -43,6 +43,11 @@
       "source": "/merken",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/m/ginatricot",
+      "destination": "/m/gina-tricot",
+      "permanent": true
     }
   ],
   "headers": [

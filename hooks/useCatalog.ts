@@ -28,6 +28,8 @@ export function useCatalog() {
   }, [attempt, initial]);
   return {
     brands: catalog.brands.filter(isCurrentBrand),
+    // Ook merken met een verlopen code (alleen voor de merkpagina).
+    allBrands: catalog.brands,
     categories: catalog.categories,
     loading,
     error,

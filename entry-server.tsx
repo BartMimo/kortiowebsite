@@ -14,6 +14,15 @@ export async function getPublicCatalog(): Promise<Catalog> {
   const catalog = await loadCatalog();
   return { ...catalog, brands: catalog.brands.filter(isCurrentBrand) };
 }
+// Actieve merken waarvan de tijdelijke code is verlopen: hun pagina blijft bestaan (zonder code),
+// zodat de plek in Google niet verloren gaat tot er een nieuwe code is. Nog niet gestarte acties niet.
+export async function getExpiredBrands() {
+  const catalog = await loadCatalog();
+  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Amsterdam" });
+  return catalog.brands.filter(
+    (b) => !isCurrentBrand(b) && !(b.valid_from && b.valid_from.slice(0, 10) > today),
+  );
+}
 export function render(url: string, catalog: Catalog | null) {
   return new Promise<{ html: string; head: string }>((resolve, reject) => {
     const context: { helmet?: HelmetServerState } = {};
