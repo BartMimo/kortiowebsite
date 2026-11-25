@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { track } from "../lib/track";
 export function ScrollManager() {
   const { pathname, hash } = useLocation();
+  // Eén paginaweergave per bezochte pagina (ook bij navigeren binnen de site).
+  useEffect(() => {
+    track("view");
+  }, [pathname]);
   useEffect(() => {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",

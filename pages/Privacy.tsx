@@ -44,7 +44,7 @@ export default function Privacy() {
               Gemert), Vezelstraat 20, 5411 AP Zeeland, KvK 42025522. Bartio is
               verantwoordelijk voor de verwerking van je gegevens.
             </p>
-            <p className="privacy-date">Laatst bijgewerkt: 4 november 2026</p>
+            <p className="privacy-date">Laatst bijgewerkt: 25 november 2026</p>
           </div>
         </section>
         <section className="section">
@@ -88,6 +88,14 @@ export default function Privacy() {
                   <strong>Downloads:</strong> wanneer je op een downloadknop op
                   de website klikt, kan het gekozen platform worden
                   geregistreerd.
+                </li>
+                <li>
+                  <strong>Websitestatistiek:</strong> we tellen welke pagina's
+                  worden bekeken en of een code wordt getoond, gekopieerd of de
+                  webshop wordt geopend, met de verwijzende website en het type
+                  apparaat (mobiel of computer). We gebruiken geen cookies en
+                  slaan geen IP-adres op; alleen een willekeurige id die bij het
+                  sluiten van je browsertabblad verdwijnt.
                 </li>
                 <li>
                   <strong>Merkaanmeldingen en contact:</strong> als je een merk

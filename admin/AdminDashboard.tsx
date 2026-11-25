@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { safeWebURL } from "../lib/brand-utils";
 import BrandDrawer from "./BrandDrawer";
+import WebStats from "./WebStats";
 
 /* ───────── Types ───────── */
 
@@ -201,8 +202,12 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-8 max-w-[1600px] mx-auto">
+      <a href="/" className="inline-flex items-center text-sm text-slate-600 hover:text-slate-800 mb-2">← Terug naar website</a>
       <h1 className="text-2xl font-bold mb-6">Admin dashboard</h1>
 
+      <WebStats />
+
+      <h2 className="text-xl font-bold mb-4">Apps</h2>
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-6 mb-8">
         <Kpi label="Favorieten" value={totals.favorited} />
@@ -213,16 +218,11 @@ export default function AdminDashboard() {
 
       {/* App Downloads */}
       <div className="grid grid-cols-2 gap-6 mb-8">
-        <Kpi label="iOS Downloads" value={appDownloads.ios} />
-        <Kpi label="Android Downloads" value={appDownloads.android} />
+        <Kpi label="Klik op App Store-knop (site)" value={appDownloads.ios} />
+        <Kpi label="Klik op Play Store-knop (site)" value={appDownloads.android} />
       </div>
-        <header className="flex items-center justify-between gap-6 mb-6">
-          <div>
-            <a href="/" className="inline-flex items-center text-sm text-slate-600 hover:text-slate-800 mb-2">← Terug naar website</a>
-            <h1 className="text-2xl font-extrabold">Dashboard</h1>
-            <p className="text-sm text-slate-400">Beheer je merken en acties</p>
-          </div>
-        </header>
+      <h2 className="text-xl font-bold mb-1">Merken</h2>
+      <p className="text-sm text-slate-400 mb-2">Acties uit de apps per merk</p>
 
       <div className="flex justify-end mb-4">
         <button
