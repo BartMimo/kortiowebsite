@@ -819,6 +819,24 @@ img {
   border-color: #b4c6f0;
   box-shadow: 0 9px 25px #1b345409;
 }
+/* Uitgelichte merken: goud randje */
+.brand-card.is-featured {
+  border: 2px solid #d4a72c;
+  box-shadow:
+    0 0 0 4px #f6e7b8,
+    0 10px 28px #b8860b1f;
+  background: linear-gradient(180deg, #fffcf2 0%, #ffffff 38%);
+}
+.brand-card.is-featured:hover {
+  border-color: #c4961c;
+  box-shadow:
+    0 0 0 4px #f1dc9c,
+    0 12px 30px #b8860b2e;
+}
+.brand-card.is-featured .featured-badge {
+  color: #7a5a00;
+  background: #fbefc6;
+}
 .brand-card-top {
   display: flex;
   justify-content: space-between;

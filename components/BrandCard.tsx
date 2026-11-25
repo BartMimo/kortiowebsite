@@ -73,7 +73,7 @@ export function BrandCard({ brand }: { brand: Brand }) {
         }).format(new Date(brand.valid_until))
       : null;
   return (
-    <article className="brand-card">
+    <article className={`brand-card${brand.is_featured ? " is-featured" : ""}`}>
       <div className="brand-card-top">
         <div className="brand-image">
           {image && !imageFailed ? (

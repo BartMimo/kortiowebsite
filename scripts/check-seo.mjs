@@ -88,7 +88,7 @@ for (const route of routes) {
     const snapshot = JSON.parse(
       page.match(/<script id="kortio-catalog"[^>]*>(.*?)<\/script>/s)?.[1],
     );
-    const cards = (page.match(/<article class="brand-card"/g) ?? []).length;
+    const cards = (page.match(/<article class="brand-card[" ]/g) ?? []).length;
     assert(snapshot.brands.length > 0, "Read-only public catalog succeeded");
     assert.equal(
       cards,
