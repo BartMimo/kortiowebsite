@@ -9,6 +9,7 @@ export const routes = [
     indexable: true,
   },
   { path: "/privacy", file: "privacy.html", indexable: false },
+  { path: "/voorwaarden", file: "voorwaarden.html", indexable: false },
   { path: "/login", file: "login.html", indexable: false },
   { path: "/admin", file: "admin.html", indexable: false },
   { path: "/404-not-found", file: "404.html", indexable: false },

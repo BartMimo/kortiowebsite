@@ -48,7 +48,7 @@ createServer(async (req, res) => {
       mime = types[".html"];
     }
     const headers = { "Content-Type": mime, "Cache-Control": "no-cache" };
-    if (["/admin", "/login", "/privacy"].includes(path) || status === 404)
+    if (["/admin", "/login", "/privacy", "/voorwaarden"].includes(path) || status === 404)
       headers["X-Robots-Tag"] = "noindex, nofollow";
     res.writeHead(status, headers);
     res.end(req.method === "HEAD" ? undefined : body);

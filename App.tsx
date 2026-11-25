@@ -9,6 +9,7 @@ const Login = lazy(() =>
   import("./components/Login").then((m) => ({ default: m.Login })),
 );
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Voorwaarden = lazy(() => import("./pages/Voorwaarden"));
 const MerkToevoegen = lazy(() => import("./pages/merk-toevoegen"));
 const LandingPage = lazy(() =>
   import("./components/LandingPage").then((m) => ({ default: m.LandingPage })),
@@ -33,6 +34,7 @@ function App() {
           <Route path="/home" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/voorwaarden" element={<Voorwaarden />} />
           <Route path="/merk-toevoegen" element={<MerkToevoegen />} />
           <Route path="/merken" element={<Navigate to="/" replace />} />
           <Route path="/kortingscode-gebruiken" element={<CodeGuide />} />

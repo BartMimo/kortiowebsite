@@ -40,7 +40,7 @@ for (const route of routes) {
     ...page.matchAll(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/g),
   ].map((m) => m[1]);
   const expected = `https://www.kortio.app${route.path}`;
-  if (route.indexable || route.path === "/privacy")
+  if (route.indexable || ["/privacy", "/voorwaarden"].includes(route.path))
     assert.deepEqual(canonicals, [expected], `${route.path}: canonical`);
   else
     assert.equal(

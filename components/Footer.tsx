@@ -59,6 +59,9 @@ export function Footer() {
                 <Link to="/privacy">Privacybeleid</Link>
               </li>
               <li>
+                <Link to="/voorwaarden">Servicevoorwaarden</Link>
+              </li>
+              <li>
                 <a href="mailto:info@kortio.app">Contact</a>
               </li>
             </ul>

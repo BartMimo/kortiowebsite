@@ -17,6 +17,10 @@
       "destination": "/privacy.html"
     },
     {
+      "source": "/voorwaarden",
+      "destination": "/voorwaarden.html"
+    },
+    {
       "source": "/login",
       "destination": "/login.html"
     },
@@ -95,7 +99,7 @@
       ]
     },
     {
-      "source": "/privacy",
+      "source": "/(privacy|voorwaarden)",
       "headers": [
         {
           "key": "X-Robots-Tag",
