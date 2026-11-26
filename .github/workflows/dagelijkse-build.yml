@@ -1,0 +1,18 @@
+# Bouwt de site elke ochtend opnieuw, zodat nieuwe merken uit Supabase een eigen,
+# indexeerbare pagina en een plek in de sitemap krijgen (en testdata vers blijft).
+# Vereist secret VERCEL_DEPLOY_HOOK (Vercel > kortiowebsite > Settings > Git > Deploy Hooks, branch main).
+name: Dagelijkse build
+on:
+  schedule:
+    - cron: "0 4 * * *" # 05:00/06:00 Nederlandse tijd
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vercel-build starten
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "Secret VERCEL_DEPLOY_HOOK ontbreekt"; exit 1; fi
+          curl -fsS -X POST "$HOOK"

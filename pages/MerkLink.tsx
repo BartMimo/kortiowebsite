@@ -7,6 +7,7 @@ import { AppStoreButton, PlayStoreButton } from "../components/ui/AppStoreButton
 import { useCatalog } from "../hooks/useCatalog";
 import { slugify } from "../lib/slug";
 import { isCurrentBrand, safeWebURL } from "../lib/catalog";
+import { brandAlias, nameWithAlias } from "../lib/brand-aliases";
 import type { Brand } from "../lib/catalog";
 
 // Merkpagina op kortio.app/m/<merk>. Hier komt 98% van het Google-verkeer binnen
@@ -27,13 +28,24 @@ const monthNL = (iso: string) =>
     timeZone: "Europe/Amsterdam",
   }).format(new Date(iso.slice(0, 10) + "T12:00:00"));
 
+// Een testdatum in de titel helpt alleen als hij vers is; "getest okt" oogt in december verouderd.
+const recentlyVerified = (iso?: string | null) =>
+  !!iso && Date.now() - new Date(iso.slice(0, 10) + "T12:00:00").getTime() <= 31 * 86400000;
+
 function buildTitle(brand: Brand, discount: string) {
-  const base = `${brand.name} kortingscode`;
-  const tested = brand.last_verified_at ? ` (getest ${monthNL(brand.last_verified_at)})` : "";
-  const withAll = `${base}${tested}${discount ? `: ${discount}` : ""} | Kortio`;
-  // Google kapt titels af rond 60 tekens; dan eerst de testdatum laten vallen.
-  if (withAll.length <= 62) return withAll;
-  return `${base}${discount ? `: ${discount}` : ""} | Kortio`;
+  const slug = slugify(brand.name);
+  const end = `${discount ? `: ${discount}` : ""} | Kortio`;
+  const tested = recentlyVerified(brand.last_verified_at)
+    ? ` (getest ${monthNL(brand.last_verified_at!)})`
+    : "";
+  // Google kapt titels af rond 60 tekens; dan eerst de testdatum en daarna de andere zoeknaam laten vallen.
+  const options = [
+    `${nameWithAlias(brand.name, slug)} kortingscode${tested}${end}`,
+    `${nameWithAlias(brand.name, slug)} kortingscode${end}`,
+    ...(brandAlias(slug) ? [`${brandAlias(slug)} kortingscode${end}`] : []),
+    `${brand.name} kortingscode${end}`,
+  ];
+  return options.find((t) => t.length <= 62) ?? options[options.length - 1];
 }
 
 export default function MerkLink() {
@@ -50,12 +62,14 @@ export default function MerkLink() {
         .slice(0, 8)
     : [];
   const verified = brand?.last_verified_at ? dateNL(brand.last_verified_at) : null;
+  const alias = brand ? brandAlias(slugify(brand.name)) : null;
+  const searchName = brand ? nameWithAlias(brand.name, slugify(brand.name)) : "";
   const until = brand?.is_temporary && brand.valid_until ? dateNL(brand.valid_until) : null;
 
   const faq = brand
     ? [
         {
-          q: `Werkt de ${brand.name} kortingscode nog?`,
+          q: `Werkt de ${alias ?? brand.name} kortingscode nog?`,
           a: verified
             ? `We hebben deze code op ${verified} voor het laatst getest bij ${brand.name}.${until ? ` Hij is geldig tot en met ${until}.` : ""} Werkt hij bij jou niet, controleer dan of je aan de voorwaarden voldoet, zoals een minimum bestelbedrag.`
             : `Deze code staat actief in Kortio.${until ? ` Hij is geldig tot en met ${until}.` : ""} Werkt hij bij jou niet, controleer dan de voorwaarden in de webshop, zoals een minimum bestelbedrag of uitgesloten artikelen.`,
@@ -90,15 +104,15 @@ export default function MerkLink() {
         title={
           brand
             ? expired
-              ? `${brand.name} kortingscode: nieuwe code volgt | Kortio`
+              ? `${searchName} kortingscode: nieuwe code volgt | Kortio`
               : buildTitle(brand, discount)
             : "Kortingscode | Kortio"
         }
         description={
           brand && expired
-            ? `Er is nu geen geldige ${brand.name} kortingscode. We controleren ${brand.name} regelmatig op nieuwe acties; bekijk intussen andere geteste kortingscodes.`
+            ? `Er is nu geen geldige ${searchName} kortingscode. We controleren ${brand.name} regelmatig op nieuwe acties; bekijk intussen andere geteste kortingscodes.`
             : brand
-            ? `${brand.name} kortingscode${discount ? ` voor ${discount}` : ""}${verified ? `, getest op ${verified}` : ""}. Tik om de actiecode te zien, kopieer hem en plak hem bij het afrekenen. Gratis, zonder account.`
+            ? `${searchName} kortingscode${discount ? ` voor ${discount}` : ""}${verified ? `, getest op ${verified}` : ""}. Tik om de actiecode te zien, kopieer hem en plak hem bij het afrekenen. Gratis, zonder account.`
             : "Kortingscodes van je favoriete merken op één plek."
         }
         // Zonder (geladen) merk geen canonical en noindex: de terugvalpagina voor nieuwe merken en
@@ -125,6 +139,11 @@ export default function MerkLink() {
               {brand.category_name && <> › {brand.category_name}</>}
             </nav>
             <h1 className="mb-2 text-3xl font-bold">{brand.name} kortingscode</h1>
+            {alias && (
+              <p className="mb-2 text-sm" style={{ color: "var(--muted)" }}>
+                Ook gezocht als {alias} kortingscode
+              </p>
+            )}
             {expired ? (
               <div className="mb-6 rounded-xl border p-5">
                 <p className="font-semibold">Op dit moment is er geen geldige {brand.name} kortingscode.</p>
