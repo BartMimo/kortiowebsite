@@ -631,6 +631,19 @@ export const brandContent: Record<string, BrandContent> = {
     ],
     checked,
   },
+  donnay: {
+    about:
+      "Donnay is een sport- en vrijetijdsmerk dat in 1910 begon met houten tennisrackets. Tegenwoordig verkoopt het basics zoals joggingpakken, shirts en shorts voor dames, heren en kinderen.",
+    shipping: {
+      text: "Verzenden binnen Nederland en België is gratis vanaf €50. Daaronder betaal je €6,95 (Nederland) of €7,95 (België). Bestel je op een werkdag voor 13:00, dan is het de volgende werkdag in huis.",
+      source: "https://www.donnay.nl/service/shipping-returns/",
+    },
+    returns: {
+      text: "Je hebt 14 dagen om te retourneren. Retourneren kost €1,99 per retour, de eerste omruiling is gratis.",
+      source: "https://www.donnay.nl/service/shipping-returns/",
+    },
+    checked,
+  },
   dryze: {
     about:
       "Dryze is een Nederlands merk uit Oosterhout dat haarstylingapparaten voor vrouwen verkoopt, zoals een airstyler en stijltangen, plus haarverzorging.",
