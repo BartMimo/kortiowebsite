@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { routes } from "./routes.mjs";
 
 const sitemap = await readFile("dist/sitemap.xml", "utf8");
@@ -78,7 +78,7 @@ for (const route of routes) {
     assert(
       graph.some(
         (s) =>
-          ["WebPage", "CollectionPage"].includes(s["@type"]) &&
+          ["WebPage", "CollectionPage", "AboutPage"].includes(s["@type"]) &&
           s.url === expected,
       ),
     );
@@ -106,6 +106,60 @@ for (const route of routes) {
     );
   }
 }
+// Merk- en categoriepagina's: zelfde basiseisen als de vaste pagina's.
+const dynamicPages = [
+  ...(await readdir("dist/m")).map((f) => ({ dir: "m", file: f })),
+  ...(await readdir("dist/kortingscodes")).map((f) => ({ dir: "kortingscodes", file: f })),
+];
+assert(dynamicPages.some((p) => p.dir === "kortingscodes"), "category pages are built");
+// Footer, homepage en kruimelpaden linken vast naar elke categoriepagina. Is er een leeg (bijv. omdat
+// de categorie in Supabase is hernoemd), dan liever een mislukte build (de oude versie blijft live)
+// dan links naar een noindex-pagina. Oplossen: dbName in lib/categories.ts aanpassen.
+for (const { dir, file } of dynamicPages.filter((p) => p.dir === "kortingscodes")) {
+  const html = await readFile(`dist/${dir}/${file}`, "utf8");
+  assert(
+    !/<meta[^>]+name="robots"[^>]+content="[^"]*noindex/.test(html),
+    `/${dir}/${file}: categorie zonder merken. Is de categorie in Supabase hernoemd? Pas lib/categories.ts aan.`,
+  );
+}
+for (const { dir, file } of dynamicPages) {
+  const path = `/${dir}/${file.replace(/\.html$/, "")}`;
+  const page = await readFile(`dist/${dir}/${file}`, "utf8");
+  const title = page.match(/<title[^>]*>(.*?)<\/title>/s)?.[1];
+  assert(title && title.length <= 66, `${path}: title present and short (${title})`);
+  assert(!titles.has(title), `${path}: unique title`);
+  titles.add(title);
+  const description = page.match(/<meta[^>]+name="description" content="([^"]*)"/)?.[1];
+  assert(description && description.length <= 170, `${path}: description present and short`);
+  assert.equal((page.match(/<h1\b/g) ?? []).length, 1, `${path}: one H1`);
+  const canonicals = [...page.matchAll(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/g)].map(
+    (m) => m[1],
+  );
+  const noindex = /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/.test(page);
+  if (!noindex) {
+    assert.deepEqual(canonicals, [`https://www.kortio.app${path}`], `${path}: canonical`);
+    assert(sitemap.includes(`<loc>https://www.kortio.app${path}</loc>`), `${path}: in sitemap`);
+    const graph = [
+      ...page.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs),
+    ].flatMap((m) => JSON.parse(m[1])["@graph"] ?? []);
+    const crumbs = graph.find((s) => s["@type"] === "BreadcrumbList")?.itemListElement ?? [];
+    assert(crumbs.length >= 2, `${path}: breadcrumb`);
+    assert(!crumbs.some((c) => /\| Kortio|— Kortio/.test(c.name)), `${path}: clean crumb names`);
+    if (dir === "kortingscodes")
+      assert(graph.some((s) => s["@type"] === "ItemList"), `${path}: item list`);
+  }
+  const snapshot = page.match(/<script id="kortio-catalog"[^>]*>(.*?)<\/script>/s)?.[1];
+  if (dir === "m") assert(!snapshot || snapshot.length < 25000, `${path}: small snapshot`);
+}
+// Interne links: de homepage linkt naar elke merkpagina die hij toont.
+const home = await readFile("dist/index.html", "utf8");
+const homeCards = (home.match(/<article class="brand-card[" ]/g) ?? []).length;
+const homeBrandLinks = new Set([...home.matchAll(/href="(\/m\/[^"]+)"/g)].map((m) => m[1]));
+assert(homeBrandLinks.size >= homeCards, "homepage links every brand card to its page");
+assert(home.includes('href="/kortingscodes/mode"'), "homepage links category pages");
+// Elke URL in de sitemap heeft een geldige lastmod.
+const entries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod><\/url>/g)];
+assert.equal(entries.length, (sitemap.match(/<url>/g) ?? []).length, "every sitemap URL has lastmod");
 assert(robots.includes("Sitemap: https://www.kortio.app/sitemap.xml"));
 assert(!sitemap.includes("https://kortio.app"));
 assert(
@@ -118,5 +172,5 @@ assert(
   ),
 );
 console.log(
-  `SEO artifact checks passed for ${routes.length} pages: HTML, metadata, schema, catalog, sitemap and hosting routes.`,
+  `SEO artifact checks passed for ${routes.length} pages and ${dynamicPages.length} brand/category pages: HTML, metadata, schema, catalog, internal links, sitemap and hosting routes.`,
 );

@@ -9,6 +9,8 @@ import { isCurrentBrand, loadCatalog } from "./lib/catalog";
 import type { Catalog } from "./lib/catalog";
 export { serializeJSON } from "./lib/seo";
 export { slugify } from "./lib/slug";
+export { relatedBrands } from "./lib/brand-seo";
+export { categoryPages } from "./lib/categories";
 
 export async function getPublicCatalog(): Promise<Catalog> {
   const catalog = await loadCatalog();

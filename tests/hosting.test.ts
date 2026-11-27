@@ -25,3 +25,17 @@ test("the old Android 2.0 APK link now leads to Google Play", () => {
   const apk = hosting.redirects.find((r: any) => r.source === "/downloads/Kortioapp.apk");
   assert.equal(apk?.destination, "https://play.google.com/store/apps/details?id=kortio.kortio");
 });
+test("category pages are served and trailing-slash URLs redirect instead of 404", () => {
+  assert.equal(hosting.trailingSlash, false);
+  assert(
+    hosting.rewrites.some(
+      (r: any) => r.source === "/kortingscodes/:slug" && r.destination === "/kortingscodes/:slug.html",
+    ),
+  );
+  assert(hosting.rewrites.some((r: any) => r.source === "/over-kortio"));
+});
+test("/kortingscodes without a category leads to the overview", () => {
+  const r = hosting.redirects.find((x: any) => x.source === "/kortingscodes");
+  assert.equal(r?.destination, "/");
+  assert.equal(r?.permanent, true);
+});

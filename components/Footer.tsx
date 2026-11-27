@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Logo } from "./ui/Logo";
+import { categoryPages } from "../lib/categories";
 export function Footer() {
   return (
     <footer className="footer">
@@ -39,6 +40,16 @@ export function Footer() {
               </li>
             </ul>
           </nav>
+          <nav aria-label="Categorieën">
+            <h2>Categorieën</h2>
+            <ul>
+              {categoryPages.map((c) => (
+                <li key={c.slug}>
+                  <Link to={`/kortingscodes/${c.slug}`}>{c.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
           <nav aria-label="Ontdekken">
             <h2>Ontdekken</h2>
             <ul>
@@ -59,6 +70,9 @@ export function Footer() {
           <nav aria-label="Contact en informatie">
             <h2>Goed om te weten</h2>
             <ul>
+              <li>
+                <Link to="/over-kortio">Over Kortio</Link>
+              </li>
               <li>
                 <Link to="/privacy">Privacybeleid</Link>
               </li>

@@ -6,7 +6,9 @@ import { Footer } from "../components/Footer";
 import { SEO } from "../components/SEO";
 import { BrandCard } from "../components/BrandCard";
 import { CTA } from "../components/CTA";
+import { CategoryLinks } from "../components/CategoryLinks";
 import { useCatalog } from "../hooks/useCatalog";
+import { slugify } from "../lib/slug";
 const normalize = (s: string) =>
   s
     .normalize("NFD")
@@ -47,11 +49,20 @@ export default function MerkenPage() {
     setSearch("");
     setCategory("");
   };
+  const year = new Intl.DateTimeFormat("nl-NL", {
+    year: "numeric",
+    timeZone: "Europe/Amsterdam",
+  }).format(new Date());
+  const count = brands.length;
   return (
     <>
       <SEO
-        title="Gratis kortingscodes voor merken & webshops — Kortio"
-        description="Zoek je favoriete merk, bekijk de korting en kopieer de code. Vind gratis kortingscodes voor mode, sport, eten en meer."
+        title={
+          count
+            ? `Kortingscodes ${year} voor ${count} merken & webshops | Kortio`
+            : `Kortingscodes ${year} voor merken & webshops | Kortio`
+        }
+        description={`Actuele kortingscodes voor ${count ? `${count} ` : ""}merken in mode, sport, beauty, wonen en meer. Tik op een code, kopieer hem en plak hem bij het afrekenen. Gratis, zonder account.`}
         canonical="/"
         pageType="CollectionPage"
       />
@@ -63,9 +74,9 @@ export default function MerkenPage() {
               Gratis kortingscodes voor merken &amp; webshops
             </div>
             <h1>
-              Jouw favoriete merk.
+              Kortingscodes van jouw
               <br />
-              <span>Met extra voordeel.</span>
+              <span>favoriete merken.</span>
             </h1>
             <div className="catalog-intro-bottom">
               <p className="section-copy">
@@ -172,7 +183,9 @@ export default function MerkenPage() {
                   ? [1, 2, 3, 4, 5, 6].map((n) => (
                       <div className="skeleton" key={n} aria-hidden="true" />
                     ))
-                  : filtered.map((b) => <BrandCard brand={b} key={b.id} />)}
+                  : filtered.map((b) => (
+                      <BrandCard brand={b} key={b.id} href={`/m/${slugify(b.name)}`} />
+                    ))}
                 {!loading && filtered.length === 0 && (
                   <div className="empty-state">
                     <Search aria-hidden="true" />
@@ -208,6 +221,7 @@ export default function MerkenPage() {
             </p>
           </div>
         </section>
+        <CategoryLinks />
         <CTA />
       </main>
       <Footer />

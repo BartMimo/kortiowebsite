@@ -22,6 +22,7 @@ export const website = {
   "@type": "WebSite",
   "@id": `${SITE_URL}/#website`,
   name: "Kortio",
+  alternateName: "kortio.app",
   url: `${SITE_URL}/`,
   inLanguage: "nl-NL",
   publisher: { "@id": organization["@id"] },

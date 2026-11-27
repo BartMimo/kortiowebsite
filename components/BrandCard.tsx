@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Check, Copy, ExternalLink, Scissors, Star } from "lucide-react";
 import { track } from "../lib/track";
 import { Brand, safeWebURL } from "../lib/catalog";
 import { imageKey } from "../lib/brand-utils";
 import { brandImages } from "../lib/brand-images";
 import { APP_STORE_URL, PLAY_STORE_URL } from "../lib/seo";
-export function BrandCard({ brand }: { brand: Brand }) {
+// href: link naar de merkpagina (overzicht en categoriepagina's). Op de merkpagina zelf niet.
+// headingLevel: h2 op de merkpagina (direct onder de h1), anders h3 onder de h2 van het overzicht.
+export function BrandCard({
+  brand,
+  href,
+  logoAlt = "",
+  headingLevel: Heading = "h3",
+}: {
+  brand: Brand;
+  href?: string;
+  logoAlt?: string;
+  headingLevel?: "h2" | "h3";
+}) {
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -94,7 +107,7 @@ export function BrandCard({ brand }: { brand: Brand }) {
           {image && !imageFailed ? (
             <img
               src={image}
-              alt=""
+              alt={logoAlt}
               width={60}
               height={60}
               loading="lazy"
@@ -115,7 +128,9 @@ export function BrandCard({ brand }: { brand: Brand }) {
           Uitgelicht
         </span>
       )}
-      <h3>{brand.name}</h3>
+      <Heading className="brand-card-name">
+        {href ? <Link to={href}>{brand.name}</Link> : brand.name}
+      </Heading>
       <p className="brand-offer">
         {brand.discount_text || "Bekijk het aanbod bij dit merk."}
       </p>

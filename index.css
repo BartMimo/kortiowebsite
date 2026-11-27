@@ -2600,3 +2600,92 @@ img {
   text-align: center;
   text-decoration: none;
 }
+
+/* SEO-update 27-11-2026: merknaam op de kaart linkt naar de merkpagina */
+/* Op de merkpagina is de kaartkop een h2: zelfde opmaak als de h3 in het overzicht. */
+.brand-card h2.brand-card-name {
+  font-family: var(--heading);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  margin: 0 0 9px;
+  overflow-wrap: anywhere;
+}
+.brand-card .brand-card-name a {
+  color: inherit;
+  text-decoration: none;
+}
+.brand-card .brand-card-name a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* Categorielinks (homepage en categoriepagina's) */
+.category-links-section {
+  padding: 0 0 90px;
+}
+.category-links-section .section-title {
+  font-size: clamp(24px, 3vw, 32px);
+}
+.category-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.category-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color 0.18s,
+    color 0.18s;
+}
+.category-links a:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.category-links svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Categoriepagina: A-Z-lijst en vragen */
+.privacy-content .category-brand-list {
+  list-style: none;
+  padding: 0;
+  columns: 2 260px;
+  column-gap: 30px;
+}
+.privacy-content .category-brand-list li {
+  break-inside: avoid;
+}
+.privacy-content .category-faq-q {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 18px 0 4px;
+}
+
+/* Footer met vier kolommen (Categorieën erbij) */
+@media (min-width: 801px) {
+  .footer-main {
+    grid-template-columns: 1.6fr repeat(4, 1fr);
+  }
+}
+@media (max-width: 800px) {
+  .category-links-section {
+    padding-bottom: 60px;
+  }
+}

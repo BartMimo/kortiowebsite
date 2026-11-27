@@ -8,6 +8,7 @@ export const routes = [
     file: "kortingscode-gebruiken.html",
     indexable: true,
   },
+  { path: "/over-kortio", file: "over-kortio.html", indexable: true },
   { path: "/privacy", file: "privacy.html", indexable: false },
   { path: "/voorwaarden", file: "voorwaarden.html", indexable: false },
   { path: "/login", file: "login.html", indexable: false },

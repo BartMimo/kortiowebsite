@@ -16,6 +16,8 @@ const LandingPage = lazy(() =>
 );
 const CodeGuide = lazy(() => import("./pages/CodeGuide"));
 const MerkLink = lazy(() => import("./pages/MerkLink"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
+const OverKortio = lazy(() => import("./pages/OverKortio"));
 const AdminDashboard = lazy(() => import("./admin/AdminDashboard"));
 
 function App() {
@@ -39,6 +41,8 @@ function App() {
           <Route path="/merken" element={<Navigate to="/" replace />} />
           <Route path="/kortingscode-gebruiken" element={<CodeGuide />} />
           <Route path="/m/:slug" element={<MerkLink />} />
+          <Route path="/kortingscodes/:slug" element={<CategoryPage />} />
+          <Route path="/over-kortio" element={<OverKortio />} />
           <Route
             path="/admin"
             element={

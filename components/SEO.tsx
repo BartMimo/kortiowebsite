@@ -1,15 +1,22 @@
 import { Helmet } from "react-helmet-async";
 import { organization, serializeJSON, SITE_URL, website } from "../lib/seo";
 
+export type Crumb = { name: string; path?: string };
 interface SEOProps {
   title: string;
   description: string;
   canonical?: string;
   noindex?: boolean;
   ogImage?: string;
-  schema?: object;
-  pageType?: "WebPage" | "CollectionPage";
+  schema?: object | object[];
+  pageType?: "WebPage" | "CollectionPage" | "AboutPage";
+  // Kruimelpad na "Kortio"; het laatste item zonder path is de pagina zelf.
+  breadcrumbs?: Crumb[];
+  dateModified?: string;
+  // false: de titel is al op lengte gemaakt (merkpagina's); dan niets meer achter plakken.
+  brandSuffix?: boolean;
 }
+const shortName = (title: string) => title.replace(/ (\||—) Kortio$/, "");
 export function SEO({
   title,
   description,
@@ -18,8 +25,12 @@ export function SEO({
   ogImage = `${SITE_URL}/social-card.png`,
   schema,
   pageType = "WebPage",
+  breadcrumbs,
+  dateModified,
+  brandSuffix = true,
 }: SEOProps) {
-  const fullTitle = title.includes("Kortio") ? title : `${title} | Kortio`;
+  const fullTitle =
+    !brandSuffix || title.includes("Kortio") ? title : `${title} | Kortio`;
   const url = canonical ? `${SITE_URL}${canonical}` : undefined;
   const graph: object[] = [organization, website];
   if (url && !noindex) {
@@ -32,27 +43,22 @@ export function SEO({
       inLanguage: "nl-NL",
       isPartOf: { "@id": website["@id"] },
       publisher: { "@id": organization["@id"] },
+      ...(dateModified ? { dateModified } : {}),
     });
-    if (canonical !== "/")
+    if (canonical !== "/") {
+      const crumbs = breadcrumbs ?? [{ name: shortName(fullTitle) }];
       graph.push({
         "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Kortio",
-            item: `${SITE_URL}/`,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: fullTitle.replace(/ — Kortio$/, ""),
-            item: url,
-          },
-        ],
+        itemListElement: [{ name: "Kortio", path: "/" }, ...crumbs].map((c, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: c.name,
+          item: c.path ? `${SITE_URL}${c.path}` : url,
+        })),
       });
+    }
   }
-  if (schema) graph.push(schema);
+  if (schema) graph.push(...(Array.isArray(schema) ? schema : [schema]));
   return (
     <Helmet>
       <title>{fullTitle}</title>
@@ -62,7 +68,7 @@ export function SEO({
         content={
           noindex
             ? "noindex, nofollow"
-            : "index, follow, max-image-preview:large"
+            : "index, follow, max-image-preview:large, max-snippet:-1"
         }
       />
       {url && <link rel="canonical" href={url} />}
