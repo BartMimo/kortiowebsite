@@ -683,4 +683,30 @@ export const brandContent: Record<string, BrandContent> = {
     },
     checked,
   },
+  vevor: {
+    about:
+      "Vevor verkoopt gereedschap, machines en producten voor huis, tuin en werkplaats, zoals trolleys, ladders en opritten, tegen lage prijzen.",
+    shipping: {
+      text: "Bezorging is gratis.",
+      source: "https://www.vevor.nl/cart",
+    },
+    returns: {
+      text: "Je kunt binnen 30 dagen retourneren en je krijgt 12 maanden garantie.",
+      source: "https://www.vevor.nl/cart",
+    },
+    checked,
+  },
+  kidzincolor: {
+    about:
+      "Kidzincolor is een Nederlandse webshop in Lemmer met kinderproducten met naam of opdruk, zoals knuffels, shoppers, mutsen, treintjes en etuis.",
+    shipping: {
+      text: "Verzenden is gratis vanaf €60 in Nederland en vanaf €75 in België. Normale levering duurt 2 tot 3 werkdagen.",
+      source: "https://kidzincolor.com/klantenservice/",
+    },
+    returns: {
+      text: "Je hebt 14 dagen om te annuleren en daarna nog 14 dagen om te retourneren. De retourkosten (circa €7,25 per pakket) betaal je zelf. Gepersonaliseerde items kun je niet retourneren.",
+      source: "https://kidzincolor.com/retour-beleid-klachtenregeling/",
+    },
+    checked,
+  },
 };
