@@ -722,4 +722,17 @@ export const brandContent: Record<string, BrandContent> = {
     },
     checked,
   },
+  beddies: {
+    about:
+      "Beddies is een webshop uit Groningen voor kinderkamers, met hoogslapers, kinderbedden, kasten en bureaus van merken als Quax, Lifetime, Vipack en Flexa.",
+    shipping: {
+      text: "Bezorging in Nederland en België is gratis vanaf €50.",
+      source: "https://www.beddies.nl/",
+    },
+    returns: {
+      text: "Je meldt een retour binnen 14 dagen na ontvangst aan en hebt daarna 14 dagen om het terug te sturen. De retourkosten betaal je zelf. Al gemonteerde producten kun je niet retourneren.",
+      source: "https://www.beddies.nl/retourneren/",
+    },
+    checked,
+  },
 };
