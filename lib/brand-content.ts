@@ -631,4 +631,43 @@ export const brandContent: Record<string, BrandContent> = {
     ],
     checked,
   },
+  dryze: {
+    about:
+      "Dryze is een Nederlands merk uit Oosterhout dat haarstylingapparaten voor vrouwen verkoopt, zoals een airstyler en stijltangen, plus haarverzorging.",
+    shipping: {
+      text: "Verzenden binnen Nederland en België is gratis vanaf €50, altijd met track & trace. Bestel je op een werkdag voor 23:00, dan wordt het de volgende dag geleverd.",
+      source: "https://dryze.nl/policies/shipping-policy",
+    },
+    returns: {
+      text: "Je kunt 30 dagen risicovrij testen en gratis retourneren met een retourlabel. Op de apparaten zit 2 jaar garantie.",
+      source: "https://dryze.nl/policies/refund-policy",
+    },
+    checked,
+  },
+  cheapfixit: {
+    about:
+      "Cheapfixit verkoopt refurbished zakelijke laptops van onder meer HP, Dell, Lenovo en Microsoft. Elke laptop wordt getest en gereinigd. Het bedrijf begon als reparatiewerkplaats en heeft een winkel in Werkendam.",
+    shipping: {
+      text: "Verzenden is gratis door heel Nederland. Bestel je voor 17:00 en is het op voorraad, dan wordt het dezelfde dag verzonden.",
+      source: "https://www.cheapfixit.nl/pages/verzending",
+    },
+    returns: {
+      text: "Je hebt 30 dagen bedenktijd en 24 maanden garantie. Het geld staat binnen 5 werkdagen na ontvangst van de retour terug.",
+      source: "https://www.cheapfixit.nl/pages/retourneren",
+    },
+    checked,
+  },
+  parfumbella: {
+    about:
+      "Parfumbella is een webshop met originele merkparfums voor dames en heren, plus make-up, nichegeuren en Arabische geuren.",
+    shipping: {
+      text: "Verzenden is gratis vanaf €50.",
+      source: "https://www.parfumbella.nl/",
+    },
+    returns: {
+      text: "Je kunt binnen 30 dagen retourneren als het product ongebruikt is, in de originele verpakking zit en de zegel nog heel is. De retourzending betaal je zelf.",
+      source: "https://www.parfumbella.nl/retourneren/",
+    },
+    checked,
+  },
 };
