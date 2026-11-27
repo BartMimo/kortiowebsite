@@ -9,6 +9,7 @@ const aliases: Record<string, string> = {
   "ninja-kitchen": "SharkNinja",
   "athletic-bee": "Athletic Bees",
   "lampen-licht": "Lampenlicht",
+  "the-jeweller": "The Jeweller Shop",
 };
 
 export function brandAlias(slug: string): string | null {

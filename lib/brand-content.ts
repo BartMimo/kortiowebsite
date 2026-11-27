@@ -657,6 +657,19 @@ export const brandContent: Record<string, BrandContent> = {
     },
     checked,
   },
+  "the-jeweller": {
+    about:
+      "The Jeweller is een online juwelier die in 1993 begon als familiebedrijf met twee winkels. Je koopt er gouden en zilveren sieraden, trouwringen en horloges, ook met gravure.",
+    shipping: {
+      text: "Verzenden binnen Nederland kost €5,90; vanaf €100 is het gratis. Bestel je op een werkdag voor 14:00, dan gaat het dezelfde dag op de post (artikelen die direct leverbaar zijn).",
+      source: "https://www.thejewellershop.com/nl/informatie/verzending-en-levering",
+    },
+    returns: {
+      text: "Je hebt 14 dagen om te retourneren. Sieraden met gravure of op maat gemaakt kun je niet terugsturen.",
+      source: "https://www.thejewellershop.com/nl/service/retouren",
+    },
+    checked,
+  },
   parfumbella: {
     about:
       "Parfumbella is een webshop met originele merkparfums voor dames en heren, plus make-up, nichegeuren en Arabische geuren.",
