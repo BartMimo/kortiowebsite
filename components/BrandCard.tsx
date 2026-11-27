@@ -4,6 +4,7 @@ import { track } from "../lib/track";
 import { Brand, safeWebURL } from "../lib/catalog";
 import { imageKey } from "../lib/brand-utils";
 import { brandImages } from "../lib/brand-images";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../lib/seo";
 export function BrandCard({ brand }: { brand: Brand }) {
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -13,6 +14,8 @@ export function BrandCard({ brand }: { brand: Brand }) {
   // code echt bekijken. Eenmaal onthuld blijft hij open voor de rest van de sessie.
   const [revealed, setRevealed] = useState(false);
   const [tearing, setTearing] = useState(false);
+  // Na het onthullen op mobiel: de bezoeker is tevreden, dus dan de app aanbieden.
+  const [appLink, setAppLink] = useState<string | null>(null);
   const revealKey = `kortio-open-${brand.id}`;
   useEffect(() => {
     try {
@@ -58,6 +61,18 @@ export function BrandCard({ brand }: { brand: Brand }) {
     setTearing(true);
     // Onthullen kopieert meteen: de klik is een gebruikersactie, dus het klembord mag.
     void copy("reveal");
+    // En opent de webshop (affiliate-link) in een nieuw tabblad, zodat de klik meetelt.
+    // Na de kopieeropdracht, want het nieuwe tabblad haalt de focus weg. Synchroon in de
+    // klik, anders blokkeert de browser het als pop-up.
+    if (website) {
+      window.open(website, "_blank", "noopener");
+      track("shop", brand.id);
+    }
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      const ua = navigator.userAgent;
+      if (/iPhone|iPad|iPod/i.test(ua)) setAppLink(APP_STORE_URL);
+      else if (/Android/i.test(ua)) setAppLink(PLAY_STORE_URL);
+    }
     setTimeout(() => {
       setRevealed(true);
       setTearing(false);
@@ -148,7 +163,7 @@ export function BrandCard({ brand }: { brand: Brand }) {
           <a
             href={website}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="sponsored noopener noreferrer"
             onClick={() => track("shop", brand.id)}
             aria-label={`Open de webshop van ${brand.name} in een nieuw tabblad`}
           >
@@ -168,6 +183,16 @@ export function BrandCard({ brand }: { brand: Brand }) {
               : ""}
         </span>
       </div>
+      {appLink && (
+        <a
+          className="app-promo"
+          href={appLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Nooit meer zoeken? <strong>Download de gratis Kortio-app</strong>
+        </a>
+      )}
       {failed && (
         <p className="copy-error" role="alert">
           Kopiëren lukt niet. Selecteer de code hierboven en kopieer deze

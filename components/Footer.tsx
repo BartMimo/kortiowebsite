@@ -20,6 +20,10 @@ export function Footer() {
               <br />
               Vind, bewaar en gebruik kortingscodes van je favoriete merken.
             </p>
+            <p className="footer-disclosure">
+              Kortio ontvangt mogelijk een vergoeding als je via onze link bij
+              een webshop bestelt. Dat kost jou niets extra.
+            </p>
           </div>
           <nav aria-label="De app">
             <h2>De app</h2>

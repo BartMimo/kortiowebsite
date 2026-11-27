@@ -76,7 +76,7 @@ export default function MerkLink() {
         },
         {
           q: `Hoe gebruik ik de ${brand.name} actiecode?`,
-          a: `Tik op de code om hem te tonen; hij wordt dan meteen gekopieerd. Ga naar de webshop van ${brand.name}, leg je producten in je winkelwagen en plak de code bij het afrekenen in het veld voor de kortingscode, actiecode of promocode.`,
+          a: `Tik op de code om hem te tonen; hij wordt dan meteen gekopieerd en de webshop van ${brand.name} opent in een nieuw tabblad. Leg daar je producten in je winkelwagen en plak de code bij het afrekenen in het veld voor de kortingscode, actiecode of promocode.`,
         },
         {
           q: `Wat levert de ${brand.name} kortingscode op?`,
@@ -155,7 +155,7 @@ export default function MerkLink() {
                   <a
                     href={safeWebURL(brand.website_url)!}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="sponsored noopener noreferrer"
                     className="mt-3 inline-block underline"
                   >
                     Bekijk de acties bij {brand.name}
@@ -170,14 +170,17 @@ export default function MerkLink() {
               {until ? ` · geldig t/m ${until}` : ""}
             </p>
             <BrandCard brand={brand} />
+            <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
+              Kortio ontvangt mogelijk een vergoeding als je via onze link bestelt. Dat kost jou niets extra.
+            </p>
 
             <section className="mt-10">
               <h2 className="mb-3 text-xl font-semibold">
                 Zo gebruik je de {brand.name} kortingscode
               </h2>
               <ol className="list-decimal space-y-2 pl-5">
-                <li>Tik hierboven op de code. Hij verschijnt en staat meteen op je klembord.</li>
-                <li>Open de webshop van {brand.name} en leg je producten in je winkelwagen.</li>
+                <li>Tik hierboven op de code. Hij verschijnt, staat meteen op je klembord en de webshop van {brand.name} opent in een nieuw tabblad.</li>
+                <li>Leg je producten in je winkelwagen.</li>
                 <li>
                   Plak de code bij het afrekenen in het veld voor de kortingscode, actiecode of
                   promocode en controleer of de korting wordt verrekend.

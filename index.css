@@ -2582,3 +2582,21 @@ img {
     font-size: 16px;
   }
 }
+
+.footer-brand p.footer-disclosure {
+  margin-top: 12px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.brand-card .app-promo {
+  display: block;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--line);
+  font-size: 12px;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+}
