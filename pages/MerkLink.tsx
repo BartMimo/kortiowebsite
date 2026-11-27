@@ -57,7 +57,7 @@ export default function MerkLink() {
           a: `Tik op de code om hem te tonen; hij wordt dan meteen gekopieerd en de webshop van ${brand.name} opent in een nieuw tabblad. Leg daar je producten in je winkelwagen en plak de code bij het afrekenen in het veld voor de kortingscode, actiecode of promocode.`,
         },
         {
-          q: `Wat levert de ${brand.name} kortingscode op?`,
+          q: `Hoeveel korting geeft de ${brand.name} code?`,
           a: offer
             ? `Met deze code krijg je ${offer} bij ${brand.name}. De precieze voorwaarden zie je in de winkelwagen van de webshop.`
             : `De korting en voorwaarden zie je in de winkelwagen van ${brand.name} nadat je de code hebt ingevuld.`,
@@ -192,6 +192,12 @@ export default function MerkLink() {
                   {verified ? ` · getest op ${verified}` : ""}
                   {until ? ` · geldig t/m ${until}` : ""}
                 </p>
+                {/* Mensen zoeken ook op "<merk> code", "korting" en "actiecode" (Search Console nov 2026). */}
+                <p className="mb-6">
+                  Op zoek naar korting bij {brand.name}? Met deze {brand.name} code (ook wel
+                  actiecode of promocode genoemd){" "}
+                  {offer ? `krijg je ${offer}.` : "bespaar je bij het afrekenen."}
+                </p>
                 <BrandCard
                   brand={brand}
                   logoAlt={`Logo van ${brand.name}`}
@@ -204,7 +210,7 @@ export default function MerkLink() {
 
                 <section className="mt-10">
                   <h2 className="mb-3 text-xl font-semibold">
-                    Zo gebruik je de {brand.name} kortingscode
+                    Zo gebruik je de {brand.name} kortingscode of actiecode
                   </h2>
                   <ol className="list-decimal space-y-2 pl-5">
                     <li>
