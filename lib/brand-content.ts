@@ -15,6 +15,28 @@ export type BrandContent = {
 const checked = "2026-11-27";
 
 export const brandContent: Record<string, BrandContent> = {
+  iscooter: {
+    about:
+      "iScooter verkoopt elektrische steps en e-bikes via een Europese webshop.",
+    returns: {
+      text: "Een ongebruikt product kun je binnen 30 dagen na levering terugsturen; meld de retour binnen 7 dagen. Voor een niet-defecte retour gelden restockingkosten (15% bij een ongeopende step).",
+      source: "https://www.iscooterglobal.eu/policies/refund-policy",
+    },
+    checked: "2026-11-28",
+  },
+  finbike: {
+    about:
+      "Finbike verkoopt elektrische fietsen en verzendt ze vanuit magazijnen in het Verenigd Koninkrijk en de EU.",
+    shipping: {
+      text: "Verzenden is gratis. Naar Nederland gaat het vanuit Duitsland en duurt het 2 tot 5 werkdagen.",
+      source: "https://www.finbike.com/policies/shipping-policy",
+    },
+    returns: {
+      text: "Een ongebruikte e-bike kun je binnen 14 dagen terugsturen. Er gaat dan 10% retourkosten af en je betaalt de verzending terug zelf.",
+      source: "https://www.finbike.com/policies/refund-policy",
+    },
+    checked: "2026-11-28",
+  },
   "happy-size": {
     about:
       "Happy Size is een webshop voor dameskleding in grote maten. Je vindt er kleding voor elke gelegenheid, uit eigen collecties en van andere merken.",
